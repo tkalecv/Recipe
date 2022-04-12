@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Recipe.DAL
 {
-    public class RecipeContext
+    public class RecipeContext : IRecipeContext
     {
         private readonly IConfiguration _configuration;
         private readonly string _connectionString;
