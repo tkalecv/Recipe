@@ -22,19 +22,5 @@ namespace Recipe.DAL
 
         public IDbConnection CreateConnection()
             => new SqlConnection(_connectionString);
-
-        public async Task<IEnumerable<T>> LoadData<T, U>(string storedProcedure, U parameters)
-        {
-            using IDbConnection dbConnection = CreateConnection();
-
-            return await dbConnection.QueryAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
-        }
-
-        public async Task SaveData<T>(string storedProcedure, T parameters)
-        {
-            using IDbConnection dbConnection = CreateConnection();
-
-            await dbConnection.ExecuteAsync(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
-        }
     }
 }
