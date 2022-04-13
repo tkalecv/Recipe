@@ -1,32 +1,29 @@
 ﻿using Dapper;
 using Recipe.DAL;
-using Recipe.Repository.Common;
 using Recipe.Repository.Common.Generic;
 using Recipe.Repository.Generic;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
 
 namespace Recipe.Repository.UnitOfWork
 {
     internal class UnitOfWork : IUnitOfWork
     {
-        IDbConnection _connection = null;
-        IDbTransaction _transaction = null;
+        public IDbConnection Connection { get; set; } = null;
+        private IDbTransaction _transaction = null;
 
         private Dictionary<string, dynamic> _repositories;
 
         public UnitOfWork(IRecipeContext recipeContext)
         {
-            _connection = recipeContext.CreateConnection();
+            Connection = recipeContext.CreateConnection();
         }
 
         public void BeginTransaction()
         {
-            _transaction = _connection.BeginTransaction();
+            _transaction = Connection.BeginTransaction();
         }
 
         public void Commit()
@@ -52,34 +49,18 @@ namespace Recipe.Repository.UnitOfWork
         {
             //TODO: check if generic is null or empty object here
             if (ReferenceEquals(parameters, null))
-                return await _connection.QueryAsync<T>(sqlQuery);
+                return await Connection.QueryAsync<T>(sqlQuery);
 
-            return await _connection.QueryAsync<T>(sqlQuery, parameters);
+            return await Connection.QueryAsync<T>(sqlQuery, parameters);
         }
 
         public async Task ExecuteQueryAsync<T>(string sqlQuery, T parameters)
         {
             //TODO: check if generic is null or empty object here
             if (ReferenceEquals(parameters, null))
-                await _connection.ExecuteAsync(sqlQuery);
+                await Connection.ExecuteAsync(sqlQuery);
 
-            await _connection.ExecuteAsync(sqlQuery, parameters);
-        }
-
-        //TODO: move this to repo?
-        public async Task<IEnumerable<T>> LoadData<T, U>(string storedProcedure, U parameters)
-        {
-            using IDbConnection dbConnection = _connection;
-
-            return await dbConnection.QueryAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
-        }
-
-        //TODO: move this to repo?
-        public async Task SaveData<T>(string storedProcedure, T parameters)
-        {
-            using IDbConnection dbConnection = _connection;
-
-            await dbConnection.ExecuteAsync(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
+            await Connection.ExecuteAsync(sqlQuery, parameters);
         }
 
         //TODO: move this to factory?

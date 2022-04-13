@@ -8,10 +8,12 @@ namespace Recipe.Repository.Common.Generic
 {
     public interface IGenericRepository<T>
     {
-        Task<IEnumerable<T>> GetAllAsync(string where = null);
-        Task CreateAsync(T entity);
         Task CreateAsync(IEnumerable<T> entityList);
+        Task CreateAsync(T entity);
         Task DeleteAsync(T entity);
+        Task<IEnumerable<T>> GetAllAsync(string where = null);
+        Task<IEnumerable<K>> LoadData<K, U>(string storedProcedure, U parameters);
+        Task SaveData<U>(string storedProcedure, U parameters);
         Task UpdateAsync(T entity);
     }
 }

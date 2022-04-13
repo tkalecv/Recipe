@@ -1,14 +1,16 @@
-﻿using Recipe.Repository.Common.Generic;
+﻿using Dapper;
+using Recipe.Repository.Common.Generic;
 using Recipe.Repository.UnitOfWork;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Recipe.Repository.Generic
 {
-    internal class GenericRepository<T> : IGenericRepository<T>
+    public class GenericRepository<T> : IGenericRepository<T>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -121,6 +123,40 @@ namespace Recipe.Repository.Generic
                 var query = $"UPDATE {typeof(T).Name} SET {stringOfColumns} WHERE @{typeof(T).Name}ID = @{typeof(T).Name}ID";
 
                 await _unitOfWork.ExecuteQueryAsync(query, entity);
+
+                _unitOfWork.Commit();
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<K>> LoadData<K, U>(string storedProcedure, U parameters)
+        {
+            try
+            {
+                _unitOfWork.BeginTransaction();
+
+                return await _unitOfWork.Connection.QueryAsync<K>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
+
+                _unitOfWork.Commit();
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                throw ex;
+            }
+        }
+
+        public async Task SaveData<U>(string storedProcedure, U parameters)
+        {
+            try
+            {
+                _unitOfWork.BeginTransaction();
+
+                await _unitOfWork.Connection.ExecuteAsync(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
 
                 _unitOfWork.Commit();
             }
