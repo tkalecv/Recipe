@@ -94,7 +94,7 @@ namespace Recipe.Repository.Generic
 
                 _unitOfWork.BeginTransaction();
 
-                var query = $"SELECT * FROM {typeof(T).Name}";
+                var query = $"SELECT * FROM {typeof(T).Name} ";
 
                 if (!string.IsNullOrWhiteSpace(where))
                     query += where;
