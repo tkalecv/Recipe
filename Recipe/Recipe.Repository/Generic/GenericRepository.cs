@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Recipe.Repository.Generic
 {
-    public class GenericRepository<T> : IGenericRepository<T>
+    internal class GenericRepository<T> : IGenericRepository<T>
     {
         private readonly IUnitOfWork _unitOfWork;
 

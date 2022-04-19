@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Recipe.Repository.UnitOfWork
 {
-    public interface IUnitOfWork
+    internal interface IUnitOfWork
     {
         IDbConnection Connection { get; set; }
         void BeginTransaction();

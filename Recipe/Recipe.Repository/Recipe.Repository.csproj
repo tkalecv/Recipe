@@ -5,7 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Recipe.DAL\Recipe.DAL.csproj" />
+    <ProjectReference Include="..\Recipe.Models.Common\Recipe.Models.Common.csproj" />
+    <ProjectReference Include="..\Recipe.Models\Recipe.Models.csproj" />
     <ProjectReference Include="..\Recipe.Repository.Common\Recipe.Repository.Common.csproj" />
   </ItemGroup>
 

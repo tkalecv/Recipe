@@ -11,9 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.Models", "Recipe.Mod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.Models.Common", "Recipe.Models.Common\Recipe.Models.Common.csproj", "{91E0CD5F-F132-4A67-BB2D-DC5D47DA30ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipe.Repository.Common", "Recipe.Repository.Common\Recipe.Repository.Common.csproj", "{0E250246-1DB0-4D83-863F-6631D9A938D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.Repository.Common", "Recipe.Repository.Common\Recipe.Repository.Common.csproj", "{0E250246-1DB0-4D83-863F-6631D9A938D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipe.Repository", "Recipe.Repository\Recipe.Repository.csproj", "{1A6F441F-114F-4D82-9DEE-5FFB7ADF1C95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.Repository", "Recipe.Repository\Recipe.Repository.csproj", "{1A6F441F-114F-4D82-9DEE-5FFB7ADF1C95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipe.Service.Common", "Recipe.Service.Common\Recipe.Service.Common.csproj", "{922F2A9A-F265-4AD4-8F21-A0B52269E60A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipe.Service", "Recipe.Service\Recipe.Service.csproj", "{A44A04F6-01D4-4C35-B016-CE993696A04B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,14 @@ Global
 		{1A6F441F-114F-4D82-9DEE-5FFB7ADF1C95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A6F441F-114F-4D82-9DEE-5FFB7ADF1C95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A6F441F-114F-4D82-9DEE-5FFB7ADF1C95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{922F2A9A-F265-4AD4-8F21-A0B52269E60A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{922F2A9A-F265-4AD4-8F21-A0B52269E60A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{922F2A9A-F265-4AD4-8F21-A0B52269E60A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{922F2A9A-F265-4AD4-8F21-A0B52269E60A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A44A04F6-01D4-4C35-B016-CE993696A04B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A44A04F6-01D4-4C35-B016-CE993696A04B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A44A04F6-01D4-4C35-B016-CE993696A04B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A44A04F6-01D4-4C35-B016-CE993696A04B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

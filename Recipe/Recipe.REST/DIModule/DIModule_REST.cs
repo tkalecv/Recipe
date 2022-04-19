@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Recipe.Service.DIModule;
 
 namespace Recipe.REST.DIModule
 {
@@ -6,6 +7,7 @@ namespace Recipe.REST.DIModule
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterModule<DIModule_Service>();
         }
     }
 }
