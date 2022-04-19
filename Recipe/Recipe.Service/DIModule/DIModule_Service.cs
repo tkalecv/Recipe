@@ -1,8 +1,5 @@
 ﻿using Autofac;
 using Recipe.Repository.DIModule;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Recipe.Service.DIModule
 {

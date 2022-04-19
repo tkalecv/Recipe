@@ -5,9 +5,6 @@ using Recipe.Models.DIModule;
 using Recipe.Repository.Common.Generic;
 using Recipe.Repository.Generic;
 using Recipe.Repository.UnitOfWork;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Recipe.Repository.DIModule
 {

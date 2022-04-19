@@ -1,14 +1,9 @@
 ﻿using Autofac;
 using Recipe.Models.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace Recipe.Models.DIModule
 {
-    public class DIModule_Models : Autofac.Module
+    public class DIModule_Models : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
