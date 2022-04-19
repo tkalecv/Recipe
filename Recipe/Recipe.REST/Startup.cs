@@ -37,6 +37,9 @@ namespace Recipe.REST
         {
             if (env.IsDevelopment())
             {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+
                 app.UseDeveloperExceptionPage();
             }
 
