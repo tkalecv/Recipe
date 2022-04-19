@@ -2,6 +2,7 @@
 using Recipe.DAL.DIModule;
 using Recipe.Models.Common;
 using Recipe.Models.DIModule;
+using Recipe.Repository.Common;
 using Recipe.Repository.Common.Generic;
 using Recipe.Repository.Generic;
 using Recipe.Repository.UnitOfWork;
@@ -22,6 +23,8 @@ namespace Recipe.Repository.DIModule
             builder.RegisterType<GenericRepository<IRecipeAttributes>>().As<IGenericRepository<IRecipeAttributes>>();
             builder.RegisterType<GenericRepository<IUser>>().As<IGenericRepository<IUser>>();
             builder.RegisterType<GenericRepository<IUserLikedRecipe>>().As<IGenericRepository<IUserLikedRecipe>>();
+
+            builder.RegisterType<IngredientRepository>().As<IIngredientRepository>();
 
             builder.RegisterType<UnitOfWork.UnitOfWork>().As<IUnitOfWork>();
 

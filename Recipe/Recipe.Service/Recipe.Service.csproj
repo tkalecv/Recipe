@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Recipe.Repository.Common\Recipe.Repository.Common.csproj" />
     <ProjectReference Include="..\Recipe.Repository\Recipe.Repository.csproj" />
     <ProjectReference Include="..\Recipe.Service.Common\Recipe.Service.Common.csproj" />
   </ItemGroup>
