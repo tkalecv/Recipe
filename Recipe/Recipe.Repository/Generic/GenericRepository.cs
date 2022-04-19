@@ -10,13 +10,18 @@ using System.Threading.Tasks;
 
 namespace Recipe.Repository.Generic
 {
-    internal class GenericRepository<T> : IGenericRepository<T>
+    internal class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly IUnitOfWork _unitOfWork;
+
+        private string TableName { get; set; }
 
         public GenericRepository(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+
+            //TODO: remove first char I if it is an interface
+            TableName = typeof(T).Name;
         }
 
         public async Task CreateAsync(T entity)
@@ -28,7 +33,7 @@ namespace Recipe.Repository.Generic
                 var columns = GetColumns();
                 var stringOfColumns = string.Join(", ", columns);
                 var stringOfParameters = string.Join(", ", columns.Select(e => "@" + e));
-                var query = $"INSERT INTO {typeof(T).Name} ({stringOfColumns}) values ({stringOfParameters})";
+                var query = $"INSERT INTO {TableName} ({stringOfColumns}) values ({stringOfParameters})";
 
                 await _unitOfWork.ExecuteQueryAsync(query, entity);
 
@@ -53,7 +58,7 @@ namespace Recipe.Repository.Generic
                     var columns = GetColumns();
                     var stringOfColumns = string.Join(", ", columns);
                     var stringOfParameters = string.Join(", ", columns.Select(e => "@" + e));
-                    var query = $"INSERT INTO {typeof(T).Name} ({stringOfColumns}) values ({stringOfParameters})";
+                    var query = $"INSERT INTO {TableName} ({stringOfColumns}) values ({stringOfParameters})";
 
                     await _unitOfWork.ExecuteQueryAsync(query, entity);
                 }
@@ -73,7 +78,7 @@ namespace Recipe.Repository.Generic
             {
                 _unitOfWork.BeginTransaction();
 
-                var query = $"DELETE FROM {typeof(T).Name} WHERE {typeof(T).Name}ID = @{typeof(T).Name}ID";
+                var query = $"DELETE FROM {TableName} WHERE {TableName}ID = @{TableName}ID";
 
                 await _unitOfWork.ExecuteQueryAsync(query, entity);
 
@@ -94,7 +99,7 @@ namespace Recipe.Repository.Generic
 
                 _unitOfWork.BeginTransaction();
 
-                var query = $"SELECT * FROM {typeof(T).Name} ";
+                var query = $"SELECT * FROM {TableName} ";
 
                 if (!string.IsNullOrWhiteSpace(where))
                     query += where;
@@ -120,7 +125,7 @@ namespace Recipe.Repository.Generic
 
                 var columns = GetColumns();
                 var stringOfColumns = string.Join(", ", columns.Select(e => $"{e} = @{e}"));
-                var query = $"UPDATE {typeof(T).Name} SET {stringOfColumns} WHERE @{typeof(T).Name}ID = @{typeof(T).Name}ID";
+                var query = $"UPDATE {TableName} SET {stringOfColumns} WHERE @{TableName}ID = @{TableName}ID";
 
                 await _unitOfWork.ExecuteQueryAsync(query, entity);
 

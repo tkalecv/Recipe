@@ -22,6 +22,7 @@ namespace Recipe.REST
         {
             services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
                 .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
+            services.AddAutoMapper(typeof(Startup));
             services.AddControllers();
         }
 

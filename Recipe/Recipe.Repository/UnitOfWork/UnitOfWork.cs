@@ -64,18 +64,18 @@ namespace Recipe.Repository.UnitOfWork
         }
 
         //TODO: move this to factory?
-        public IGenericRepository<T> Repository<T>()
-        {
-            if (_repositories == null)
-                _repositories = new Dictionary<string, dynamic>();
-            var type = typeof(T).Name;
-            if (_repositories.ContainsKey(type))
-                return (IGenericRepository<T>)_repositories[type];
-            var repositoryType = typeof(GenericRepository<>);
-            _repositories.Add(type, Activator.CreateInstance(
-                repositoryType.MakeGenericType(typeof(T)), this)
-            );
-            return _repositories[type];
-        }
+        //public IGenericRepository<T> Repository<T>()
+        //{
+        //    if (_repositories == null)
+        //        _repositories = new Dictionary<string, dynamic>();
+        //    var type = typeof(T).Name;
+        //    if (_repositories.ContainsKey(type))
+        //        return (IGenericRepository<T>)_repositories[type];
+        //    var repositoryType = typeof(GenericRepository<>);
+        //    _repositories.Add(type, Activator.CreateInstance(
+        //        repositoryType.MakeGenericType(typeof(T)), this)
+        //    );
+        //    return _repositories[type];
+        //}
     }
 }

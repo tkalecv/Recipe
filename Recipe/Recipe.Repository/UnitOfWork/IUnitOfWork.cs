@@ -13,7 +13,6 @@ namespace Recipe.Repository.UnitOfWork
         void Dispose();
         Task<IEnumerable<T>> ExecuteQueryAsync<T, U>(string sqlQuery, U parameters);
         Task ExecuteQueryAsync<T>(string sqlQuery, T parameters);
-        IGenericRepository<T> Repository<T>();
         void Rollback();
     }
 }

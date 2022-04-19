@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Recipe.Repository.Common.Generic
 {
-    public interface IGenericRepository<T>
+    public interface IGenericRepository<T> where T : class
     {
         Task CreateAsync(IEnumerable<T> entityList);
         Task CreateAsync(T entity);
