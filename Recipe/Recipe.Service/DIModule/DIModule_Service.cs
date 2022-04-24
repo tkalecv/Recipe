@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Recipe.Repository.DIModule;
+using Recipe.Service.Common;
 
 namespace Recipe.Service.DIModule
 {
@@ -7,6 +8,7 @@ namespace Recipe.Service.DIModule
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<IngredientService>().As<IIngredientService>();
 
             builder.RegisterModule<DIModule_Repository>();
         }

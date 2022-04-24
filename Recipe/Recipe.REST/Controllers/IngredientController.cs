@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Recipe.Models.Common;
+using Recipe.Service.Common;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,11 +12,19 @@ namespace Recipe.REST.Controllers
     [ApiController]
     public class IngredientController : ControllerBase
     {
+        private readonly IIngredientService _ingredientService;
+
+        public IngredientController(IIngredientService ingredientService)
+        {
+            _ingredientService = ingredientService;
+        }
+
         // GET: api/<IngredientController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IEnumerable<IIngredient>> Get()
         {
-            return new string[] { "value1", "value2" };
+            //TODO: should we use automapper here to convert to Ingredient model?
+            return await _ingredientService.GetAllAsync();
         }
 
         // GET api/<IngredientController>/5

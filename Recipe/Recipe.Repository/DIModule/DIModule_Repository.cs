@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Recipe.DAL.DIModule;
+using Recipe.Models;
 using Recipe.Models.Common;
 using Recipe.Models.DIModule;
 using Recipe.Repository.Common;
@@ -14,15 +15,15 @@ namespace Recipe.Repository.DIModule
         protected override void Load(ContainerBuilder builder)
         {
             //TODO: should we put here interfaces or classes?
-            builder.RegisterType<GenericRepository<IIngredient>>().As<IGenericRepository<IIngredient>>();
-            builder.RegisterType<GenericRepository<IIngredientMeasuringUnit>>().As<IGenericRepository<IIngredientMeasuringUnit>>();
-            builder.RegisterType<GenericRepository<IMeasuringUnit>>().As<IGenericRepository<IMeasuringUnit>>();
-            builder.RegisterType<GenericRepository<IPicture>>().As<IGenericRepository<IPicture>>();
-            builder.RegisterType<GenericRepository<IPreparationStep>>().As<IGenericRepository<IPreparationStep>>();
-            builder.RegisterType<GenericRepository<IRecipe>>().As<IGenericRepository<IRecipe>>();
-            builder.RegisterType<GenericRepository<IRecipeAttributes>>().As<IGenericRepository<IRecipeAttributes>>();
-            builder.RegisterType<GenericRepository<IUser>>().As<IGenericRepository<IUser>>();
-            builder.RegisterType<GenericRepository<IUserLikedRecipe>>().As<IGenericRepository<IUserLikedRecipe>>();
+            builder.RegisterType<GenericRepository<Ingredient>>().As<IGenericRepository<IIngredient>>();
+            builder.RegisterType<GenericRepository<IngredientMeasuringUnit>>().As<IGenericRepository<IIngredientMeasuringUnit>>();
+            builder.RegisterType<GenericRepository<MeasuringUnit>>().As<IGenericRepository<IMeasuringUnit>>();
+            builder.RegisterType<GenericRepository<Picture>>().As<IGenericRepository<IPicture>>();
+            builder.RegisterType<GenericRepository<PreparationStep>>().As<IGenericRepository<IPreparationStep>>();
+            builder.RegisterType<GenericRepository<Models.Recipe>>().As<IGenericRepository<IRecipe>>();
+            builder.RegisterType<GenericRepository<RecipeAttributes>>().As<IGenericRepository<IRecipeAttributes>>();
+            builder.RegisterType<GenericRepository<User>>().As<IGenericRepository<IUser>>();
+            builder.RegisterType<GenericRepository<UserLikedRecipe>>().As<IGenericRepository<IUserLikedRecipe>>();
 
             builder.RegisterType<IngredientRepository>().As<IIngredientRepository>();
 
@@ -30,17 +31,6 @@ namespace Recipe.Repository.DIModule
 
             builder.RegisterModule<DIModule_Models>();
             builder.RegisterModule<DIModule_DAL>();
-
-            //TODO: remove this
-            //builder.RegisterType<Ingredient>().As<IIngredient>();
-            //builder.RegisterType<IngredientMeasuringUnit>().As<IIngredientMeasuringUnit>();
-            //builder.RegisterType<MeasuringUnit>().As<IMeasuringUnit>();
-            //builder.RegisterType<Picture>().As<IPicture>();
-            //builder.RegisterType<PreparationStep>().As<IPreparationStep>();
-            //builder.RegisterType<Recipe>().As<IRecipe>();
-            //builder.RegisterType<RecipeAttributes>().As<IRecipeAttributes>();
-            //builder.RegisterType<User>().As<IUser>();
-            //builder.RegisterType<UserLikedRecipe>().As<UserLikedRecipe>();
         }
 
     }
