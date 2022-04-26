@@ -21,6 +21,7 @@ namespace Recipe.Repository.UnitOfWork
 
         public void BeginTransaction()
         {
+            //TODO: Maybe move this to constructor?
             if (Connection.State == ConnectionState.Closed)
                 Connection.Open();
 
@@ -60,6 +61,16 @@ namespace Recipe.Repository.UnitOfWork
                 await Connection.ExecuteAsync(sqlQuery, transaction: _transaction);
 
             await Connection.ExecuteAsync(sqlQuery, parameters, transaction: _transaction);
+        }
+
+        public async Task<IEnumerable<T>> LoadData<T, U>(string storedProcedure, U parameters)
+        {
+            return await Connection.QueryAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure, transaction: _transaction);
+        }
+
+        public async Task SaveData<U>(string storedProcedure, U parameters)
+        {
+            await Connection.ExecuteAsync(storedProcedure, parameters, commandType: CommandType.StoredProcedure, transaction: _transaction);
         }
 
         //TODO: move this to factory?

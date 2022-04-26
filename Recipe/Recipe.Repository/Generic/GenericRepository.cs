@@ -24,6 +24,7 @@ namespace Recipe.Repository.Generic
             TableName = typeof(T).Name;
         }
 
+        //TODO: move begin transaction, commit and rollback to separate methods so we can do multiple queries in the service classes
         public async Task CreateAsync(T entity)
         {
             try
@@ -144,9 +145,11 @@ namespace Recipe.Repository.Generic
             {
                 _unitOfWork.BeginTransaction();
 
-                return await _unitOfWork.Connection.QueryAsync<K>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
+                IEnumerable<K> list = await _unitOfWork.LoadData<K, U>(storedProcedure, parameters);
 
                 _unitOfWork.Commit();
+
+                return list;
             }
             catch (Exception ex)
             {
@@ -161,7 +164,7 @@ namespace Recipe.Repository.Generic
             {
                 _unitOfWork.BeginTransaction();
 
-                await _unitOfWork.Connection.ExecuteAsync(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
+                await _unitOfWork.SaveData(storedProcedure, parameters);
 
                 _unitOfWork.Commit();
             }

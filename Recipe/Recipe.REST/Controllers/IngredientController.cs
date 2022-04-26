@@ -41,9 +41,16 @@ namespace Recipe.REST.Controllers
 
         // GET api/<IngredientController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IngredientPostVM> Get(int id)
         {
-            return "value";
+            try
+            {
+                return _mapper.Map<IngredientPostVM>(await _ingredientService.FindByIDAsync(id));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         // POST api/<IngredientController>
