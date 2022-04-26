@@ -27,10 +27,16 @@ namespace Recipe.REST.Controllers
 
         // GET: api/<IngredientController>
         [HttpGet]
-        public async Task<IEnumerable<IIngredient>> Get()
+        public async Task<IEnumerable<IngredientPostVM>> Get()
         {
-            //TODO: should we use automapper here to convert to Ingredient model?
-            return await _ingredientService.GetAllAsync();
+            try
+            {
+                return _mapper.Map<IEnumerable<IngredientPostVM>>(await _ingredientService.GetAllAsync());
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         // GET api/<IngredientController>/5

@@ -104,7 +104,7 @@ namespace Recipe.Repository.Generic
                 if (!string.IsNullOrWhiteSpace(where))
                     query += where;
 
-                entityList = await _unitOfWork.ExecuteQueryAsync<T, dynamic>(query, new { });
+                entityList = await _unitOfWork.ExecuteQueryAsync<T, dynamic>(query, null);
 
                 _unitOfWork.Commit();
 

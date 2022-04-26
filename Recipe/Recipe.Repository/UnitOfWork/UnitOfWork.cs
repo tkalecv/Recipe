@@ -50,8 +50,7 @@ namespace Recipe.Repository.UnitOfWork
 
         public async Task<IEnumerable<T>> ExecuteQueryAsync<T, U>(string sqlQuery, U parameters)
         {
-            //TODO: check if generic is null or empty object here
-            if (ReferenceEquals(parameters, null))
+            if (EqualityComparer<U>.Default.Equals(parameters, default(U)))
                 return await Connection.QueryAsync<T>(sqlQuery, transaction: _transaction);
 
             return await Connection.QueryAsync<T>(sqlQuery, parameters, transaction: _transaction);
@@ -59,8 +58,7 @@ namespace Recipe.Repository.UnitOfWork
 
         public async Task ExecuteQueryAsync<T>(string sqlQuery, T parameters)
         {
-            //TODO: check if generic is null or empty object here
-            if (ReferenceEquals(parameters, null))
+            if (EqualityComparer<T>.Default.Equals(parameters, default(T)))
                 await Connection.ExecuteAsync(sqlQuery, transaction: _transaction);
 
             await Connection.ExecuteAsync(sqlQuery, parameters, transaction: _transaction);
