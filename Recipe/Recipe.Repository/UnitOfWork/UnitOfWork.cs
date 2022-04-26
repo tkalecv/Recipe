@@ -11,21 +11,21 @@ namespace Recipe.Repository.UnitOfWork
 {
     internal class UnitOfWork : IUnitOfWork
     {
-        public IDbConnection Connection { get; set; } = null;
+        private IDbConnection _connection { get; set; } = null;
         private IDbTransaction _transaction = null;
 
         public UnitOfWork(IRecipeContext recipeContext)
         {
-            Connection = recipeContext.CreateConnection();
+            _connection = recipeContext.CreateConnection();
         }
 
         public void BeginTransaction()
         {
             //TODO: Maybe move this to constructor?
-            if (Connection.State == ConnectionState.Closed)
-                Connection.Open();
+            if (_connection.State == ConnectionState.Closed)
+                _connection.Open();
 
-            _transaction = Connection.BeginTransaction();
+            _transaction = _connection.BeginTransaction();
         }
 
         public void Commit()
@@ -45,32 +45,36 @@ namespace Recipe.Repository.UnitOfWork
             if (_transaction != null)
                 _transaction.Dispose();
             _transaction = null;
+
+            //TODO: should we close the connection here?
+            if (_connection != null)
+                _connection.Dispose();
         }
 
         public async Task<IEnumerable<T>> ExecuteQueryAsync<T, U>(string sqlQuery, U parameters)
         {
             if (EqualityComparer<U>.Default.Equals(parameters, default(U)))
-                return await Connection.QueryAsync<T>(sqlQuery, transaction: _transaction);
+                return await _connection.QueryAsync<T>(sqlQuery, transaction: _transaction);
 
-            return await Connection.QueryAsync<T>(sqlQuery, parameters, transaction: _transaction);
+            return await _connection.QueryAsync<T>(sqlQuery, parameters, transaction: _transaction);
         }
 
         public async Task ExecuteQueryAsync<T>(string sqlQuery, T parameters)
         {
             if (EqualityComparer<T>.Default.Equals(parameters, default(T)))
-                await Connection.ExecuteAsync(sqlQuery, transaction: _transaction);
+                await _connection.ExecuteAsync(sqlQuery, transaction: _transaction);
 
-            await Connection.ExecuteAsync(sqlQuery, parameters, transaction: _transaction);
+            await _connection.ExecuteAsync(sqlQuery, parameters, transaction: _transaction);
         }
 
         public async Task<IEnumerable<T>> LoadData<T, U>(string storedProcedure, U parameters)
         {
-            return await Connection.QueryAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure, transaction: _transaction);
+            return await _connection.QueryAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure, transaction: _transaction);
         }
 
         public async Task SaveData<U>(string storedProcedure, U parameters)
         {
-            await Connection.ExecuteAsync(storedProcedure, parameters, commandType: CommandType.StoredProcedure, transaction: _transaction);
+            await _connection.ExecuteAsync(storedProcedure, parameters, commandType: CommandType.StoredProcedure, transaction: _transaction);
         }
 
         //TODO: move this to factory?

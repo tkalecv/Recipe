@@ -7,7 +7,6 @@ namespace Recipe.Repository.UnitOfWork
 {
     internal interface IUnitOfWork
     {
-        IDbConnection Connection { get; set; }
         void BeginTransaction();
         void Commit();
         void Dispose();
