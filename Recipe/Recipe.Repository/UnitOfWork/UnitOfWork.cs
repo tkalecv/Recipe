@@ -14,8 +14,6 @@ namespace Recipe.Repository.UnitOfWork
         public IDbConnection Connection { get; set; } = null;
         private IDbTransaction _transaction = null;
 
-        private Dictionary<string, dynamic> _repositories;
-
         public UnitOfWork(IRecipeContext recipeContext)
         {
             Connection = recipeContext.CreateConnection();
