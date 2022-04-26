@@ -22,8 +22,14 @@ namespace Recipe.REST
         {
             services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
                 .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
+
+            //AutoMapper
             services.AddAutoMapper(typeof(Startup));
+
             services.AddControllers();
+
+            //Swagger
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,8 +37,9 @@ namespace Recipe.REST
         {
             if (env.IsDevelopment())
             {
-                app.UseSwagger();
+                //Swagger
                 app.UseSwaggerUI();
+                app.UseSwagger(c => c.SerializeAsV2 = true);
 
                 app.UseDeveloperExceptionPage();
             }

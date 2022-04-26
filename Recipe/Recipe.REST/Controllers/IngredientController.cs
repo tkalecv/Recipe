@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Recipe.Models;
 using Recipe.Models.Common;
+using Recipe.REST.ViewModels;
 using Recipe.Service.Common;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,10 +17,12 @@ namespace Recipe.REST.Controllers
     public class IngredientController : ControllerBase
     {
         private readonly IIngredientService _ingredientService;
+        private readonly IMapper _mapper;
 
-        public IngredientController(IIngredientService ingredientService)
+        public IngredientController(IIngredientService ingredientService, IMapper mapper)
         {
             _ingredientService = ingredientService;
+            _mapper = mapper;
         }
 
         // GET: api/<IngredientController>
@@ -36,8 +42,17 @@ namespace Recipe.REST.Controllers
 
         // POST api/<IngredientController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task Post([FromBody] IngredientPostVM ingredient)
         {
+            //if (!ModelState.IsValid)               
+            try
+            {
+                await _ingredientService.CreateAsync(_mapper.Map<Ingredient>(ingredient));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         // PUT api/<IngredientController>/5

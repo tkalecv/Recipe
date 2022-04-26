@@ -23,6 +23,9 @@ namespace Recipe.Repository.UnitOfWork
 
         public void BeginTransaction()
         {
+            if (Connection.State == ConnectionState.Closed)
+                Connection.Open();
+
             _transaction = Connection.BeginTransaction();
         }
 
@@ -49,18 +52,18 @@ namespace Recipe.Repository.UnitOfWork
         {
             //TODO: check if generic is null or empty object here
             if (ReferenceEquals(parameters, null))
-                return await Connection.QueryAsync<T>(sqlQuery);
+                return await Connection.QueryAsync<T>(sqlQuery, transaction: _transaction);
 
-            return await Connection.QueryAsync<T>(sqlQuery, parameters);
+            return await Connection.QueryAsync<T>(sqlQuery, parameters, transaction: _transaction);
         }
 
         public async Task ExecuteQueryAsync<T>(string sqlQuery, T parameters)
         {
             //TODO: check if generic is null or empty object here
             if (ReferenceEquals(parameters, null))
-                await Connection.ExecuteAsync(sqlQuery);
+                await Connection.ExecuteAsync(sqlQuery, transaction: _transaction);
 
-            await Connection.ExecuteAsync(sqlQuery, parameters);
+            await Connection.ExecuteAsync(sqlQuery, parameters, transaction: _transaction);
         }
 
         //TODO: move this to factory?

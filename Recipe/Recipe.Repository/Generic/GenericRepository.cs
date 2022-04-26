@@ -176,7 +176,7 @@ namespace Recipe.Repository.Generic
         {
             return typeof(T)
                     .GetProperties()
-                    .Where(e => e.Name.ToLower().Contains("id") && !e.PropertyType.GetTypeInfo().IsGenericType)
+                    .Where(e => !e.Name.ToLower().Contains("id") && !e.PropertyType.GetTypeInfo().IsGenericType)
                     .Select(e => e.Name);
         }
     }

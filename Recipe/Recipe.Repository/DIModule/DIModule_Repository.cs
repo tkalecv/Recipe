@@ -15,15 +15,25 @@ namespace Recipe.Repository.DIModule
         protected override void Load(ContainerBuilder builder)
         {
             //TODO: should we put here interfaces or classes?
-            builder.RegisterType<GenericRepository<Ingredient>>().As<IGenericRepository<IIngredient>>();
-            builder.RegisterType<GenericRepository<IngredientMeasuringUnit>>().As<IGenericRepository<IIngredientMeasuringUnit>>();
-            builder.RegisterType<GenericRepository<MeasuringUnit>>().As<IGenericRepository<IMeasuringUnit>>();
-            builder.RegisterType<GenericRepository<Picture>>().As<IGenericRepository<IPicture>>();
-            builder.RegisterType<GenericRepository<PreparationStep>>().As<IGenericRepository<IPreparationStep>>();
-            builder.RegisterType<GenericRepository<Models.Recipe>>().As<IGenericRepository<IRecipe>>();
-            builder.RegisterType<GenericRepository<RecipeAttributes>>().As<IGenericRepository<IRecipeAttributes>>();
-            builder.RegisterType<GenericRepository<User>>().As<IGenericRepository<IUser>>();
-            builder.RegisterType<GenericRepository<UserLikedRecipe>>().As<IGenericRepository<IUserLikedRecipe>>();
+            builder.RegisterType<GenericRepository<Ingredient>>().As<IGenericRepository<Ingredient>>();
+            builder.RegisterType<GenericRepository<IngredientMeasuringUnit>>().As<IGenericRepository<IngredientMeasuringUnit>>();
+            builder.RegisterType<GenericRepository<MeasuringUnit>>().As<IGenericRepository<MeasuringUnit>>();
+            builder.RegisterType<GenericRepository<Picture>>().As<IGenericRepository<Picture>>();
+            builder.RegisterType<GenericRepository<PreparationStep>>().As<IGenericRepository<PreparationStep>>();
+            builder.RegisterType<GenericRepository<Models.Recipe>>().As<IGenericRepository<Models.Recipe>>();
+            builder.RegisterType<GenericRepository<RecipeAttributes>>().As<IGenericRepository<RecipeAttributes>>();
+            builder.RegisterType<GenericRepository<User>>().As<IGenericRepository<User>>();
+            builder.RegisterType<GenericRepository<UserLikedRecipe>>().As<IGenericRepository<UserLikedRecipe>>();
+
+            builder.RegisterType<GenericRepository<IIngredient>>().As<IGenericRepository<IIngredient>>();
+            builder.RegisterType<GenericRepository<IIngredientMeasuringUnit>>().As<IGenericRepository<IIngredientMeasuringUnit>>();
+            builder.RegisterType<GenericRepository<IMeasuringUnit>>().As<IGenericRepository<IMeasuringUnit>>();
+            builder.RegisterType<GenericRepository<IPicture>>().As<IGenericRepository<IPicture>>();
+            builder.RegisterType<GenericRepository<IPreparationStep>>().As<IGenericRepository<IPreparationStep>>();
+            builder.RegisterType<GenericRepository<IRecipe>>().As<IGenericRepository<IRecipe>>();
+            builder.RegisterType<GenericRepository<IRecipeAttributes>>().As<IGenericRepository<IRecipeAttributes>>();
+            builder.RegisterType<GenericRepository<IUser>>().As<IGenericRepository<IUser>>();
+            builder.RegisterType<GenericRepository<IUserLikedRecipe>>().As<IGenericRepository<IUserLikedRecipe>>();
 
             builder.RegisterType<IngredientRepository>().As<IIngredientRepository>();
 
