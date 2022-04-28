@@ -25,6 +25,11 @@ namespace Recipe.Repository.Generic
             TableName = typeof(T).Name;
         }
 
+        /// <summary>
+        /// Method asynchronously asynchronously executes SQL INSERT query with parameters and inserts rows in table
+        /// </summary>
+        /// <param name="entity">Object with values that will be passed as parameter values in SQL DELETE query</param>
+        /// <returns>Task</returns>
         public async Task CreateAsync(T entity)
         {
             try
@@ -42,6 +47,11 @@ namespace Recipe.Repository.Generic
             }
         }
 
+        /// <summary>
+        /// Method asynchronously executes SQL INSERT query with parameters and inserts multiple rows in table
+        /// </summary>
+        /// <param name="entityList">List of objects with values that will be passed as parameter values in SQL INSERT query</param>
+        /// <returns>Task</returns>
         public async Task CreateAsync(IEnumerable<T> entityList)
         {
             try
@@ -63,6 +73,11 @@ namespace Recipe.Repository.Generic
             }
         }
 
+        /// <summary>
+        /// Method asynchronously executes SQL DELETE query with parameters and deletes rows in table
+        /// </summary>
+        /// <param name="entity">Object with values that will be passed as parameter values in SQL DELETE query</param>
+        /// <returns>Task</returns>
         public async Task DeleteAsync(T entity)
         {
             try
@@ -77,6 +92,11 @@ namespace Recipe.Repository.Generic
             }
         }
 
+        /// <summary>
+        /// Method asynchronously retrieves rows from SQL table filtered with primary key
+        /// </summary>
+        /// <param name="id">SQL table row id (Primary Key)</param>
+        /// <returns>Task<T></returns>
         public async Task<T> GetByIdAsync(int id)
         {
             try
@@ -91,6 +111,11 @@ namespace Recipe.Repository.Generic
             }
         }
 
+        /// <summary>
+        /// Method asynchronously executes retrieve rows from SQL table with or without WHERE filter
+        /// </summary>
+        /// <param name="where">SQL WHERE filter that extends default SELECT query</param>
+        /// <returns>Task<IEnumerable<T>></returns>
         public async Task<IEnumerable<T>> GetAllAsync(string where = null)
         {
             try
@@ -112,6 +137,11 @@ namespace Recipe.Repository.Generic
             }
         }
 
+        /// <summary>
+        /// Method asynchronously executes SQL UPDATE query with parameters and updates rows in table
+        /// </summary>
+        /// <param name="entity">Object with values that will be passed as parameter values in SQL UPDATE query</param>
+        /// <returns>Task</returns>
         public async Task UpdateAsync(T entity)
         {
             try
@@ -128,6 +158,12 @@ namespace Recipe.Repository.Generic
             }
         }
 
+        /// <summary>
+        /// Method asynchronously executes SQL query with return data
+        /// </summary>
+        /// <param name="sqlQuery">SQL query</param>
+        /// <param name="entity">Object with values that will be passed as parameter values in SQL query</param>
+        /// <returns>Task<IEnumerable<T>></returns>
         public async Task<IEnumerable<T>> ExecuteQueryWithReturnAsync(string sqlQuery, T entity)
         {
             if (EqualityComparer<T>.Default.Equals(entity, default(T)))
@@ -136,6 +172,12 @@ namespace Recipe.Repository.Generic
             return await _connection.QueryAsync<T>(sqlQuery, entity, transaction: _transaction);
         }
 
+        /// <summary>
+        /// Method asynchronously executes SQL query with no return data
+        /// </summary>
+        /// <param name="sqlQuery">SQL query</param>
+        /// <param name="entity">Object with values that will be passed as parameter values in SQL query</param>
+        /// <returns>Task</returns>
         public async Task ExecuteQueryAsync(string sqlQuery, T entity)
         {
             if (EqualityComparer<T>.Default.Equals(entity, default(T)))
@@ -144,16 +186,32 @@ namespace Recipe.Repository.Generic
             await _connection.ExecuteAsync(sqlQuery, entity, transaction: _transaction);
         }
 
+        /// <summary>
+        /// Method asynchronously executes SQL query with return data
+        /// </summary>
+        /// <param name="storedProcedure">Name of the SQL stored procedure in your database</param>
+        /// <param name="entity">Object with values that will be passed as parameter values in SQL stored procedure</param>
+        /// <returns>Task<IEnumerable<T>></returns>
         public async Task<IEnumerable<T>> ExecuteStoredProcedureWithReturnAsync(string storedProcedure, T entity)
         {
             return await _connection.QueryAsync<T>(storedProcedure, entity, commandType: CommandType.StoredProcedure, transaction: _transaction);
         }
 
+        /// <summary>
+        /// Method asynchronously executes SQL stored procedure with no return data
+        /// </summary>
+        /// <param name="storedProcedure">Name of the SQL stored procedure in your database</param>
+        /// <param name="entity">Object with values that will be passed as parameter values in SQL stored procedure</param>
+        /// <returns>Task</returns>
         public async Task ExecuteStoredProcedureAsync(string storedProcedure, T entity)
         {
             await _connection.ExecuteAsync(storedProcedure, entity, commandType: CommandType.StoredProcedure, transaction: _transaction);
         }
 
+        /// <summary>
+        /// Method gets entity properties names as string. They are used as SQL query parameters
+        /// </summary>
+        /// <returns>IEnumerable<string></returns>
         private IEnumerable<string> GetColumns()
         {
             return typeof(T)

@@ -23,6 +23,10 @@ namespace Recipe.Repository.UnitOfWork
             _connection = recipeContext.CreateConnection();
         }
 
+        /// <summary>
+        /// Method asynchronously opens a database connection and begins a database transaction
+        /// </summary>
+        /// <returns>Task</returns>
         private async Task BeginTransactionAsync()
         {
             if (_connection.State == ConnectionState.Closed)
@@ -32,18 +36,30 @@ namespace Recipe.Repository.UnitOfWork
                 _transaction = await _connection.BeginTransactionAsync();
         }
 
+        /// <summary>
+        /// Method asynchronously commits the database transaction and disposes the transaction and connection objects
+        /// </summary>
+        /// <returns>Task</returns>
         public async Task CommitAsync()
         {
             await _transaction.CommitAsync();
             await DisposeAsync();
         }
 
+        /// <summary>
+        /// Method asynchronously rolls back a transaction from a pending state
+        /// </summary>
+        /// <returns>Task</returns>
         public async Task RollbackAsync()
         {
             await _transaction.RollbackAsync();
             await DisposeAsync();
         }
 
+        /// <summary>
+        /// Method asynchronously disposes the transaction and connection objects
+        /// </summary>
+        /// <returns>Task</returns>
         public async Task DisposeAsync()
         {
             if (_transaction != null)
@@ -54,6 +70,11 @@ namespace Recipe.Repository.UnitOfWork
                 await _connection.DisposeAsync();
         }
 
+        /// <summary>
+        /// Method initializes GenericRepository
+        /// </summary>
+        /// <typeparam name="T">Object used to initialize GenericRepository</typeparam>
+        /// <returns>IGenericRepository<T></returns>
         public IGenericRepository<T> Repository<T>()
         {
             AsyncContext.Run(async () => await BeginTransactionAsync());

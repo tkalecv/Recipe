@@ -13,6 +13,7 @@ namespace Recipe.DAL
         public RecipeContext(IConfiguration configuration)
         {
             _configuration = configuration;
+            //Retrieves connection string from "appsettings.json" file
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 

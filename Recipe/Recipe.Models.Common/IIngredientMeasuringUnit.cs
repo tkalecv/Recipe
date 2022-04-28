@@ -2,7 +2,7 @@
 {
     public interface IIngredientMeasuringUnit
     {
-        int IngredientID { get; set; }
+        int IngredientMeasuringUnitID { get; set; }
         int MeasuringUnitID { get; set; }
     }
 }
