@@ -35,8 +35,6 @@ namespace Recipe.Repository.DIModule
             builder.RegisterType<GenericRepository<IUser>>().As<IGenericRepository<IUser>>();
             builder.RegisterType<GenericRepository<IUserLikedRecipe>>().As<IGenericRepository<IUserLikedRecipe>>();
 
-            builder.RegisterType<IngredientRepository>().As<IIngredientRepository>();
-
             builder.RegisterType<UnitOfWork.UnitOfWork>().As<IUnitOfWork>();
 
             builder.RegisterModule<DIModule_Models>();

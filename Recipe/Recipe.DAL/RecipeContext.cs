@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace Recipe.DAL
@@ -15,7 +16,7 @@ namespace Recipe.DAL
             _connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        public IDbConnection CreateConnection()
+        public DbConnection CreateConnection()
             => new SqlConnection(_connectionString);
     }
 }

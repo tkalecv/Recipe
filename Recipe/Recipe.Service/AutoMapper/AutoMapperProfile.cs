@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Recipe.Repository.AutoMapper
+namespace Recipe.Service.AutoMapper
 {
     internal class AutoMapperProfile : Profile
     {

@@ -10,39 +10,34 @@ using System.Threading.Tasks;
 
 namespace Recipe.Repository.Generic
 {
-    internal class GenericRepository<T> : IGenericRepository<T> where T : class
+    internal class GenericRepository<T> : IGenericRepository<T>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IDbTransaction _transaction;
+        private IDbConnection _connection => _transaction.Connection;
 
         private string TableName { get; set; }
 
-        public GenericRepository(IUnitOfWork unitOfWork)
+        public GenericRepository(IDbTransaction transaction)
         {
-            _unitOfWork = unitOfWork;
+            _transaction = transaction;
 
             //TODO: remove first char I if it is an interface
             TableName = typeof(T).Name;
         }
 
-        //TODO: move begin transaction, commit and rollback to separate methods so we can do multiple queries in the service classes
         public async Task CreateAsync(T entity)
         {
             try
             {
-                _unitOfWork.BeginTransaction();
-
                 var columns = GetColumns();
                 var stringOfColumns = string.Join(", ", columns);
                 var stringOfParameters = string.Join(", ", columns.Select(e => "@" + e));
                 var query = $"INSERT INTO {TableName} ({stringOfColumns}) values ({stringOfParameters})";
 
-                await _unitOfWork.ExecuteQueryAsync(query, entity);
-
-                _unitOfWork.Commit();
+                await ExecuteQueryAsync(query, entity);
             }
             catch (Exception ex)
             {
-                _unitOfWork.Rollback();
                 throw ex;
             }
         }
@@ -51,24 +46,19 @@ namespace Recipe.Repository.Generic
         {
             try
             {
-                _unitOfWork.BeginTransaction();
-
                 foreach (T entity in entityList)
                 {
-                    //TODO: this wont get values for every entity
+                    //TODO: this wont get values for every entity??
                     var columns = GetColumns();
                     var stringOfColumns = string.Join(", ", columns);
                     var stringOfParameters = string.Join(", ", columns.Select(e => "@" + e));
                     var query = $"INSERT INTO {TableName} ({stringOfColumns}) values ({stringOfParameters})";
 
-                    await _unitOfWork.ExecuteQueryAsync(query, entity);
+                    await ExecuteQueryAsync(query, entity);
                 }
-
-                _unitOfWork.Commit();
             }
             catch (Exception ex)
             {
-                _unitOfWork.Rollback();
                 throw ex;
             }
         }
@@ -77,17 +67,26 @@ namespace Recipe.Repository.Generic
         {
             try
             {
-                _unitOfWork.BeginTransaction();
-
                 var query = $"DELETE FROM {TableName} WHERE {TableName}ID = @{TableName}ID";
 
-                await _unitOfWork.ExecuteQueryAsync(query, entity);
-
-                _unitOfWork.Commit();
+                await ExecuteQueryAsync(query, entity);
             }
             catch (Exception ex)
             {
-                _unitOfWork.Rollback();
+                throw ex;
+            }
+        }
+
+        public async Task<T> GetByIdAsync(int id)
+        {
+            try
+            {
+                IEnumerable<T> entities = await GetAllAsync($"WHERE {TableName}ID = {id};");
+
+                return entities.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
@@ -98,22 +97,17 @@ namespace Recipe.Repository.Generic
             {
                 IEnumerable<T> entityList;
 
-                _unitOfWork.BeginTransaction();
-
                 var query = $"SELECT * FROM {TableName} ";
 
                 if (!string.IsNullOrWhiteSpace(where))
                     query += where;
 
-                entityList = await _unitOfWork.ExecuteQueryAsync<T, dynamic>(query, null);
-
-                _unitOfWork.Commit();
+                entityList = await ExecuteQueryWithReturnAsync(query, (T)new object { }); //TODO: check if this works
 
                 return entityList;
             }
             catch (Exception ex)
             {
-                _unitOfWork.Rollback();
                 throw ex;
             }
         }
@@ -122,57 +116,42 @@ namespace Recipe.Repository.Generic
         {
             try
             {
-                _unitOfWork.BeginTransaction();
-
                 var columns = GetColumns();
                 var stringOfColumns = string.Join(", ", columns.Select(e => $"{e} = @{e}"));
                 var query = $"UPDATE {TableName} SET {stringOfColumns} WHERE @{TableName}ID = @{TableName}ID";
 
-                await _unitOfWork.ExecuteQueryAsync(query, entity);
-
-                _unitOfWork.Commit();
+                await ExecuteQueryAsync(query, entity);
             }
             catch (Exception ex)
             {
-                _unitOfWork.Rollback();
                 throw ex;
             }
         }
 
-        public async Task<IEnumerable<K>> LoadData<K, U>(string storedProcedure, U parameters)
+        public async Task<IEnumerable<T>> ExecuteQueryWithReturnAsync(string sqlQuery, T entity)
         {
-            try
-            {
-                _unitOfWork.BeginTransaction();
+            if (EqualityComparer<T>.Default.Equals(entity, default(T))) //TODO: check if this works
+                return await _connection.QueryAsync<T>(sqlQuery, transaction: _transaction);
 
-                IEnumerable<K> list = await _unitOfWork.LoadData<K, U>(storedProcedure, parameters);
-
-                _unitOfWork.Commit();
-
-                return list;
-            }
-            catch (Exception ex)
-            {
-                _unitOfWork.Rollback();
-                throw ex;
-            }
+            return await _connection.QueryAsync<T>(sqlQuery, entity, transaction: _transaction);
         }
 
-        public async Task SaveData<U>(string storedProcedure, U parameters)
+        public async Task ExecuteQueryAsync(string sqlQuery, T entity)
         {
-            try
-            {
-                _unitOfWork.BeginTransaction();
+            if (EqualityComparer<T>.Default.Equals(entity, default(T))) //TODO: check if this works
+                await _connection.ExecuteAsync(sqlQuery, transaction: _transaction);
 
-                await _unitOfWork.SaveData(storedProcedure, parameters);
+            await _connection.ExecuteAsync(sqlQuery, entity, transaction: _transaction);
+        }
 
-                _unitOfWork.Commit();
-            }
-            catch (Exception ex)
-            {
-                _unitOfWork.Rollback();
-                throw ex;
-            }
+        public async Task<IEnumerable<T>> ExecuteStoredProcedureWithReturnAsync(string storedProcedure, T entity)
+        {
+            return await _connection.QueryAsync<T>(storedProcedure, entity, commandType: CommandType.StoredProcedure, transaction: _transaction);
+        }
+
+        public async Task ExecuteStoredProcedureAsync(string storedProcedure, T entity)
+        {
+            await _connection.ExecuteAsync(storedProcedure, entity, commandType: CommandType.StoredProcedure, transaction: _transaction);
         }
 
         private IEnumerable<string> GetColumns()

@@ -5,91 +5,74 @@ using Recipe.Repository.Generic;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace Recipe.Repository.UnitOfWork
 {
-    internal class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
-        private IDbConnection _connection { get; set; } = null;
-        private IDbTransaction _transaction = null;
+        private DbConnection _connection { get; set; } = null;
+        private DbTransaction _transaction { get; set; } = null;
+
+        Dictionary<string, dynamic> _repositories { get; set; }
 
         public UnitOfWork(IRecipeContext recipeContext)
         {
             _connection = recipeContext.CreateConnection();
         }
 
-        public void BeginTransaction()
+        private async Task BeginTransactionAsync()
         {
             //TODO: Maybe move this to constructor?
             if (_connection.State == ConnectionState.Closed)
-                _connection.Open();
+                await _connection.OpenAsync();
 
-            _transaction = _connection.BeginTransaction();
+            if (_transaction == null)
+                _transaction = await _connection.BeginTransactionAsync();
         }
 
-        public void Commit()
+        public async Task CommitAsync()
         {
-            _transaction.Commit();
-            Dispose();
+            await _transaction.CommitAsync();
+            await DisposeAsync();
         }
 
-        public void Rollback()
+        public async Task RollbackAsync()
         {
-            _transaction.Rollback();
-            Dispose();
+            await _transaction.RollbackAsync();
+            await DisposeAsync();
         }
 
-        public void Dispose()
+        public async Task DisposeAsync()
         {
             if (_transaction != null)
-                _transaction.Dispose();
+                await _transaction.DisposeAsync();
             _transaction = null;
 
             //TODO: should we close the connection here?
             if (_connection != null)
-                _connection.Dispose();
+                await _connection.DisposeAsync();
         }
 
-        public async Task<IEnumerable<T>> ExecuteQueryAsync<T, U>(string sqlQuery, U parameters)
+        public IGenericRepository<T> Repository<T>()
         {
-            if (EqualityComparer<U>.Default.Equals(parameters, default(U)))
-                return await _connection.QueryAsync<T>(sqlQuery, transaction: _transaction);
+            Task.Run(async () => await BeginTransactionAsync()).Wait();
 
-            return await _connection.QueryAsync<T>(sqlQuery, parameters, transaction: _transaction);
+            if (_repositories == null)
+                _repositories = new Dictionary<string, dynamic>();
+
+            var type = typeof(T).Name;
+
+            if (_repositories.ContainsKey(type))
+                return (IGenericRepository<T>)_repositories[type];
+
+            var repositoryType = typeof(GenericRepository<>);
+
+            _repositories.Add(type, Activator.CreateInstance(
+                repositoryType.MakeGenericType(typeof(T)), _transaction));
+
+            return _repositories[type];
         }
-
-        public async Task ExecuteQueryAsync<T>(string sqlQuery, T parameters)
-        {
-            if (EqualityComparer<T>.Default.Equals(parameters, default(T)))
-                await _connection.ExecuteAsync(sqlQuery, transaction: _transaction);
-
-            await _connection.ExecuteAsync(sqlQuery, parameters, transaction: _transaction);
-        }
-
-        public async Task<IEnumerable<T>> LoadData<T, U>(string storedProcedure, U parameters)
-        {
-            return await _connection.QueryAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure, transaction: _transaction);
-        }
-
-        public async Task SaveData<U>(string storedProcedure, U parameters)
-        {
-            await _connection.ExecuteAsync(storedProcedure, parameters, commandType: CommandType.StoredProcedure, transaction: _transaction);
-        }
-
-        //TODO: move this to factory?
-        //public IGenericRepository<T> Repository<T>()
-        //{
-        //    if (_repositories == null)
-        //        _repositories = new Dictionary<string, dynamic>();
-        //    var type = typeof(T).Name;
-        //    if (_repositories.ContainsKey(type))
-        //        return (IGenericRepository<T>)_repositories[type];
-        //    var repositoryType = typeof(GenericRepository<>);
-        //    _repositories.Add(type, Activator.CreateInstance(
-        //        repositoryType.MakeGenericType(typeof(T)), this)
-        //    );
-        //    return _repositories[type];
-        //}
     }
 }
