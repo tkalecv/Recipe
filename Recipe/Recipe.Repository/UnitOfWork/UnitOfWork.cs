@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Nito.AsyncEx;
 using Recipe.DAL;
 using Recipe.Repository.Common.Generic;
 using Recipe.Repository.Generic;
@@ -57,7 +58,7 @@ namespace Recipe.Repository.UnitOfWork
 
         public IGenericRepository<T> Repository<T>()
         {
-            Task.Run(async () => await BeginTransactionAsync()).Wait();
+            AsyncContext.Run(async () => await BeginTransactionAsync());
 
             if (_repositories == null)
                 _repositories = new Dictionary<string, dynamic>();
