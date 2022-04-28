@@ -25,7 +25,6 @@ namespace Recipe.Repository.UnitOfWork
 
         private async Task BeginTransactionAsync()
         {
-            //TODO: Maybe move this to constructor?
             if (_connection.State == ConnectionState.Closed)
                 await _connection.OpenAsync();
 
@@ -51,7 +50,6 @@ namespace Recipe.Repository.UnitOfWork
                 await _transaction.DisposeAsync();
             _transaction = null;
 
-            //TODO: should we close the connection here?
             if (_connection != null)
                 await _connection.DisposeAsync();
         }

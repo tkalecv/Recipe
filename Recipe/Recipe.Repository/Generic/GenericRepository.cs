@@ -46,10 +46,10 @@ namespace Recipe.Repository.Generic
         {
             try
             {
+                var columns = GetColumns();
+
                 foreach (T entity in entityList)
                 {
-                    //TODO: this wont get values for every entity??
-                    var columns = GetColumns();
                     var stringOfColumns = string.Join(", ", columns);
                     var stringOfParameters = string.Join(", ", columns.Select(e => "@" + e));
                     var query = $"INSERT INTO {TableName} ({stringOfColumns}) values ({stringOfParameters})";
@@ -102,7 +102,7 @@ namespace Recipe.Repository.Generic
                 if (!string.IsNullOrWhiteSpace(where))
                     query += where;
 
-                entityList = await ExecuteQueryWithReturnAsync(query, (T)new object { }); //TODO: check if this works
+                entityList = await ExecuteQueryWithReturnAsync(query, default(T));
 
                 return entityList;
             }
@@ -130,7 +130,7 @@ namespace Recipe.Repository.Generic
 
         public async Task<IEnumerable<T>> ExecuteQueryWithReturnAsync(string sqlQuery, T entity)
         {
-            if (EqualityComparer<T>.Default.Equals(entity, default(T))) //TODO: check if this works
+            if (EqualityComparer<T>.Default.Equals(entity, default(T)))
                 return await _connection.QueryAsync<T>(sqlQuery, transaction: _transaction);
 
             return await _connection.QueryAsync<T>(sqlQuery, entity, transaction: _transaction);
@@ -138,7 +138,7 @@ namespace Recipe.Repository.Generic
 
         public async Task ExecuteQueryAsync(string sqlQuery, T entity)
         {
-            if (EqualityComparer<T>.Default.Equals(entity, default(T))) //TODO: check if this works
+            if (EqualityComparer<T>.Default.Equals(entity, default(T)))
                 await _connection.ExecuteAsync(sqlQuery, transaction: _transaction);
 
             await _connection.ExecuteAsync(sqlQuery, entity, transaction: _transaction);
