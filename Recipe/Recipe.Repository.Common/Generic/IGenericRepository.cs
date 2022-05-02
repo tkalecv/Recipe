@@ -5,15 +5,15 @@ namespace Recipe.Repository.Common.Generic
 {
     public interface IGenericRepository<T>
     {
-        Task CreateAsync(IEnumerable<T> entityList);
-        Task CreateAsync(T entity);
-        Task DeleteAsync(T entity);
-        Task ExecuteQueryAsync(string sqlQuery, T entity);
+        Task<int> CreateAsync(IEnumerable<T> entityList);
+        Task<int> CreateAsync(T entity);
+        Task<int> DeleteAsync(T entity);
+        Task<int> ExecuteQueryAsync(string sqlQuery, T entity);
         Task<IEnumerable<T>> ExecuteQueryWithReturnAsync(string sqlQuery, T entity);
-        Task ExecuteStoredProcedureAsync(string storedProcedure, T entity);
+        Task<int> ExecuteStoredProcedureAsync(string storedProcedure, T entity);
         Task<IEnumerable<T>> ExecuteStoredProcedureWithReturnAsync(string storedProcedure, T entity);
         Task<IEnumerable<T>> GetAllAsync(string where = null);
         Task<T> GetByIdAsync(int id);
-        Task UpdateAsync(T entity);
+        Task<int> UpdateAsync(T entity);
     }
 }

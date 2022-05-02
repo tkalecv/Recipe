@@ -21,16 +21,19 @@ namespace Recipe.Service
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            //TODO: check if transaction passed to repository will be null after commit?
             _repository = _unitOfWork.Repository<Ingredient>();
         }
 
-        public async Task CreateAsync(IIngredient entity)
+        public async Task<int> CreateAsync(IIngredient entity)
         {
             try
             {
-                await _repository.CreateAsync(_mapper.Map<Ingredient>(entity));
+                int rowCount = await _repository.CreateAsync(_mapper.Map<Ingredient>(entity));
 
                 await _unitOfWork.CommitAsync();
+
+                return rowCount;
             }
             catch (Exception ex)
             {
@@ -40,13 +43,15 @@ namespace Recipe.Service
             }
         }
 
-        public async Task CreateAsync(IEnumerable<IIngredient> entities)
+        public async Task<int> CreateAsync(IEnumerable<IIngredient> entities)
         {
             try
             {
-                await _repository.CreateAsync(_mapper.Map<IEnumerable<Ingredient>>(entities));
+                int rowCount = await _repository.CreateAsync(_mapper.Map<IEnumerable<Ingredient>>(entities));
 
                 await _unitOfWork.CommitAsync();
+
+                return rowCount;
             }
             catch (Exception ex)
             {
@@ -56,13 +61,15 @@ namespace Recipe.Service
             }
         }
 
-        public async Task DeleteAsync(IIngredient entity)
+        public async Task<int> DeleteAsync(IIngredient entity)
         {
             try
             {
-                await _repository.DeleteAsync(_mapper.Map<Ingredient>(entity));
+                int rowCount = await _repository.DeleteAsync(_mapper.Map<Ingredient>(entity));
 
                 await _unitOfWork.CommitAsync();
+
+                return rowCount;
             }
             catch (Exception ex)
             {
@@ -72,13 +79,15 @@ namespace Recipe.Service
             }
         }
 
-        public async Task UpdateAsync(IIngredient entity)
+        public async Task<int> UpdateAsync(IIngredient entity)
         {
             try
             {
-                await _repository.UpdateAsync(_mapper.Map<Ingredient>(entity));
+                int rowCount = await _repository.UpdateAsync(_mapper.Map<Ingredient>(entity));
 
                 await _unitOfWork.CommitAsync();
+
+                return rowCount;
             }
             catch (Exception ex)
             {

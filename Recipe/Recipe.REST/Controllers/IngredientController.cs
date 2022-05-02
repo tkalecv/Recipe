@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace Recipe.REST.Controllers
 {
+    //TODO: add calls for specific filtering like "[HttpGet("{id}/name/{name}")]"
+
     [Route("api/[controller]")]
     [ApiController]
     public class IngredientController : ControllerBase

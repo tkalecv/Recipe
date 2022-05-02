@@ -26,11 +26,11 @@ namespace Recipe.Repository.Generic
         }
 
         /// <summary>
-        /// Method asynchronously asynchronously executes SQL INSERT query with parameters and inserts rows in table
+        /// Method asynchronously executes SQL INSERT query with parameters and inserts rows in table. Number of affected rows is returned
         /// </summary>
         /// <param name="entity">Object with values that will be passed as parameter values in SQL DELETE query</param>
-        /// <returns>Task</returns>
-        public async Task CreateAsync(T entity)
+        /// <returns>Task<int></returns>
+        public async Task<int> CreateAsync(T entity)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace Recipe.Repository.Generic
                 var stringOfParameters = string.Join(", ", columns.Select(e => "@" + e));
                 var query = $"INSERT INTO {TableName} ({stringOfColumns}) values ({stringOfParameters})";
 
-                await ExecuteQueryAsync(query, entity);
+               return await ExecuteQueryAsync(query, entity);
             }
             catch (Exception ex)
             {
@@ -48,24 +48,26 @@ namespace Recipe.Repository.Generic
         }
 
         /// <summary>
-        /// Method asynchronously executes SQL INSERT query with parameters and inserts multiple rows in table
+        /// Method asynchronously executes SQL INSERT query with parameters and inserts multiple rows in table. Number of affected rows is returned
         /// </summary>
         /// <param name="entityList">List of objects with values that will be passed as parameter values in SQL INSERT query</param>
-        /// <returns>Task</returns>
-        public async Task CreateAsync(IEnumerable<T> entityList)
+        /// <returns>Task<int></returns>
+        public async Task<int> CreateAsync(IEnumerable<T> entityList)
         {
             try
             {
                 var columns = GetColumns();
+                int rowNumber = 0;
 
                 foreach (T entity in entityList)
                 {
                     var stringOfColumns = string.Join(", ", columns);
                     var stringOfParameters = string.Join(", ", columns.Select(e => "@" + e));
-                    var query = $"INSERT INTO {TableName} ({stringOfColumns}) values ({stringOfParameters})";
+                    string query = $"INSERT INTO {TableName} ({stringOfColumns}) values ({stringOfParameters})";
 
-                    await ExecuteQueryAsync(query, entity);
+                    rowNumber += await ExecuteQueryAsync(query, entity);
                 }
+                return rowNumber;
             }
             catch (Exception ex)
             {
@@ -74,17 +76,17 @@ namespace Recipe.Repository.Generic
         }
 
         /// <summary>
-        /// Method asynchronously executes SQL DELETE query with parameters and deletes rows in table
+        /// Method asynchronously executes SQL DELETE query with parameters and deletes rows in table. Number of affected rows is returned
         /// </summary>
         /// <param name="entity">Object with values that will be passed as parameter values in SQL DELETE query</param>
-        /// <returns>Task</returns>
-        public async Task DeleteAsync(T entity)
+        /// <returns>Task<int></returns>
+        public async Task<int> DeleteAsync(T entity)
         {
             try
             {
                 var query = $"DELETE FROM {TableName} WHERE {TableName}ID = @{TableName}ID";
 
-                await ExecuteQueryAsync(query, entity);
+                return await ExecuteQueryAsync(query, entity);
             }
             catch (Exception ex)
             {
@@ -138,11 +140,11 @@ namespace Recipe.Repository.Generic
         }
 
         /// <summary>
-        /// Method asynchronously executes SQL UPDATE query with parameters and updates rows in table
+        /// Method asynchronously executes SQL UPDATE query with parameters and updates rows in table. Number of affected rows is returned
         /// </summary>
         /// <param name="entity">Object with values that will be passed as parameter values in SQL UPDATE query</param>
-        /// <returns>Task</returns>
-        public async Task UpdateAsync(T entity)
+        /// <returns>Task<int></returns>
+        public async Task<int> UpdateAsync(T entity)
         {
             try
             {
@@ -150,7 +152,7 @@ namespace Recipe.Repository.Generic
                 var stringOfColumns = string.Join(", ", columns.Select(e => $"{e} = @{e}"));
                 var query = $"UPDATE {TableName} SET {stringOfColumns} WHERE @{TableName}ID = @{TableName}ID";
 
-                await ExecuteQueryAsync(query, entity);
+                return await ExecuteQueryAsync(query, entity);
             }
             catch (Exception ex)
             {
@@ -173,17 +175,17 @@ namespace Recipe.Repository.Generic
         }
 
         /// <summary>
-        /// Method asynchronously executes SQL query with no return data
+        /// Method asynchronously executes SQL query. Number of affected rows is returned
         /// </summary>
         /// <param name="sqlQuery">SQL query</param>
         /// <param name="entity">Object with values that will be passed as parameter values in SQL query</param>
-        /// <returns>Task</returns>
-        public async Task ExecuteQueryAsync(string sqlQuery, T entity)
+        /// <returns>Task<int></returns>
+        public async Task<int> ExecuteQueryAsync(string sqlQuery, T entity)
         {
             if (EqualityComparer<T>.Default.Equals(entity, default(T)))
-                await _connection.ExecuteAsync(sqlQuery, transaction: _transaction);
+                return await _connection.ExecuteAsync(sqlQuery, transaction: _transaction);
 
-            await _connection.ExecuteAsync(sqlQuery, entity, transaction: _transaction);
+            return await _connection.ExecuteAsync(sqlQuery, entity, transaction: _transaction);
         }
 
         /// <summary>
@@ -198,14 +200,14 @@ namespace Recipe.Repository.Generic
         }
 
         /// <summary>
-        /// Method asynchronously executes SQL stored procedure with no return data
+        /// Method asynchronously executes SQL stored procedure. Number of affected rows is returned
         /// </summary>
         /// <param name="storedProcedure">Name of the SQL stored procedure in your database</param>
         /// <param name="entity">Object with values that will be passed as parameter values in SQL stored procedure</param>
-        /// <returns>Task</returns>
-        public async Task ExecuteStoredProcedureAsync(string storedProcedure, T entity)
+        /// <returns>Task<int></returns>
+        public async Task<int> ExecuteStoredProcedureAsync(string storedProcedure, T entity)
         {
-            await _connection.ExecuteAsync(storedProcedure, entity, commandType: CommandType.StoredProcedure, transaction: _transaction);
+            return await _connection.ExecuteAsync(storedProcedure, entity, commandType: CommandType.StoredProcedure, transaction: _transaction);
         }
 
         /// <summary>
