@@ -43,7 +43,7 @@ namespace Recipe.REST.Controllers
                 if (result == null || result.Count() <= 0)
                     return StatusCode(StatusCodes.Status204NoContent, result);
 
-                return StatusCode(StatusCodes.Status200OK, result);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -63,7 +63,7 @@ namespace Recipe.REST.Controllers
                     return StatusCode(StatusCodes.Status404NotFound, new { message = $"Ingredient with id '{id}' does not exist." }); //TODO: create model for respose with message, datetime now...
 
                 //add validations like if it returns empty and stuff like that
-                return StatusCode(StatusCodes.Status200OK, result);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -71,6 +71,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
+        //TODO: Use this model for create, use another for other calls because we need id
         // POST api/<IngredientController>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] IngredientPostVM ingredient)
@@ -81,7 +82,9 @@ namespace Recipe.REST.Controllers
                 if (!ModelState.IsValid)
                     return StatusCode(StatusCodes.Status400BadRequest, ingredient);
 
-                return StatusCode(StatusCodes.Status201Created, await _ingredientService.CreateAsync(_mapper.Map<Ingredient>(ingredient)));
+                await _ingredientService.CreateAsync(_mapper.Map<Ingredient>(ingredient));
+
+                return Created($"/{ingredient.Name}", ingredient);
             }
             catch (Exception ex)
             {
@@ -91,13 +94,13 @@ namespace Recipe.REST.Controllers
 
         // PUT api/<IngredientController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void Put([FromQuery] int id, [FromBody] string value)
         {
         }
 
         // DELETE api/<IngredientController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete([FromQuery] int id)
         {
         }
     }
