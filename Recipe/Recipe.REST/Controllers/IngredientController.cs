@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Recipe.Models;
 using Recipe.Models.Common;
@@ -6,6 +7,9 @@ using Recipe.REST.ViewModels;
 using Recipe.Service.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -13,6 +17,7 @@ using System.Threading.Tasks;
 namespace Recipe.REST.Controllers
 {
     //TODO: add calls for specific filtering like "[HttpGet("{id}/name/{name}")]"
+    //TODO: add global response handlers
 
     [Route("api/[controller]")]
     [ApiController]
@@ -33,7 +38,17 @@ namespace Recipe.REST.Controllers
         {
             try
             {
-                return _mapper.Map<IEnumerable<IngredientPostVM>>(await _ingredientService.GetAllAsync());
+                var result = _mapper.Map<IEnumerable<IngredientPostVM>>(await _ingredientService.GetAllAsync());
+
+                if(result == null || result.Count() <= 0)
+                    return HttpResponseException
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+
+                };
+
+                return;
             }
             catch (Exception ex)
             {
@@ -43,30 +58,39 @@ namespace Recipe.REST.Controllers
 
         // GET api/<IngredientController>/5
         [HttpGet("{id}")]
-        public async Task<IngredientPostVM> Get(int id)
+        public async Task<IActionResult> Get(int id) //TODO: is it better to use IActionResult?
         {
             try
             {
-                return _mapper.Map<IngredientPostVM>(await _ingredientService.FindByIDAsync(id));
+                var result = await _ingredientService.FindByIDAsync(id);
+
+                if (result == null)
+                    return StatusCode(StatusCodes.Status404NotFound, new { message = $"Ingredient with id '{id}' does not exist." }); //TODO: create model for respose with message, datetime now...
+
+                //add validations like if it returns empty and stuff like that
+                return StatusCode(StatusCodes.Status200OK, result);
             }
             catch (Exception ex)
             {
-                throw ex;
+                return StatusCode(StatusCodes.Status400BadRequest, new { message = ex });
             }
         }
 
         // POST api/<IngredientController>
         [HttpPost]
-        public async Task Post([FromBody] IngredientPostVM ingredient)
+        public async Task<IActionResult> Post([FromBody] IngredientPostVM ingredient)
         {
             //if (!ModelState.IsValid)               
             try
             {
-                await _ingredientService.CreateAsync(_mapper.Map<Ingredient>(ingredient));
+                if (!ModelState.IsValid)
+                    return StatusCode(StatusCodes.Status400BadRequest, ingredient);
+
+                return StatusCode(StatusCodes.Status201Created, await _ingredientService.CreateAsync(_mapper.Map<Ingredient>(ingredient)));
             }
             catch (Exception ex)
             {
-                throw ex;
+                return StatusCode(StatusCodes.Status400BadRequest, new { message = ex });
             }
         }
 
