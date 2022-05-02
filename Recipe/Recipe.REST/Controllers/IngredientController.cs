@@ -34,25 +34,20 @@ namespace Recipe.REST.Controllers
 
         // GET: api/<IngredientController>
         [HttpGet]
-        public async Task<IEnumerable<IngredientPostVM>> Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
                 var result = _mapper.Map<IEnumerable<IngredientPostVM>>(await _ingredientService.GetAllAsync());
 
-                if(result == null || result.Count() <= 0)
-                    return HttpResponseException
+                if (result == null || result.Count() <= 0)
+                    return StatusCode(StatusCodes.Status204NoContent, result);
 
-                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-                {
-
-                };
-
-                return;
+                return StatusCode(StatusCodes.Status200OK, result);
             }
             catch (Exception ex)
             {
-                throw ex;
+                return StatusCode(StatusCodes.Status400BadRequest, new { message = ex });
             }
         }
 
