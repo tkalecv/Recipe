@@ -28,7 +28,7 @@ namespace Recipe.Repository.Generic
         /// <summary>
         /// Method asynchronously executes SQL INSERT query with parameters and inserts rows in table. Number of affected rows is returned
         /// </summary>
-        /// <param name="entity">Object with values that will be passed as parameter values in SQL DELETE query</param>
+        /// <param name="entity">Object with values that will be passed as parameter values in SQL INSERT query</param>
         /// <returns>Task<int></returns>
         public async Task<int> CreateAsync(T entity)
         {

@@ -1,4 +1,4 @@
-﻿namespace Recipe.REST.ViewModels
+﻿namespace Recipe.REST.ViewModels.Ingredient
 {
     public class IngredientPostVM
     {

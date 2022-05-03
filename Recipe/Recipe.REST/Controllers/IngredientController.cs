@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Recipe.Models;
 using Recipe.Models.Common;
 using Recipe.REST.ViewModels;
+using Recipe.REST.ViewModels.Error;
+using Recipe.REST.ViewModels.Ingredient;
 using Recipe.Service.Common;
 using System;
 using System.Collections.Generic;
@@ -18,6 +20,7 @@ namespace Recipe.REST.Controllers
 {
     //TODO: add calls for specific filtering like "[HttpGet("{id}/name/{name}")]"
     //TODO: add global response handlers
+    //TODO: add verification for row numbers
 
     [Route("api/[controller]")]
     [ApiController]
@@ -38,7 +41,7 @@ namespace Recipe.REST.Controllers
         {
             try
             {
-                var result = _mapper.Map<IEnumerable<IngredientPostVM>>(await _ingredientService.GetAllAsync());
+                var result = _mapper.Map<IEnumerable<IngredientVM>>(await _ingredientService.GetAllAsync());
 
                 if (result == null || result.Count() <= 0)
                     return StatusCode(StatusCodes.Status204NoContent, result);
@@ -47,36 +50,34 @@ namespace Recipe.REST.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { message = ex });
+                return StatusCode(StatusCodes.Status400BadRequest, new ErrorVM { Message = ex.ToString() });
             }
         }
 
         // GET api/<IngredientController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id) //TODO: is it better to use IActionResult?
+        public async Task<IActionResult> Get(int id)
         {
             try
             {
                 var result = await _ingredientService.FindByIDAsync(id);
 
                 if (result == null)
-                    return StatusCode(StatusCodes.Status404NotFound, new { message = $"Ingredient with id '{id}' does not exist." }); //TODO: create model for respose with message, datetime now...
+                    return StatusCode(StatusCodes.Status404NotFound, new ErrorVM { Message = $"Ingredient with id '{id}' does not exist." });
 
                 //add validations like if it returns empty and stuff like that
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { message = ex });
+                return StatusCode(StatusCodes.Status400BadRequest, new ErrorVM { Message = ex.ToString() });
             }
         }
 
-        //TODO: Use this model for create, use another for other calls because we need id
         // POST api/<IngredientController>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] IngredientPostVM ingredient)
         {
-            //if (!ModelState.IsValid)               
             try
             {
                 if (!ModelState.IsValid)
@@ -88,20 +89,43 @@ namespace Recipe.REST.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { message = ex });
+                return StatusCode(StatusCodes.Status400BadRequest, new ErrorVM { Message = ex.ToString() });
             }
         }
 
         // PUT api/<IngredientController>/5
         [HttpPut("{id}")]
-        public void Put([FromQuery] int id, [FromBody] string value)
+        public async Task<IActionResult> Put([FromQuery] int id, [FromBody] IngredientPostVM ingredient)
         {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return StatusCode(StatusCodes.Status400BadRequest, ingredient);
+
+                await _ingredientService.UpdateAsync(_mapper.Map<Ingredient>(ingredient));
+
+                return Ok(ingredient);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new ErrorVM { Message = ex.ToString() });
+            }
         }
 
         // DELETE api/<IngredientController>/5
         [HttpDelete("{id}")]
-        public void Delete([FromQuery] int id)
+        public async Task<IActionResult> Delete([FromQuery] int id)
         {
+            try
+            {
+                await _ingredientService.DeleteAsync(id);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new ErrorVM { Message = ex.ToString() });
+            }
         }
     }
 }

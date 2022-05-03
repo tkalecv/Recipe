@@ -9,6 +9,7 @@ namespace Recipe.Service.Common
         Task<int> CreateAsync(IEnumerable<IIngredient> entities);
         Task<int> CreateAsync(IIngredient entity);
         Task<int> DeleteAsync(IIngredient entity);
+        Task<int> DeleteAsync(int id);
         Task<IIngredient> FindByIDAsync(int id);
         Task<IEnumerable<IIngredient>> GetAllAsync();
         Task<int> UpdateAsync(IIngredient entity);

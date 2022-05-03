@@ -21,10 +21,17 @@ namespace Recipe.Service
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            //TODO: check if transaction passed to repository will be null after commit?
+            // use only repository in all the methods, do not reuse service methods, because 
+            // transaction passed to repository will be null after commit.
+            // Keep all the logic in service then call that method in controller.
             _repository = _unitOfWork.Repository<Ingredient>();
         }
 
+        /// <summary>
+        /// Method creates new Ingredient entry in db
+        /// </summary>
+        /// <param name="entity">Ingredient object that will be created</param>
+        /// <returnsTask<int>></returns>
         public async Task<int> CreateAsync(IIngredient entity)
         {
             try
@@ -43,6 +50,11 @@ namespace Recipe.Service
             }
         }
 
+        /// <summary>
+        /// Method creates multiple Ingredient entries in db
+        /// </summary>
+        /// <param name="entities">List of Ingredient objects that will be created</param>
+        /// <returns>Task<int></returns>
         public async Task<int> CreateAsync(IEnumerable<IIngredient> entities)
         {
             try
@@ -61,6 +73,11 @@ namespace Recipe.Service
             }
         }
 
+        /// <summary>
+        /// Method removes Ingredient entry from db
+        /// </summary>
+        /// <param name="entity">Ingredient object that will be removed</param>
+        /// <returns>Task<int></returns>
         public async Task<int> DeleteAsync(IIngredient entity)
         {
             try
@@ -79,6 +96,36 @@ namespace Recipe.Service
             }
         }
 
+        /// <summary>
+        /// Method removes Ingredient entry from db
+        /// </summary>
+        /// <param name="id">ID unique identifier of Ingredient object that will be removed</param>
+        /// <returns>Task<int></returns>
+        public async Task<int> DeleteAsync(int id)
+        {
+            try
+            {
+                var entity = await _repository.GetByIdAsync(id);
+
+                int rowCount = await _repository.DeleteAsync(entity);
+
+                await _unitOfWork.CommitAsync();
+
+                return rowCount;
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Method updates Ingredient entry in db
+        /// </summary>
+        /// <param name="entity">Ingredient object that will be updated</param>
+        /// <returns>Task<int></returns>
         public async Task<int> UpdateAsync(IIngredient entity)
         {
             try
@@ -97,6 +144,11 @@ namespace Recipe.Service
             }
         }
 
+        /// <summary>
+        /// Method retrieves Ingredient entry from db filtered by ID unique identifier
+        /// </summary>
+        /// <param name="id">ID unique identifier of Ingredient object that will be updated</param>
+        /// <returns>Task<IIngredient></returns>
         public async Task<IIngredient> FindByIDAsync(int id)
         {
             try
@@ -115,6 +167,10 @@ namespace Recipe.Service
             }
         }
 
+        /// <summary>
+        /// Method retrieves all of Ingredient entries from db
+        /// </summary>
+        /// <returns>Task<IEnumerable<IIngredient>></returns>
         public async Task<IEnumerable<IIngredient>> GetAllAsync()
         {
             try
