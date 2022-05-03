@@ -50,7 +50,7 @@ namespace Recipe.REST.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new ErrorVM { Message = ex.ToString() });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorVM { Message = ex.ToString() });
             }
         }
 
@@ -70,7 +70,7 @@ namespace Recipe.REST.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new ErrorVM { Message = ex.ToString() });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorVM { Message = ex.ToString() });
             }
         }
 
@@ -89,7 +89,7 @@ namespace Recipe.REST.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new ErrorVM { Message = ex.ToString() });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorVM { Message = ex.ToString() });
             }
         }
 
@@ -108,7 +108,7 @@ namespace Recipe.REST.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new ErrorVM { Message = ex.ToString() });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorVM { Message = ex.ToString() });
             }
         }
 
@@ -124,7 +124,7 @@ namespace Recipe.REST.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new ErrorVM { Message = ex.ToString() });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorVM { Message = ex.ToString() });
             }
         }
     }
