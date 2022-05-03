@@ -8,5 +8,6 @@ namespace Recipe.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public int UserID { get; set; }
+        public int SubcategoryID { get; set; }
     }
 }

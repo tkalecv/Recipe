@@ -2,8 +2,34 @@
 --Use Database 'RecipeDatabaseFirebase'
 USE RecipeDatabaseFirebase;
 
+	--Create table 'Category'
+	CREATE TABLE Category
+	(
+		CategoryID INT IDENTITY(1,1) NOT NULL,
+		[Name]     NVARCHAR(100)     NOT NULL
+
+		-- PRIMARY + UNIQUE
+		CONSTRAINT PK_Category_CategoryID PRIMARY KEY (CategoryID),
+		CONSTRAINT UC_Category_Name UNIQUE ([Name])
+	);
+
+	--Create table 'SubCategory'
+	CREATE TABLE Subcategory
+	(
+		SubCategoryID INT IDENTITY(1,1) NOT NULL,
+		[Name]        NVARCHAR(100)     NOT NULL,
+		CategoryID    INT               NOT NULL
+
+		-- PRIMARY + UNIQUE
+		CONSTRAINT PK_SubCategory_SubCategoryID PRIMARY KEY (SubCategoryID),
+		CONSTRAINT UC_SubCategory_Name UNIQUE ([Name]),
+
+		CONSTRAINT FK_Subcategory_Category FOREIGN KEY (CategoryID) REFERENCES dbo.Category (CategoryID)
+		ON DELETE CASCADE,
+	);
+
 --Create table 'User'
-CREATE TABLE [User]
+	CREATE TABLE [User]
 	(
 		UserID               INT            NOT NULL,
 		FirebaseUserID       NVARCHAR (450) NOT NULL,
@@ -26,13 +52,17 @@ CREATE TABLE [User]
 		RecipeID      INT IDENTITY(1,1) NOT NULL,
 		[Name]        NVARCHAR(255)     NOT NULL,
 		[Description] NVARCHAR(255)     NOT NULL,
-		UserID        INT               NOT NULL
+		UserID        INT               NOT NULL,
+		SubcategoryID INT               NOT NULL
 			
 		-- PRIMARY + UNIQUE
 		CONSTRAINT PK_Recipe PRIMARY KEY (RecipeID),
 
 		--FK
-		CONSTRAINT FK_Recipe_User FOREIGN KEY (UserID) REFERENCES [User] (UserID)
+		CONSTRAINT FK_Recipe_User FOREIGN KEY (UserID) REFERENCES dbo.[User] (UserID),
+		CONSTRAINT FK_Recipe_Subcategory FOREIGN KEY (SubcategoryID) REFERENCES dbo.Subcategory (SubcategoryID)
+		ON DELETE CASCADE,
+
 	);
 
 	--Create table 'RecipeAttributes'
@@ -84,7 +114,7 @@ CREATE TABLE [User]
 	(
 		PictureID INT IDENTITY(1,1) NOT NULL,
 		RecipeID  INT               NOT NULL,
-		[Image] IMAGE             NOT NULL
+		[Image] IMAGE               NOT NULL
 
 		-- PRIMARY + UNIQUE
 		CONSTRAINT PK_Picture PRIMARY KEY (PictureID),
@@ -112,7 +142,7 @@ CREATE TABLE [User]
 		[Name]       NVARCHAR(255)     NOT NULL
 
 		-- PRIMARY + UNIQUE
-		CONSTRAINT PK_Ingredient PRIMARY KEY (IngredientID),
+		CONSTRAINT PK_Ingredient_IngredientID PRIMARY KEY (IngredientID),
 		CONSTRAINT UC_Ingredient_Name UNIQUE ([Name]),
 	);
 
@@ -126,9 +156,9 @@ CREATE TABLE [User]
 		CONSTRAINT PK_IngredientMeasuringUnit_IngredientID_MeasuringUnitID PRIMARY KEY (IngredientID, MeasuringUnitID),
 
 		--FK
-		CONSTRAINT FK_IngredientMeasuringUnit_IngredientID FOREIGN KEY (IngredientID) REFERENCES dbo.Ingredient (IngredientID)
+		CONSTRAINT FK_IngredientMeasuringUnit_Ingredient FOREIGN KEY (IngredientID) REFERENCES dbo.Ingredient (IngredientID)
 		ON DELETE CASCADE,
-		CONSTRAINT FK_IngredientMeasuringUnit_MeasuringUnitID FOREIGN KEY (MeasuringUnitID) REFERENCES dbo.MeasuringUnit (MeasuringUnitID)
+		CONSTRAINT FK_IngredientMeasuringUnit_MeasuringUnit FOREIGN KEY (MeasuringUnitID) REFERENCES dbo.MeasuringUnit (MeasuringUnitID)
 		ON DELETE CASCADE
 	);
 
@@ -139,11 +169,11 @@ CREATE TABLE [User]
 		RecipeID INT NOT NULL
 
 		-- PRIMARY + UNIQUE
-		CONSTRAINT UC_UserLikedRecipe_UserID_RecipeID PRIMARY KEY (UserID, RecipeID),
+		CONSTRAINT PK_UserLikedRecipe_UserID_RecipeID PRIMARY KEY (UserID, RecipeID),
 
 		--FK
-		CONSTRAINT FK_UserLikedRecipe_UserID FOREIGN KEY (UserID) REFERENCES dbo.[User] (UserID)
+		CONSTRAINT FK_UserLikedRecipe_User FOREIGN KEY (UserID) REFERENCES dbo.[User] (UserID)
 		ON DELETE CASCADE,
-		CONSTRAINT FK_UserLikedRecipe_RecipeID FOREIGN KEY (RecipeID) REFERENCES dbo.Recipe (RecipeID)
+		CONSTRAINT FK_UserLikedRecipe_Recipe FOREIGN KEY (RecipeID) REFERENCES dbo.Recipe (RecipeID)
 		ON DELETE CASCADE
 	);

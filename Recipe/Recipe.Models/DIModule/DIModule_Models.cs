@@ -16,6 +16,8 @@ namespace Recipe.Models.DIModule
             builder.RegisterType<RecipeAttributes>().As<IRecipeAttributes>();
             builder.RegisterType<User>().As<IUser>();
             builder.RegisterType<UserLikedRecipe>().As<IUserLikedRecipe>();
+            builder.RegisterType<Category>().As<ICategory>();
+            builder.RegisterType<Subcategory>().As<ISubcategory>();
         }
     }
 }
