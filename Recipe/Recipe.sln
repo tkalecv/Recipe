@@ -15,9 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.Repository.Common", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.Repository", "Recipe.Repository\Recipe.Repository.csproj", "{1A6F441F-114F-4D82-9DEE-5FFB7ADF1C95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipe.Service.Common", "Recipe.Service.Common\Recipe.Service.Common.csproj", "{922F2A9A-F265-4AD4-8F21-A0B52269E60A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.Service.Common", "Recipe.Service.Common\Recipe.Service.Common.csproj", "{922F2A9A-F265-4AD4-8F21-A0B52269E60A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipe.Service", "Recipe.Service\Recipe.Service.csproj", "{A44A04F6-01D4-4C35-B016-CE993696A04B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.Service", "Recipe.Service\Recipe.Service.csproj", "{A44A04F6-01D4-4C35-B016-CE993696A04B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipe.ExceptionHandler", "Recipe.ExceptionHandler\Recipe.ExceptionHandler.csproj", "{70F8B744-0613-4781-B05F-8C217164B4C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{A44A04F6-01D4-4C35-B016-CE993696A04B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A44A04F6-01D4-4C35-B016-CE993696A04B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A44A04F6-01D4-4C35-B016-CE993696A04B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70F8B744-0613-4781-B05F-8C217164B4C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70F8B744-0613-4781-B05F-8C217164B4C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70F8B744-0613-4781-B05F-8C217164B4C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70F8B744-0613-4781-B05F-8C217164B4C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

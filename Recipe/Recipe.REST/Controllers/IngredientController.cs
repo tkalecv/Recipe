@@ -1,17 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+using Recipe.ExceptionHandler.CustomExceptions;
 using Recipe.Models;
-using Recipe.Models.Common;
-using Recipe.REST.ViewModels;
-using Recipe.REST.ViewModels.Error;
 using Recipe.REST.ViewModels.Ingredient;
 using Recipe.Service.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -44,13 +41,13 @@ namespace Recipe.REST.Controllers
                 var result = _mapper.Map<IEnumerable<IngredientVM>>(await _ingredientService.GetAllAsync());
 
                 if (result == null || result.Count() <= 0)
-                    return StatusCode(StatusCodes.Status204NoContent, result);
+                    throw new HttpStatusCodeException(StatusCodes.Status204NoContent, new { message = "" });
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorVM { Message = ex.ToString() });
+                throw ex;
             }
         }
 
@@ -63,14 +60,14 @@ namespace Recipe.REST.Controllers
                 var result = await _ingredientService.FindByIDAsync(id);
 
                 if (result == null)
-                    return StatusCode(StatusCodes.Status404NotFound, new ErrorVM { Message = $"Ingredient with id '{id}' does not exist." });
+                    throw new HttpStatusCodeException(StatusCodes.Status404NotFound, $"Ingredient with id '{id}' does not exist.");
 
                 //add validations like if it returns empty and stuff like that
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorVM { Message = ex.ToString() });
+                throw ex;
             }
         }
 
@@ -81,7 +78,7 @@ namespace Recipe.REST.Controllers
             try
             {
                 if (!ModelState.IsValid)
-                    return StatusCode(StatusCodes.Status400BadRequest, ingredient);
+                    throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, ingredient);
 
                 await _ingredientService.CreateAsync(_mapper.Map<Ingredient>(ingredient));
 
@@ -89,7 +86,7 @@ namespace Recipe.REST.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorVM { Message = ex.ToString() });
+                throw ex;
             }
         }
 
@@ -100,7 +97,7 @@ namespace Recipe.REST.Controllers
             try
             {
                 if (!ModelState.IsValid)
-                    return StatusCode(StatusCodes.Status400BadRequest, ingredient);
+                    throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, ingredient);
 
                 await _ingredientService.UpdateAsync(_mapper.Map<Ingredient>(ingredient));
 
@@ -108,7 +105,7 @@ namespace Recipe.REST.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorVM { Message = ex.ToString() });
+                throw ex;
             }
         }
 
@@ -124,7 +121,7 @@ namespace Recipe.REST.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorVM { Message = ex.ToString() });
+                throw ex;
             }
         }
     }

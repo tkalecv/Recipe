@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Recipe.ExceptionHandler;
 
 namespace Recipe.REST
 {
@@ -20,6 +21,8 @@ namespace Recipe.REST
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<CustomExceptionMiddleware>();
+
             services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
                 .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
 
@@ -43,6 +46,9 @@ namespace Recipe.REST
 
                 app.UseDeveloperExceptionPage();
             }
+
+            //Custom Exception Handler
+            app.ConfigureCustomExceptionMiddleware();
 
             app.UseHttpsRedirection();
 
