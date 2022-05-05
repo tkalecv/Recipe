@@ -42,7 +42,7 @@ namespace Recipe.ExceptionHandler.CustomExceptions
                 case StatusCodes.Status400BadRequest:
                     return "Runtime Error";
                 case StatusCodes.Status401Unauthorized:
-                    return "Please login first";
+                    return "This request requires Authentication. Please login first";
                 default:
                     return null;
             }
