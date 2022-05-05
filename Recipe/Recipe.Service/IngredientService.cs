@@ -145,6 +145,32 @@ namespace Recipe.Service
         }
 
         /// <summary>
+        /// Method updates Ingredient entry in db
+        /// </summary>
+        /// <param name="id">ID unique identifier of Ingredient object that will be updated</param>
+        /// <param name="entity">Ingredient object with new values</param>
+        /// <returns>Task<int></returns>
+        public async Task<int> UpdateAsync(int id, IIngredient entity)
+        {
+            try
+            {
+                entity.IngredientID = id;
+
+                int rowCount = await _repository.UpdateAsync(_mapper.Map<Ingredient>(entity));
+
+                await _unitOfWork.CommitAsync();
+
+                return rowCount;
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// Method retrieves Ingredient entry from db filtered by ID unique identifier
         /// </summary>
         /// <param name="id">ID unique identifier of Ingredient object that will be updated</param>

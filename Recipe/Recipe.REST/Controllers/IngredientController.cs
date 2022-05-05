@@ -41,7 +41,7 @@ namespace Recipe.REST.Controllers
                 var result = _mapper.Map<IEnumerable<IngredientVM>>(await _ingredientService.GetAllAsync());
 
                 if (result == null || result.Count() <= 0)
-                    throw new HttpStatusCodeException(StatusCodes.Status204NoContent, new { message = "" });
+                    throw new HttpStatusCodeException(StatusCodes.Status204NoContent, "There are no Ingredients.");
 
                 return Ok(result);
             }
@@ -52,7 +52,7 @@ namespace Recipe.REST.Controllers
         }
 
         // GET api/<IngredientController>/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -91,7 +91,7 @@ namespace Recipe.REST.Controllers
         }
 
         // PUT api/<IngredientController>/5
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> Put([FromQuery] int id, [FromBody] IngredientPostVM ingredient)
         {
             try
@@ -99,7 +99,7 @@ namespace Recipe.REST.Controllers
                 if (!ModelState.IsValid)
                     throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, ingredient);
 
-                await _ingredientService.UpdateAsync(_mapper.Map<Ingredient>(ingredient));
+                await _ingredientService.UpdateAsync(id, _mapper.Map<Ingredient>(ingredient));
 
                 return Ok(ingredient);
             }
@@ -110,7 +110,7 @@ namespace Recipe.REST.Controllers
         }
 
         // DELETE api/<IngredientController>/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromQuery] int id)
         {
             try

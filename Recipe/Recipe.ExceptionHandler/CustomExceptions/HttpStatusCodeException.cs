@@ -41,6 +41,8 @@ namespace Recipe.ExceptionHandler.CustomExceptions
                     return "An unhandled error occurred";
                 case StatusCodes.Status400BadRequest:
                     return "Runtime Error";
+                case StatusCodes.Status401Unauthorized:
+                    return "Please login first";
                 default:
                     return null;
             }

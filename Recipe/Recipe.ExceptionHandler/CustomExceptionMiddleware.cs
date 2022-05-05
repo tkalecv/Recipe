@@ -20,6 +20,18 @@ namespace Recipe.ExceptionHandler
             {
                 await HandleExceptionAsync(context, ex);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                string result = null;
+                context.Response.ContentType = "application/json";
+
+                result = new ErrorDetails()
+                {
+                    Message = ex.Message,
+                    StatusCode = StatusCodes.Status401Unauthorized
+                }.ToString();
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            }
             catch (Exception exceptionObj)
             {
                 await HandleExceptionAsync(context, exceptionObj);

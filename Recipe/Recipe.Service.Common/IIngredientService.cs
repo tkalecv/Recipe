@@ -13,5 +13,6 @@ namespace Recipe.Service.Common
         Task<IIngredient> FindByIDAsync(int id);
         Task<IEnumerable<IIngredient>> GetAllAsync();
         Task<int> UpdateAsync(IIngredient entity);
+        Task<int> UpdateAsync(int id, IIngredient entity);
     }
 }
