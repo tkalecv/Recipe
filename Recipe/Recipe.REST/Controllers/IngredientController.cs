@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 namespace Recipe.REST.Controllers
 {
     //TODO: add calls for specific filtering like "[HttpGet("{id}/name/{name}")]"
-    //TODO: add global response handlers
     //TODO: add verification for row numbers
 
     [Route("api/[controller]")]
