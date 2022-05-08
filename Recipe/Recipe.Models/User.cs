@@ -3,6 +3,7 @@ using Recipe.Models.Common;
 
 namespace Recipe.Models
 {
+    //TODO: expand interface and model with firebase.auth.user class and remove unnecessary fields. Add Address field. Remove fields from sql script.
     public class User : IUser
     {
         public int UserID { get; set; }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Recipe.Auth;
 using Recipe.ExceptionHandler;
 
 namespace Recipe.REST
@@ -23,8 +24,8 @@ namespace Recipe.REST
         {
             services.AddTransient<CustomExceptionMiddleware>();
 
-            services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
-                .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
+            //Custom Firebase JWT token auth
+            services.ConfigureFirebaseAuthentication(Configuration);
 
             //AutoMapper
             services.AddAutoMapper(typeof(Startup));

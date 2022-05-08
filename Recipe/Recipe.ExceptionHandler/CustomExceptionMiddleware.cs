@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Firebase.Auth;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Recipe.ExceptionHandler.CustomExceptions;
 using Recipe.ExceptionHandler.Models;
 using System;
@@ -30,7 +33,29 @@ namespace Recipe.ExceptionHandler
                     Message = ex.Message,
                     StatusCode = StatusCodes.Status401Unauthorized
                 }.ToString();
+
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+
+                await context.Response.WriteAsync(result);
+            }
+            catch (FirebaseAuthException ex)
+            {
+                JObject responseData = JObject.Parse(ex.ResponseData);
+                string message = responseData.SelectToken("error.message").ToString();
+                int code = (int)responseData.SelectToken("error.code");
+
+                string result = null;
+                context.Response.ContentType = "application/json";
+
+                result = new ErrorDetails()
+                {
+                    Message = message,
+                    StatusCode = code
+                }.ToString();
+
+                context.Response.StatusCode = code;
+
+                await context.Response.WriteAsync(result);
             }
             catch (Exception exceptionObj)
             {
@@ -49,6 +74,7 @@ namespace Recipe.ExceptionHandler
                     Message = exception.Message,
                     StatusCode = (int)exception.StatusCode
                 }.ToString();
+
                 context.Response.StatusCode = (int)exception.StatusCode;
             }
             else
@@ -58,6 +84,7 @@ namespace Recipe.ExceptionHandler
                     Message = "Runtime Error",
                     StatusCode = StatusCodes.Status400BadRequest
                 }.ToString();
+
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
             }
             return context.Response.WriteAsync(result);
@@ -70,7 +97,9 @@ namespace Recipe.ExceptionHandler
                 Message = exception.Message,
                 StatusCode = StatusCodes.Status500InternalServerError
             }.ToString();
+
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
             return context.Response.WriteAsync(result);
         }
     }

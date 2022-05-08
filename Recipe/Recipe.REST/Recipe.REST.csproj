@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Recipe.Auth\Recipe.Auth.csproj" />
     <ProjectReference Include="..\Recipe.ExceptionHandler\Recipe.ExceptionHandler.csproj" />
     <ProjectReference Include="..\Recipe.Service\Recipe.Service.csproj" />
   </ItemGroup>
