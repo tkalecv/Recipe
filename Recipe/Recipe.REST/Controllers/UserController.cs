@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using Recipe.Auth;
 using Recipe.Auth.ViewModels;
 using Recipe.ExceptionHandler.CustomExceptions;
+using Recipe.Service.Common;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -16,55 +18,34 @@ namespace Recipe.REST.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IFirebaseClient firebaseClient;
+        private readonly IUserService _userService;
 
-        public UserController(IFirebaseClient firebaseClient)
+        public UserController(IUserService userService)
         {
-            this.firebaseClient = firebaseClient;
+            _userService = userService;
         }
 
         [HttpPost("/register")]
-        public async Task<IActionResult> Registration(RegisterUserVM registerModel) //TODO: create new register model with address etc.
+        public async Task<IActionResult> Register(RegisterUserVM registerModel) //TODO: create new register model with address etc.
         {
-            //TODO: move logic to user service
-            //TODO: insert user in mine db
             try
             {
-                FirebaseAuthLink UserInfo = null;
-
-                //create the user
-                UserInfo = await firebaseClient.AuthProvider.CreateUserWithEmailAndPasswordAsync(registerModel.Email, registerModel.Password);
-
-                Dictionary<string, object> Claims = new Dictionary<string, object>()
-                {
-                    { "Role", "User" },
-                };
-
-                await firebaseClient.Admin.SetCustomUserClaimsAsync(UserInfo.User.LocalId, Claims);
-
-                //log in the new user
-                UserInfo = await firebaseClient.AuthProvider
-                                .SignInWithEmailAndPasswordAsync(registerModel.Email, registerModel.Password);
-
-                string token = UserInfo.FirebaseToken;
-                string refreshToken = UserInfo.RefreshToken;
+                FirebaseAuthLink UserInfo = await _userService.Register(registerModel);
+                string Token = UserInfo.FirebaseToken;
+                string RefreshToken = UserInfo.RefreshToken;
 
                 //saving the token in a session variable
-                if (token != null)
+                if (Token != null)
                 {
-                    HttpContext.Session.SetString("_UserToken", token);
-                    HttpContext.Session.SetString("_UserRefreshToken", refreshToken);
+                    HttpContext.Session.SetString("_UserToken", Token);
+                    HttpContext.Session.SetString("_UserRefreshToken", RefreshToken);
 
                     return Ok(); //TODO: return UserInfo model.
                 }
 
                 throw new HttpStatusCodeException(StatusCodes.Status400BadRequest);
             }
-            catch (Firebase.Auth.FirebaseAuthException ex)
-            {
-                throw ex;
-            }
-            catch (FirebaseAdmin.Auth.FirebaseAuthException ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -76,26 +57,36 @@ namespace Recipe.REST.Controllers
             try
             {
                 //log in an existing user
-                var loggedUserInfo = await firebaseClient.AuthProvider
-                                .SignInWithEmailAndPasswordAsync(loginModel.Email, loginModel.Password);
+                FirebaseAuthLink UserInfo = await _userService.SignIn(loginModel);
+                string Token = UserInfo.FirebaseToken;
+                string RefreshToken = UserInfo.RefreshToken;
 
-                var test = HttpContext.User;
-
-                string token = loggedUserInfo.FirebaseToken;
-                string refreshToken = loggedUserInfo.RefreshToken;
-
-                //save the token to a session variable
-                if (token != null)
+                //saving the token in a session variable
+                if (Token != null)
                 {
-                    HttpContext.Session.SetString("_UserToken", token);
-                    HttpContext.Session.SetString("_UserRefreshToken", refreshToken);
+                    HttpContext.Session.SetString("_UserToken", Token);
+                    HttpContext.Session.SetString("_UserRefreshToken", RefreshToken);
 
-                    return Ok(); //TODO: return loggedUserInfo model.
+                    return Ok(); //TODO: return UserInfo model.
                 }
 
                 throw new HttpStatusCodeException(StatusCodes.Status400BadRequest);
             }
-            catch (FirebaseAuthException ex)
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpPost]
+        public IActionResult LogOut()
+        {
+            try
+            {
+                HttpContext.Session.Remove("_UserToken");
+                return Ok();
+            }
+            catch (Exception ex)
             {
                 throw ex;
             }

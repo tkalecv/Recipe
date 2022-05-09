@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Recipe.Auth\Recipe.Auth.csproj" />
     <ProjectReference Include="..\Recipe.Models.Common\Recipe.Models.Common.csproj" />
   </ItemGroup>
 
