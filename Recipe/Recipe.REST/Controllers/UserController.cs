@@ -30,15 +30,24 @@ namespace Recipe.REST.Controllers
             //TODO: insert user in mine db
             try
             {
+                FirebaseAuthLink UserInfo = null;
+
                 //create the user
-                await firebaseClient.FirebaseAuthProvider.CreateUserWithEmailAndPasswordAsync(registerModel.Email, registerModel.Password);
+                UserInfo = await firebaseClient.AuthProvider.CreateUserWithEmailAndPasswordAsync(registerModel.Email, registerModel.Password);
+
+                Dictionary<string, object> Claims = new Dictionary<string, object>()
+                {
+                    { "Role", "User" },
+                };
+
+                await firebaseClient.Admin.SetCustomUserClaimsAsync(UserInfo.User.LocalId, Claims);
 
                 //log in the new user
-                var loggedUserInfo = await firebaseClient.FirebaseAuthProvider
+                UserInfo = await firebaseClient.AuthProvider
                                 .SignInWithEmailAndPasswordAsync(registerModel.Email, registerModel.Password);
 
-                string token = loggedUserInfo.FirebaseToken;
-                string refreshToken = loggedUserInfo.RefreshToken;
+                string token = UserInfo.FirebaseToken;
+                string refreshToken = UserInfo.RefreshToken;
 
                 //saving the token in a session variable
                 if (token != null)
@@ -46,12 +55,16 @@ namespace Recipe.REST.Controllers
                     HttpContext.Session.SetString("_UserToken", token);
                     HttpContext.Session.SetString("_UserRefreshToken", refreshToken);
 
-                    return Ok(); //TODO: return loggedUserInfo model.
+                    return Ok(); //TODO: return UserInfo model.
                 }
 
                 throw new HttpStatusCodeException(StatusCodes.Status400BadRequest);
             }
-            catch (FirebaseAuthException ex)
+            catch (Firebase.Auth.FirebaseAuthException ex)
+            {
+                throw ex;
+            }
+            catch (FirebaseAdmin.Auth.FirebaseAuthException ex)
             {
                 throw ex;
             }
@@ -63,7 +76,7 @@ namespace Recipe.REST.Controllers
             try
             {
                 //log in an existing user
-                var loggedUserInfo = await firebaseClient.FirebaseAuthProvider
+                var loggedUserInfo = await firebaseClient.AuthProvider
                                 .SignInWithEmailAndPasswordAsync(loginModel.Email, loginModel.Password);
 
                 var test = HttpContext.User;

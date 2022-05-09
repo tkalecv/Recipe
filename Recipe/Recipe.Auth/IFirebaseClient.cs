@@ -4,6 +4,7 @@ namespace Recipe.Auth
 {
     public interface IFirebaseClient
     {
-        FirebaseAuthProvider FirebaseAuthProvider { get; set; }
+        FirebaseAdmin.Auth.FirebaseAuth Admin { get; set; }
+        FirebaseAuthProvider AuthProvider { get; set; }
     }
 }

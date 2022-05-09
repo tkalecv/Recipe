@@ -7,6 +7,7 @@ using Recipe.ExceptionHandler.CustomExceptions;
 using Recipe.ExceptionHandler.Models;
 using System;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Recipe.ExceptionHandler
@@ -38,7 +39,7 @@ namespace Recipe.ExceptionHandler
 
                 await context.Response.WriteAsync(result);
             }
-            catch (FirebaseAuthException ex)
+            catch (Firebase.Auth.FirebaseAuthException ex)
             {
                 JObject responseData = JObject.Parse(ex.ResponseData);
                 string message = responseData.SelectToken("error.message").ToString();
@@ -50,6 +51,22 @@ namespace Recipe.ExceptionHandler
                 result = new ErrorDetails()
                 {
                     Message = message,
+                    StatusCode = code
+                }.ToString();
+
+                context.Response.StatusCode = code;
+
+                await context.Response.WriteAsync(result);
+            }
+            catch (FirebaseAdmin.Auth.FirebaseAuthException ex)
+            {
+                string result = null;
+                context.Response.ContentType = "application/json";
+                int code = int.Parse(Regex.Match(ex.HttpResponse.ToString(), @"(?<=StatusCode:.+?).+?(?=,)").Value);
+
+                result = new ErrorDetails()
+                {
+                    Message = ex.Message,
                     StatusCode = code
                 }.ToString();
 

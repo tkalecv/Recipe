@@ -11,23 +11,23 @@ namespace Recipe.Auth
 {
     public class FirebaseClient : IFirebaseClient
     {
-        public FirebaseAuthProvider FirebaseAuthProvider { get; set; }
+        public FirebaseAuthProvider AuthProvider { get; set; }
 
-        public FirebaseAdmin.Auth.FirebaseAuth FirebaseAdminDefault { get; set; }
+        public FirebaseAdmin.Auth.FirebaseAuth Admin { get; set; }
 
         public FirebaseClient(IConfiguration configuration)
         {
             //You should add your firebase web api key in appsettings.json in Recipe.REST project
-            FirebaseAuthProvider = new FirebaseAuthProvider(
+            AuthProvider = new FirebaseAuthProvider(
                             new FirebaseConfig(configuration["Firebase:FirebaseWEBApikey"]));
 
             FirebaseApp FirebaseAdminApp = FirebaseApp.Create(new AppOptions
             {
                 Credential = GoogleCredential.FromFile(configuration["Firebase:FirebasePrivateKeyPath"]) //You should put path to your firebase private key token file
-                                                                                                        //in appsettings.json in Recipe.REST project
+                                                                                                         //in appsettings.json in Recipe.REST project
             });
 
-            FirebaseAdminDefault = FirebaseAdmin.Auth.FirebaseAuth.GetAuth(FirebaseAdminApp);
+            Admin = FirebaseAdmin.Auth.FirebaseAuth.GetAuth(FirebaseAdminApp);
         }
     }
 }
