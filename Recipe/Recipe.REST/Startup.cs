@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Recipe.Auth;
 using Recipe.ExceptionHandler;
+using System;
 
 namespace Recipe.REST
 {
@@ -28,7 +29,15 @@ namespace Recipe.REST
             //AutoMapper
             services.AddAutoMapper(typeof(Startup));
 
+            //Session
             services.AddControllers();
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             //Swagger
             services.AddSwaggerGen();
@@ -52,6 +61,9 @@ namespace Recipe.REST
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            //Session
+            app.UseSession();
 
             app.UseAuthentication();
             app.UseAuthorization();
