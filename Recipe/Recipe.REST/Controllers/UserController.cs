@@ -51,7 +51,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpPost("/login")]
+        [HttpPost("/signin")]
         public async Task<IActionResult> SignIn(RegisterUserVM loginModel)
         {
             try
@@ -78,7 +78,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("/signoff")]
         public IActionResult LogOut()
         {
             try

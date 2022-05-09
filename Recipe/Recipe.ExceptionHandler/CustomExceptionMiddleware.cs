@@ -115,7 +115,7 @@ namespace Recipe.ExceptionHandler
                 StatusCode = StatusCodes.Status500InternalServerError
             }.ToString();
 
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
             return context.Response.WriteAsync(result);
         }
