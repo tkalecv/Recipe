@@ -27,6 +27,7 @@ namespace Recipe.REST.Controllers
         public async Task<IActionResult> Registration(RegisterUserVM registerModel) //TODO: create new register model with address etc.
         {
             //TODO: move logic to user service
+            //TODO: insert user in mine db
             try
             {
                 //create the user
@@ -45,7 +46,7 @@ namespace Recipe.REST.Controllers
                     HttpContext.Session.SetString("_UserToken", token);
                     HttpContext.Session.SetString("_UserRefreshToken", refreshToken);
 
-                    return Ok(); //TODO: maybe add something to return here?
+                    return Ok(); //TODO: return loggedUserInfo model.
                 }
 
                 throw new HttpStatusCodeException(StatusCodes.Status400BadRequest);
@@ -65,6 +66,8 @@ namespace Recipe.REST.Controllers
                 var loggedUserInfo = await firebaseClient.FirebaseAuthProvider
                                 .SignInWithEmailAndPasswordAsync(loginModel.Email, loginModel.Password);
 
+                var test = HttpContext.User;
+
                 string token = loggedUserInfo.FirebaseToken;
                 string refreshToken = loggedUserInfo.RefreshToken;
 
@@ -74,10 +77,10 @@ namespace Recipe.REST.Controllers
                     HttpContext.Session.SetString("_UserToken", token);
                     HttpContext.Session.SetString("_UserRefreshToken", refreshToken);
 
-                    return Ok(); //TODO: maybe add something to return here?
+                    return Ok(); //TODO: return loggedUserInfo model.
                 }
 
-                throw new HttpStatusCodeException(StatusCodes.Status400BadRequest); //TODO: throw unathorized code?
+                throw new HttpStatusCodeException(StatusCodes.Status400BadRequest);
             }
             catch (FirebaseAuthException ex)
             {
