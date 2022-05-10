@@ -51,7 +51,7 @@ namespace Recipe.REST.Controllers
         }
 
         // GET api/<IngredientController>/5
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}")] // I can also use it like this [Route("/[area]/[controller]/[action]?id={id}")]
         public async Task<IActionResult> Get(int id)
         {
             try

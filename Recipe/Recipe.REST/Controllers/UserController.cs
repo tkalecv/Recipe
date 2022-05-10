@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Recipe.REST.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]")] // I can also use this api/[controller]/[action]
     [ApiController]
     public class UserController : ControllerBase
     {
