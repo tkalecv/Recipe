@@ -25,7 +25,7 @@ namespace Recipe.REST.Controllers
             _userService = userService;
         }
 
-        [HttpPost("/register")]
+        [HttpPost("/[controller]/register")]
         public async Task<IActionResult> Register(RegisterUserVM registerModel) //TODO: create new register model with address etc.
         {
             try
@@ -51,13 +51,15 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpPost("/signin")]
-        public async Task<IActionResult> SignIn(RegisterUserVM loginModel)
+        [HttpPost("/[controller]/login")]
+        public async Task<IActionResult> Login(RegisterUserVM loginModel)
         {
             try
             {
+                var a = Microsoft.AspNetCore.Http.Extensions.UriHelper.GetDisplayUrl(Request);
+
                 //log in an existing user
-                FirebaseAuthLink UserInfo = await _userService.SignIn(loginModel);
+                FirebaseAuthLink UserInfo = await _userService.Login(loginModel);
                 string Token = UserInfo.FirebaseToken;
                 string RefreshToken = UserInfo.RefreshToken;
 
@@ -67,7 +69,7 @@ namespace Recipe.REST.Controllers
                     HttpContext.Session.SetString("_UserToken", Token);
                     HttpContext.Session.SetString("_UserRefreshToken", RefreshToken);
 
-                    return Ok(); //TODO: return UserInfo model.
+                    return Ok(UserInfo); //TODO: return UserInfo model.
                 }
 
                 throw new HttpStatusCodeException(StatusCodes.Status400BadRequest);
@@ -78,7 +80,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpPost("/signoff")]
+        [HttpPost("/[controller]/logout")]
         public IActionResult LogOut()
         {
             try

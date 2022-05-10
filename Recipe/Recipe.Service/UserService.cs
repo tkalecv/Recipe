@@ -36,6 +36,7 @@ namespace Recipe.Service
             FirebaseAuthLink UserInfo = null;
 
             //TODO: insert user in mine db
+            //TODO: add password verifications, regex
             try
             {
                 //create the user
@@ -57,20 +58,6 @@ namespace Recipe.Service
 
                 return UserInfo;
             }
-            catch (Firebase.Auth.FirebaseAuthException ex)
-            {
-                if (UserInfo != null)
-                    await firebaseClient.Admin.DeleteUserAsync(UserInfo.User.LocalId); //TODO: check if the task can be canceled on exception throw
-
-                throw ex;
-            }
-            catch (FirebaseAdmin.Auth.FirebaseAuthException ex)
-            {
-                if (UserInfo != null)
-                    await firebaseClient.Admin.DeleteUserAsync(UserInfo.User.LocalId);
-
-                throw ex;
-            }
             catch (Exception ex)
             {
                 if (UserInfo != null)
@@ -80,7 +67,7 @@ namespace Recipe.Service
             }
         }
 
-        public async Task<FirebaseAuthLink> SignIn(RegisterUserVM loginModel)
+        public async Task<FirebaseAuthLink> Login(RegisterUserVM loginModel)
         {
             FirebaseAuthLink UserInfo = null;
 
@@ -95,25 +82,8 @@ namespace Recipe.Service
 
                 return UserInfo;
             }
-            catch (Firebase.Auth.FirebaseAuthException ex)
-            {
-                if (UserInfo != null)
-                    await firebaseClient.Admin.DeleteUserAsync(UserInfo.User.LocalId); //TODO: check if the task can be canceled on exception throw
-
-                throw ex;
-            }
-            catch (FirebaseAdmin.Auth.FirebaseAuthException ex)
-            {
-                if (UserInfo != null)
-                    await firebaseClient.Admin.DeleteUserAsync(UserInfo.User.LocalId);
-
-                throw ex;
-            }
             catch (Exception ex)
             {
-                if (UserInfo != null)
-                    await firebaseClient.Admin.DeleteUserAsync(UserInfo.User.LocalId);
-
                 throw ex;
             }
         }

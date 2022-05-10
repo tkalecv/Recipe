@@ -14,6 +14,7 @@ namespace Recipe.ExceptionHandler
 {
     public class CustomExceptionMiddleware : IMiddleware
     {
+        //TODO: check why it is always returning 200
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
