@@ -168,7 +168,7 @@ namespace Recipe.Service
 
             if (string.IsNullOrWhiteSpace(password))
             {
-                ErrorMessage = "Password should not be empty";
+                ErrorMessage = "Password should not be empty. \n";
                 return (false, ErrorMessage);
             }
 
