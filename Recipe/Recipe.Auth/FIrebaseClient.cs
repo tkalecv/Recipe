@@ -17,17 +17,37 @@ namespace Recipe.Auth
 
         public FirebaseClient(IConfiguration configuration)
         {
+            
+            AuthProvider = ConfigureFirebaseAuth(configuration["Firebase:FirebaseWEBApikey"]);
+
+
+            Admin = ConfigureFirebaseAdmin(configuration["Firebase:FirebasePrivateKeyPath"]);
+        }
+
+        private FirebaseAuthProvider ConfigureFirebaseAuth(string webApiKey) 
+        {
             //You should add your firebase web api key in appsettings.json in Recipe.REST project
-            AuthProvider = new FirebaseAuthProvider(
-                            new FirebaseConfig(configuration["Firebase:FirebaseWEBApikey"]));
+            return new FirebaseAuthProvider(
+                            new FirebaseConfig(webApiKey));
+        }
 
-            FirebaseApp FirebaseAdminApp = FirebaseApp.Create(new AppOptions
+        private FirebaseAdmin.Auth.FirebaseAuth ConfigureFirebaseAdmin(string privateKeyPath)
+        {
+            FirebaseAdmin.Auth.FirebaseAuth defaultInstance = FirebaseAdmin.Auth.FirebaseAuth.DefaultInstance;
+
+            //This verification is needed because once you crate the app you have to use default instace
+            if (defaultInstance == null)
             {
-                Credential = GoogleCredential.FromFile(configuration["Firebase:FirebasePrivateKeyPath"]) //You should put path to your firebase private key token file
-                                                                                                         //in appsettings.json in Recipe.REST project
-            });
+                FirebaseApp FirebaseAdminApp = FirebaseApp.Create(new AppOptions
+                {
+                    Credential = GoogleCredential.FromFile(privateKeyPath) //You should put path to your firebase private key token file
+                                                                           //in appsettings.json in Recipe.REST project
+                });
 
-            Admin = FirebaseAdmin.Auth.FirebaseAuth.GetAuth(FirebaseAdminApp);
+                return FirebaseAdmin.Auth.FirebaseAuth.GetAuth(FirebaseAdminApp);
+            }
+            else
+                return defaultInstance;
         }
     }
 }
