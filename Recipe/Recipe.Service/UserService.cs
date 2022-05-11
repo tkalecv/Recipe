@@ -10,12 +10,12 @@ using Recipe.Repository.UnitOfWork;
 using Recipe.Service.Common;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Recipe.Service
 {
+    //TODO: Add methods for GetUser and RefreshToken
     public class UserService : IUserService
     {
         private readonly IFirebaseClient firebaseClient;
@@ -50,9 +50,12 @@ namespace Recipe.Service
             //TODO: insert user in mine db
             try
             {
-                (bool IsValidated, string ErrorMessage) = ValidatePassword(registerModel.Password);
+                string ErrorMessage = string.Empty;
+                bool EmailAndPasswordValidated;
 
-                if (!IsValidated)
+                (EmailAndPasswordValidated, ErrorMessage) = ValidateEmailAndPassword(registerModel.Email, registerModel.Password);
+
+                if (!EmailAndPasswordValidated)
                     throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, ErrorMessage);
 
                 //create the user
@@ -113,23 +116,50 @@ namespace Recipe.Service
         #region Helper methods
 
         /// <summary>
-        /// Method checks if string value can be parsed to boolean or not. If not "true" is returned as default value.
+        /// Method verifies if E-mail address and password are correct and returns corresponding error message if they are not.
         /// </summary>
-        /// <param name="value">String value that you want to parse</param>
-        /// <returns>bool</returns>
-        private bool ParseToBoolean(string value)
+        /// <param name="emailAddress">E-mail address you want to verify</param>
+        /// <param name="password">Password you want to verify</param>
+        /// <returns>(bool, string)</returns>
+        private (bool, string) ValidateEmailAndPassword(string emailAddress, string password)
         {
-            if (value.ToLower().Equals("true") || value.ToLower().Equals("false"))
-                return bool.Parse(value);
+            string PasswordErrorMessage = string.Empty;
+            string EmailErrorMessage = string.Empty;
+            bool IsPasswordValidated;
+            bool IsEmailValidated;
 
-            return true;
+            (IsEmailValidated, EmailErrorMessage) = ValidateEmail(emailAddress);
+
+            (IsPasswordValidated, PasswordErrorMessage) = ValidatePassword(password);
+
+            if (!IsEmailValidated || !IsPasswordValidated)
+                return (false, EmailErrorMessage + PasswordErrorMessage);
+
+            return (true, "");
+        }
+
+        /// <summary>
+        /// Method verifies if E-mail address is correct and returns corresponding error message if it is not.
+        /// </summary>
+        /// <param name="emailAddress">E-mail address you want to verify</param>
+        /// <returns>(bool, string)</returns>
+        private (bool, string) ValidateEmail(string emailAddress)
+        {
+            Regex EmailVerificationRegex = new Regex(@"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*"
+                                                      + "@"
+                                                      + @"((([\-\w]+\.)+[a-zA-Z]{2,4})|(([0-9]{1,3}\.){3}[0-9]{1,3}))$");
+
+            if (EmailVerificationRegex.IsMatch(emailAddress))
+                return (true, "");
+
+            return (false, "The specified E-mail is not in the required form. \n");
         }
 
         /// <summary>
         /// Method verifies if password has expected strength and returns corresponding error message if it does not.
         /// You can control password strength in "appsettings.json" file
         /// </summary>
-        /// <param name="password">Value you want to verify</param>
+        /// <param name="password">Password you want to verify</param>
         /// <returns>(bool, string)</returns>
         private (bool, string) ValidatePassword(string password)
         {
@@ -142,7 +172,6 @@ namespace Recipe.Service
                 return (false, ErrorMessage);
             }
 
-            //TODO: verify if this works
             bool VerifyHasNumber = ParseToBoolean(_configuration["PasswordStrength:HasNumber"]);
             bool VerifyHasUpperChar = ParseToBoolean(_configuration["PasswordStrength:HasUpperChar"]);
             bool VerifyHasLowerChar = ParseToBoolean(_configuration["PasswordStrength:HasLowerChar"]);
@@ -161,29 +190,42 @@ namespace Recipe.Service
 
             if (VerifyHasLowerChar && !HasLowerChar.IsMatch(password))
             {
-                ErrorMessage += "Password should contain At least one lower case letter \n";
+                ErrorMessage += "Password should contain at least one lower case letter. \n";
             }
-            else if (VerifyHasUpperChar && !HasUpperChar.IsMatch(password))
+            if (VerifyHasUpperChar && !HasUpperChar.IsMatch(password))
             {
-                ErrorMessage += "Password should contain At least one upper case letter \n";
+                ErrorMessage += "Password should contain at least one upper case letter. \n";
             }
-            else if (!HasMinMaxChars.IsMatch(password))
+            if (!HasMinMaxChars.IsMatch(password))
             {
-                ErrorMessage += $"Password should not be less than {MinMaxCharsArr[0]} or greater than {MinMaxCharsArr[1]} characters \n";
+                ErrorMessage += $"Password should not be less than {MinMaxCharsArr[0]} or greater than {MinMaxCharsArr[1]} characters. \n";
             }
-            else if (VerifyHasNumber && !HasNumber.IsMatch(password))
+            if (VerifyHasNumber && !HasNumber.IsMatch(password))
             {
-                ErrorMessage += "Password should contain At least one numeric value \n";
+                ErrorMessage += "Password should contain at least one numeric value. \n";
             }
-            else if (VerifyHasSymbols && !HasSymbol.IsMatch(password))
+            if (VerifyHasSymbols && !HasSymbol.IsMatch(password))
             {
-                ErrorMessage += "Password should contain At least one special case character";
+                ErrorMessage += "Password should contain at least one special case character.";
             }
 
             if (ErrorMessage != string.Empty)
                 ValidationPassed = false;
 
             return (ValidationPassed, ErrorMessage);
+        }
+
+        /// <summary>
+        /// Method checks if string value can be parsed to boolean or not. If not "true" is returned as default value.
+        /// </summary>
+        /// <param name="value">String value that you want to parse</param>
+        /// <returns>bool</returns>
+        private bool ParseToBoolean(string value)
+        {
+            if (value.ToLower().Equals("true") || value.ToLower().Equals("false"))
+                return bool.Parse(value);
+
+            return true;
         }
         #endregion
     }

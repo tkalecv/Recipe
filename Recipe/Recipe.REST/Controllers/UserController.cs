@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Recipe.REST.Controllers
 {
-    [Route("api/[controller]")] // I can also use this api/[controller]/[action]
+    [Route("api/user")] //NOTE: You can also use this api/[controller]/[action]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -25,7 +25,7 @@ namespace Recipe.REST.Controllers
             _userService = userService;
         }
 
-        [HttpPost("/[controller]/register")]
+        [HttpPost("/user/register")]
         public async Task<IActionResult> Register(RegisterUserVM registerModel) //TODO: create new register model with address etc.
         {
             try
@@ -51,7 +51,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpPost("/[controller]/login")]
+        [HttpPost("/user/login")]
         public async Task<IActionResult> Login(RegisterUserVM loginModel)
         {
             try
@@ -80,7 +80,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpPost("/[controller]/logout")]
+        [HttpPost("/user/logout")]
         public IActionResult LogOut()
         {
             try

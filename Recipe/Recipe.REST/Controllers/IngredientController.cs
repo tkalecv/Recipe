@@ -15,10 +15,10 @@ using System.Threading.Tasks;
 
 namespace Recipe.REST.Controllers
 {
-    //TODO: add calls for specific filtering like "[HttpGet("{id}/name/{name}")]"
+    //NOTE: You can add calls for specific filtering like "[HttpGet("{id}/name/{name}")]"
     //TODO: add verification for row numbers
 
-    [Route("api/[controller]")]
+    [Route("api/ingredient")]
     [ApiController]
     public class IngredientController : ControllerBase
     {
