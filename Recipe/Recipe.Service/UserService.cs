@@ -49,7 +49,6 @@ namespace Recipe.Service
         {
             FirebaseAuthLink UserInfo = null;
 
-            //TODO: insert user in mine db
             try
             {
                 #region Email and Password validation

@@ -27,7 +27,7 @@ namespace Recipe.REST.Controllers
         }
 
         [HttpPost("/user/register")]
-        public async Task<IActionResult> Register(RegisterUserVM registerModel) //TODO: create new register model with address etc.
+        public async Task<IActionResult> Register(RegisterUserVM registerModel)
         {
             try
             {
