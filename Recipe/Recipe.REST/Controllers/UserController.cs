@@ -1,13 +1,12 @@
-﻿using Firebase.Auth;
+﻿using AutoMapper;
+using Firebase.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Recipe.Auth;
-using Recipe.Auth.ViewModels;
+using Recipe.Auth.Models;
 using Recipe.ExceptionHandler.CustomExceptions;
+using Recipe.REST.ViewModels.User;
 using Recipe.Service.Common;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -19,10 +18,12 @@ namespace Recipe.REST.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpPost("/user/register")]
@@ -30,7 +31,7 @@ namespace Recipe.REST.Controllers
         {
             try
             {
-                FirebaseAuthLink UserInfo = await _userService.Register(registerModel);
+                FirebaseAuthLink UserInfo = await _userService.Register(_mapper.Map<AuthUser>(registerModel));
                 string Token = UserInfo.FirebaseToken;
                 string RefreshToken = UserInfo.RefreshToken;
 
@@ -59,7 +60,7 @@ namespace Recipe.REST.Controllers
                 var a = Microsoft.AspNetCore.Http.Extensions.UriHelper.GetDisplayUrl(Request);
 
                 //log in an existing user
-                FirebaseAuthLink UserInfo = await _userService.Login(loginModel);
+                FirebaseAuthLink UserInfo = await _userService.Login(_mapper.Map<AuthUser>(loginModel));
                 string Token = UserInfo.FirebaseToken;
                 string RefreshToken = UserInfo.RefreshToken;
 

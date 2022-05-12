@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Recipe.Auth.ViewModels
+namespace Recipe.REST.ViewModels.User
 {
     public class LoginUserVM
     {

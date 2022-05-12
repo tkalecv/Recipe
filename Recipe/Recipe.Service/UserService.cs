@@ -3,8 +3,9 @@ using Firebase.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Recipe.Auth;
-using Recipe.Auth.ViewModels;
+using Recipe.Auth.ModelsCommon;
 using Recipe.ExceptionHandler.CustomExceptions;
+using Recipe.Models;
 using Recipe.Repository.Common.Generic;
 using Recipe.Repository.UnitOfWork;
 using Recipe.Service.Common;
@@ -23,7 +24,7 @@ namespace Recipe.Service
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IUserRegistrationHelper _userRegistrationHelper;
-        private readonly IGenericRepository<Models.User> _repository;
+        private readonly IGenericRepository<Models.UserData> _repository;
 
         public UserService(IFirebaseClient firebaseClient, IUnitOfWork unitOfWork
             , IMapper mapper, IUserRegistrationHelper userRegistrationHelper)
@@ -36,7 +37,7 @@ namespace Recipe.Service
             // use only repository in all the methods, do not reuse service methods, because 
             // transaction passed to repository will be null after commit.
             // Keep all the logic in service then call that method in controller.
-            _repository = _unitOfWork.Repository<Models.User>();
+            _repository = _unitOfWork.Repository<Models.UserData>();
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace Recipe.Service
         /// </summary>
         /// <param name="registerModel">Entity with data used to register</param>
         /// <returns>Task<FirebaseAuthLink></returns>
-        public async Task<FirebaseAuthLink> Register(RegisterUserVM registerModel)
+        public async Task<FirebaseAuthLink> Register(IAuthUser registerModel)
         {
             FirebaseAuthLink UserInfo = null;
 
@@ -61,8 +62,10 @@ namespace Recipe.Service
                     throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, ErrorMessage);
                 #endregion
 
-                //create the user
-                UserInfo = await firebaseClient.AuthProvider.CreateUserWithEmailAndPasswordAsync(registerModel.Email, registerModel.Password);
+                #region Create Firebase user
+                UserInfo = await firebaseClient.AuthProvider
+                    .CreateUserWithEmailAndPasswordAsync(registerModel.Email, registerModel.Password);
+                #endregion
 
                 #region Set claims
                 Dictionary<string, object> Claims = new Dictionary<string, object>()
@@ -73,8 +76,16 @@ namespace Recipe.Service
                 await SetCustomUserClains(UserInfo.User.LocalId, Claims);
                 #endregion
 
-                //insert user in custom db
-                await _repository.CreateAsync(_mapper.Map<Models.User>(registerModel));
+                #region Insert User into custom db
+                UserData userData = new UserData
+                {
+                    Address = registerModel.Address,
+                    City = registerModel.City,
+                    FirebaseUserID = UserInfo.User.LocalId
+                };
+                await _repository.CreateAsync(userData);
+                await _unitOfWork.CommitAsync();
+                #endregion
 
                 //log in the new user //TODO: should I remove this?
                 UserInfo = await firebaseClient.AuthProvider
@@ -87,6 +98,7 @@ namespace Recipe.Service
                 if (UserInfo != null)
                     await firebaseClient.Admin.DeleteUserAsync(UserInfo.User.LocalId);
 
+                await _unitOfWork.RollbackAsync();
                 throw ex;
             }
         }
@@ -96,7 +108,7 @@ namespace Recipe.Service
         /// </summary>
         /// <param name="loginModel">Entity with data used to log in</param>
         /// <returns>Task<FirebaseAuthLink></returns>
-        public async Task<FirebaseAuthLink> Login(LoginUserVM loginModel)
+        public async Task<FirebaseAuthLink> Login(IAuthUser loginModel)
         {
             try
             {

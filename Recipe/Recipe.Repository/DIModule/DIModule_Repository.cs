@@ -21,7 +21,7 @@ namespace Recipe.Repository.DIModule
             builder.RegisterType<GenericRepository<PreparationStep>>().As<IGenericRepository<PreparationStep>>();
             builder.RegisterType<GenericRepository<Models.Recipe>>().As<IGenericRepository<Models.Recipe>>();
             builder.RegisterType<GenericRepository<RecipeAttributes>>().As<IGenericRepository<RecipeAttributes>>();
-            builder.RegisterType<GenericRepository<User>>().As<IGenericRepository<User>>();
+            builder.RegisterType<GenericRepository<UserData>>().As<IGenericRepository<UserData>>();
             builder.RegisterType<GenericRepository<UserLikedRecipe>>().As<IGenericRepository<UserLikedRecipe>>();
 
             builder.RegisterType<GenericRepository<IIngredient>>().As<IGenericRepository<IIngredient>>();
@@ -31,7 +31,7 @@ namespace Recipe.Repository.DIModule
             builder.RegisterType<GenericRepository<IPreparationStep>>().As<IGenericRepository<IPreparationStep>>();
             builder.RegisterType<GenericRepository<IRecipe>>().As<IGenericRepository<IRecipe>>();
             builder.RegisterType<GenericRepository<IRecipeAttributes>>().As<IGenericRepository<IRecipeAttributes>>();
-            builder.RegisterType<GenericRepository<IUser>>().As<IGenericRepository<IUser>>();
+            builder.RegisterType<GenericRepository<IUserData>>().As<IGenericRepository<IUserData>>();
             builder.RegisterType<GenericRepository<IUserLikedRecipe>>().As<IGenericRepository<IUserLikedRecipe>>();
 
             builder.RegisterType<UnitOfWork.UnitOfWork>().As<IUnitOfWork>();

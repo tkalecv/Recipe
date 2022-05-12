@@ -1,3 +1,4 @@
+--DROP DATABASE RecipeDatabaseFirebase;
 --CREATE DATABASE RecipeDatabaseFirebase;
 --Use Database 'RecipeDatabaseFirebase'
 USE RecipeDatabaseFirebase;
@@ -28,21 +29,21 @@ USE RecipeDatabaseFirebase;
 		ON DELETE CASCADE,
 	);
 
---Create table 'User'
-	CREATE TABLE [User]
+--Create table 'UserData'
+	CREATE TABLE [UserData]
 	(
-		UserID               INT            NOT NULL,
-		FirebaseUserID       NVARCHAR (450) NOT NULL,
-		[Address]            NVARCHAR (100) NOT NULL,
-		City                 NVARCHAR (100) NOT NULL,
+		UserDataID           INT IDENTITY(1,1) NOT NULL,
+		FirebaseUserID       NVARCHAR (450)    NOT NULL,
+		[Address]            NVARCHAR (100)    NOT NULL,
+		City                 NVARCHAR (100)    NOT NULL,
 
 		-- PRIMARY + UNIQUE
-		CONSTRAINT PK_User PRIMARY KEY CLUSTERED (UserID ASC),
+		CONSTRAINT PK_UserData PRIMARY KEY CLUSTERED (UserDataID ASC),
 	);
 
-		-- INDEX for table 'User'
-		CREATE UNIQUE NONCLUSTERED INDEX IX_User_FirebaseUserID
-		ON [User] (FirebaseUserID ASC);
+		-- INDEX for table 'UserData'
+		CREATE UNIQUE NONCLUSTERED INDEX IX_UserData_FirebaseUserID
+		ON [UserData] (FirebaseUserID ASC);
 
 	--Create table 'Recipe'
 	CREATE TABLE Recipe
@@ -50,14 +51,14 @@ USE RecipeDatabaseFirebase;
 		RecipeID      INT IDENTITY(1,1) NOT NULL,
 		[Name]        NVARCHAR(255)     NOT NULL,
 		[Description] NVARCHAR(255)     NOT NULL,
-		UserID        INT               NOT NULL,
+		UserDataID    INT               NOT NULL,
 		SubcategoryID INT               NOT NULL
 			
 		-- PRIMARY + UNIQUE
 		CONSTRAINT PK_Recipe PRIMARY KEY (RecipeID),
 
 		--FK
-		CONSTRAINT FK_Recipe_User FOREIGN KEY (UserID) REFERENCES dbo.[User] (UserID),
+		CONSTRAINT FK_Recipe_UserData FOREIGN KEY (UserDataID) REFERENCES dbo.[UserData] (UserDataID),
 		CONSTRAINT FK_Recipe_Subcategory FOREIGN KEY (SubcategoryID) REFERENCES dbo.Subcategory (SubcategoryID)
 		ON DELETE CASCADE,
 
@@ -163,14 +164,14 @@ USE RecipeDatabaseFirebase;
 	--Create table 'UserLikedRecipe'
 	CREATE TABLE UserLikedRecipe
 	(
-		UserID   INT NOT NULL,
-		RecipeID INT NOT NULL
+		UserDataID   INT NOT NULL,
+		RecipeID     INT NOT NULL
 
 		-- PRIMARY + UNIQUE
-		CONSTRAINT PK_UserLikedRecipe_UserID_RecipeID PRIMARY KEY (UserID, RecipeID),
+		CONSTRAINT PK_UserLikedRecipe_UserDataID_RecipeID PRIMARY KEY (UserDataID, RecipeID),
 
 		--FK
-		CONSTRAINT FK_UserLikedRecipe_User FOREIGN KEY (UserID) REFERENCES dbo.[User] (UserID)
+		CONSTRAINT FK_UserLikedRecipe_UserData FOREIGN KEY (UserDataID) REFERENCES dbo.[UserData] (UserDataID)
 		ON DELETE CASCADE,
 		CONSTRAINT FK_UserLikedRecipe_Recipe FOREIGN KEY (RecipeID) REFERENCES dbo.Recipe (RecipeID)
 		ON DELETE CASCADE

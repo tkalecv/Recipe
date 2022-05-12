@@ -14,7 +14,7 @@ namespace Recipe.Models.DIModule
             builder.RegisterType<PreparationStep>().As<IPreparationStep>();
             builder.RegisterType<Recipe>().As<IRecipe>();
             builder.RegisterType<RecipeAttributes>().As<IRecipeAttributes>();
-            builder.RegisterType<User>().As<IUser>();
+            builder.RegisterType<UserData>().As<IUserData>();
             builder.RegisterType<UserLikedRecipe>().As<IUserLikedRecipe>();
             builder.RegisterType<Category>().As<ICategory>();
             builder.RegisterType<Subcategory>().As<ISubcategory>();
