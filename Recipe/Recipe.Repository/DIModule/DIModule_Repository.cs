@@ -14,7 +14,6 @@ namespace Recipe.Repository.DIModule
     {
         protected override void Load(ContainerBuilder builder)
         {
-            //TODO: should we put here interfaces or classes?
             builder.RegisterType<GenericRepository<Ingredient>>().As<IGenericRepository<Ingredient>>();
             builder.RegisterType<GenericRepository<IngredientMeasuringUnit>>().As<IGenericRepository<IngredientMeasuringUnit>>();
             builder.RegisterType<GenericRepository<MeasuringUnit>>().As<IGenericRepository<MeasuringUnit>>();

@@ -23,7 +23,6 @@ namespace Recipe.Service
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IUserRegistrationHelper _userRegistrationHelper;
-        private readonly IConfiguration _configuration;
         private readonly IGenericRepository<Models.User> _repository;
 
         public UserService(IFirebaseClient firebaseClient, IUnitOfWork unitOfWork

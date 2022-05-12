@@ -33,18 +33,16 @@ USE RecipeDatabaseFirebase;
 	(
 		UserID               INT            NOT NULL,
 		FirebaseUserID       NVARCHAR (450) NOT NULL,
-		UserName             NVARCHAR (256) NOT NULL,
-		Email                NVARCHAR (256) NOT NULL,
-		FirstName            NVARCHAR (256) NOT NULL,
-		LastName             NVARCHAR (256) NOT NULL,
+		[Address]            NVARCHAR (100) NOT NULL,
+		City                 NVARCHAR (100) NOT NULL,
 
 		-- PRIMARY + UNIQUE
 		CONSTRAINT PK_User PRIMARY KEY CLUSTERED (UserID ASC),
 	);
 
 		-- INDEX for table 'User'
-		CREATE UNIQUE NONCLUSTERED INDEX IX_User_Email_FirebaseUserID
-		ON [User] (Email, FirebaseUserID ASC);
+		CREATE UNIQUE NONCLUSTERED INDEX IX_User_FirebaseUserID
+		ON [User] (FirebaseUserID ASC);
 
 	--Create table 'Recipe'
 	CREATE TABLE Recipe
