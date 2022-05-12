@@ -44,13 +44,14 @@ namespace Recipe.Service
         /// </summary>
         /// <param name="registerModel">Entity with data used to register</param>
         /// <returns>Task<FirebaseAuthLink></returns>
-        public async Task<FirebaseAuthLink> Register(RegisterUserVM registerModel) //TODO: create new register model with address etc.
+        public async Task<FirebaseAuthLink> Register(RegisterUserVM registerModel)
         {
             FirebaseAuthLink UserInfo = null;
 
             //TODO: insert user in mine db
             try
             {
+                #region Email and Password validation
                 string ErrorMessage = string.Empty;
                 bool EmailAndPasswordValidated;
 
@@ -58,24 +59,26 @@ namespace Recipe.Service
 
                 if (!EmailAndPasswordValidated)
                     throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, ErrorMessage);
+                #endregion
 
                 //create the user
                 UserInfo = await firebaseClient.AuthProvider.CreateUserWithEmailAndPasswordAsync(registerModel.Email, registerModel.Password);
 
+                #region Set claims
                 Dictionary<string, object> Claims = new Dictionary<string, object>()
                 {
                     { "Role", "User" },
                 };
 
-                await firebaseClient.Admin
-                    .SetCustomUserClaimsAsync(UserInfo.User.LocalId, Claims);
+                await SetCustomUserClains(UserInfo.User.LocalId, Claims);
+                #endregion
+
+                //insert user in custom db
+                await _repository.CreateAsync(_mapper.Map<Models.User>(registerModel));
 
                 //log in the new user //TODO: should I remove this?
                 UserInfo = await firebaseClient.AuthProvider
                                 .SignInWithEmailAndPasswordAsync(registerModel.Email, registerModel.Password);
-
-                string token = UserInfo.FirebaseToken;
-                string refreshToken = UserInfo.RefreshToken;
 
                 return UserInfo;
             }
@@ -93,25 +96,40 @@ namespace Recipe.Service
         /// </summary>
         /// <param name="loginModel">Entity with data used to log in</param>
         /// <returns>Task<FirebaseAuthLink></returns>
-        public async Task<FirebaseAuthLink> Login(RegisterUserVM loginModel)
+        public async Task<FirebaseAuthLink> Login(LoginUserVM loginModel)
         {
-            FirebaseAuthLink UserInfo = null;
-
             try
             {
                 //log in an existing user
-                UserInfo = await firebaseClient.AuthProvider
+                return await firebaseClient.AuthProvider
                                 .SignInWithEmailAndPasswordAsync(loginModel.Email, loginModel.Password);
 
-                string token = UserInfo.FirebaseToken;
-                string refreshToken = UserInfo.RefreshToken;
-
-                return UserInfo;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
+
+        #region Helper methods
+        /// <summary>
+        /// Method sets custom claims to specified user
+        /// </summary>
+        /// <param name="userId">User identifier to which you want to set claims to</param>
+        /// <param name="claims">Custom claims you want to set to user</param>
+        /// <returns>Task</returns>
+        private async Task SetCustomUserClains(string userId, Dictionary<string, object> claims)
+        {
+            try
+            {
+                await firebaseClient.Admin
+                     .SetCustomUserClaimsAsync(userId, claims);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
     }
 }

@@ -6,7 +6,7 @@ namespace Recipe.Service.Common
 {
     public interface IUserService
     {
+        Task<FirebaseAuthLink> Login(LoginUserVM loginModel);
         Task<FirebaseAuthLink> Register(RegisterUserVM registerModel);
-        Task<FirebaseAuthLink> Login(RegisterUserVM loginModel);
     }
 }

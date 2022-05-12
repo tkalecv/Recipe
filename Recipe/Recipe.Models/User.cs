@@ -8,7 +8,8 @@ namespace Recipe.Models
         public int UserID { get; set; }
         [JsonIgnore]
         public string FirebaseUserID { get; set; }
-        public string UserName { get; set; }
+        [JsonIgnore]
+        public string Password { get; set; }
         public string Address { get; set; }
         public string City { get; set; }
     }

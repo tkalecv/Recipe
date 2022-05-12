@@ -2,11 +2,10 @@
 {
     public interface IUser
     {
-        string Email { get; set; }
         string FirebaseUserID { get; set; }
-        string FirstName { get; set; }
-        string LastName { get; set; }
+        string Password { get; set; }
         int UserID { get; set; }
-        string UserName { get; set; }
+        string Address { get; set; }
+        string City { get; set; }
     }
 }

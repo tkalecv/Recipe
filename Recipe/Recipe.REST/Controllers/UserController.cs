@@ -52,7 +52,7 @@ namespace Recipe.REST.Controllers
         }
 
         [HttpPost("/user/login")]
-        public async Task<IActionResult> Login(RegisterUserVM loginModel)
+        public async Task<IActionResult> Login(LoginUserVM loginModel)
         {
             try
             {
