@@ -27,7 +27,8 @@ namespace Recipe.REST
             services.ConfigureFirebaseAuthentication(Configuration);
 
             //AutoMapper
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(typeof(Recipe.REST.AutoMapper.AutoMapperProfile)
+                , typeof(Recipe.Service.AutoMapper.AutoMapperProfile));
 
             //Session
             services.AddControllers();

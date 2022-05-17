@@ -36,6 +36,8 @@ USE RecipeDatabaseFirebase;
 		FirebaseUserID       NVARCHAR (450)    NOT NULL,
 		[Address]            NVARCHAR (100)    NOT NULL,
 		City                 NVARCHAR (100)    NOT NULL,
+		FirstName            NVARCHAR(50)      NOT NULL,
+		LastName             NVARCHAR(50)      NOT NULL,
 
 		-- PRIMARY + UNIQUE
 		CONSTRAINT PK_UserData PRIMARY KEY CLUSTERED (UserDataID ASC),

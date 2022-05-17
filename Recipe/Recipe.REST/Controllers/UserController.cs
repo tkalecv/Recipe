@@ -41,7 +41,7 @@ namespace Recipe.REST.Controllers
                     HttpContext.Session.SetString("_UserToken", Token);
                     HttpContext.Session.SetString("_UserRefreshToken", RefreshToken);
 
-                    return Ok(); //TODO: return UserInfo model. Or create custom model to return just some info
+                    return Ok(); //TODO: create custom model to return just some info
                 }
 
                 throw new HttpStatusCodeException(StatusCodes.Status400BadRequest);
@@ -68,7 +68,7 @@ namespace Recipe.REST.Controllers
                     HttpContext.Session.SetString("_UserToken", Token);
                     HttpContext.Session.SetString("_UserRefreshToken", RefreshToken);
 
-                    return Ok(UserInfo); //TODO: return UserInfo model. Or create custom model to return just some info
+                    return Ok(UserInfo); //TODO: create custom model to return just some info
                 }
 
                 throw new HttpStatusCodeException(StatusCodes.Status400BadRequest);

@@ -74,6 +74,23 @@ namespace Recipe.ExceptionHandler
 
                 await context.Response.WriteAsync(result);
             }
+            catch (ArgumentException ex)
+            {
+                string result = null;
+                context.Response.ContentType = "application/json";
+                int code = StatusCodes.Status400BadRequest;
+
+                result = new ErrorDetails()
+                {
+                    Message = ex.Message,
+                    StatusCode = code
+                }.ToString();
+
+                context.Response.StatusCode = code;
+
+                await context.Response.WriteAsync(result);
+
+            }
             catch (Exception exceptionObj)
             {
                 await HandleExceptionAsync(context, exceptionObj);

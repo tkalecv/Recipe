@@ -22,7 +22,7 @@ namespace Recipe.REST
             .UseServiceProviderFactory(new AutofacServiceProviderFactory())
             .ConfigureContainer<ContainerBuilder>(builder =>
             {
-                builder.RegisterModule(new DIModule_REST());
+                builder.RegisterModule(new DIModule_REST()); //Autofac Dependency Injection
             });
     }
 }

@@ -3,7 +3,6 @@ using Recipe.Auth.Models;
 using Recipe.Auth.ModelsCommon;
 using Recipe.Models;
 using Recipe.Models.Common;
-using Recipe.REST.ViewModels;
 using Recipe.REST.ViewModels.Ingredient;
 using Recipe.REST.ViewModels.User;
 

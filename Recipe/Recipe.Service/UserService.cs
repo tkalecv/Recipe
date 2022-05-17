@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Firebase.Auth;
+using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Recipe.Auth;
@@ -48,7 +49,7 @@ namespace Recipe.Service
         /// <returns>Task<FirebaseAuthLink></returns>
         public async Task<FirebaseAuthLink> Register(IAuthUser registerModel)
         {
-            FirebaseAuthLink UserInfo = null;
+            UserRecord UserRecord = null;
 
             try
             {
@@ -63,8 +64,10 @@ namespace Recipe.Service
                 #endregion
 
                 #region Create Firebase user
-                UserInfo = await firebaseClient.AuthProvider
-                    .CreateUserWithEmailAndPasswordAsync(registerModel.Email, registerModel.Password);
+                UserRecord = await firebaseClient.Admin
+                    .CreateUserAsync(_mapper.Map<UserRecordArgs>(registerModel));
+
+                registerModel.Uid = UserRecord.Uid;
                 #endregion
 
                 #region Set claims
@@ -73,30 +76,22 @@ namespace Recipe.Service
                     { ClaimTypes.Role, "User" },
                 };
 
-                await SetCustomUserClaims(UserInfo.User.LocalId, Claims);
+                await SetCustomUserClaims(UserRecord.Uid, Claims);
                 #endregion
 
                 #region Insert User into custom db
-                UserData userData = new UserData
-                {
-                    Address = registerModel.Address,
-                    City = registerModel.City,
-                    FirebaseUserID = UserInfo.User.LocalId
-                };
-                await _repository.CreateAsync(userData);
+                await _repository.CreateAsync(_mapper.Map<UserData>(registerModel));
                 await _unitOfWork.CommitAsync();
                 #endregion
 
                 //log in the new user //TODO: should I remove this?
-                UserInfo = await firebaseClient.AuthProvider
+                return await firebaseClient.AuthProvider
                                 .SignInWithEmailAndPasswordAsync(registerModel.Email, registerModel.Password);
-
-                return UserInfo;
             }
             catch (Exception ex)
             {
-                if (UserInfo != null)
-                    await firebaseClient.Admin.DeleteUserAsync(UserInfo.User.LocalId);
+                if (UserRecord != null)
+                    await firebaseClient.Admin.DeleteUserAsync(UserRecord.Uid);
 
                 await _unitOfWork.RollbackAsync();
                 throw ex;
@@ -116,6 +111,60 @@ namespace Recipe.Service
                 return await firebaseClient.AuthProvider
                                 .SignInWithEmailAndPasswordAsync(loginModel.Email, loginModel.Password);
 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// ethod retrieves user data using his id
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task<UserRecord></returns>
+        public async Task<UserRecord> GetuserWithid(string userId)
+        {
+            try
+            {
+                return await firebaseClient.Admin
+                    .GetUserAsync(userId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Method retrieves user data using his bearer token
+        /// </summary>
+        /// <param name="token">Users bearer token</param>
+        /// <returns>Task<Firebase.Auth.User></returns>
+        public async Task<Firebase.Auth.User> GetuserWithToken(string token)
+        {
+            try
+            {
+                return await firebaseClient.AuthProvider
+                    .GetUserAsync(token);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Method updates users token expiration time to current time
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        public async Task RefreshToken(string userId)
+        {
+            try
+            {
+                await firebaseClient.Admin
+                   .RevokeRefreshTokensAsync(userId);
             }
             catch (Exception ex)
             {
