@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 namespace Recipe.REST.Controllers
 {
     //NOTE: You can add calls for specific filtering like "[HttpGet("{id}/name/{name}")]"
+   // or like You can also use it like this [Route("/[area]/[controller]/[action]?id={id}")]
 
     [Route("api/ingredient")]
     [ApiController]
@@ -50,7 +51,7 @@ namespace Recipe.REST.Controllers
         }
 
         // GET api/<IngredientController>/5
-        [HttpGet("{id:int}")] // I can also use it like this [Route("/[area]/[controller]/[action]?id={id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
             try
