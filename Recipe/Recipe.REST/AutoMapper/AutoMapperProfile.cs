@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Firebase.Auth;
 using Recipe.Auth.Models;
 using Recipe.Auth.ModelsCommon;
 using Recipe.Models;
@@ -23,6 +24,8 @@ namespace Recipe.REST.AutoMapper
 
             CreateMap<LoginUserVM, IAuthUser>().ReverseMap();
             CreateMap<LoginUserVM, AuthUser>().ReverseMap();
+
+            CreateMap<ReturnUserVM, FirebaseAuthLink>().ReverseMap();
         }
     }
 }

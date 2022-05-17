@@ -13,6 +13,8 @@ namespace Recipe.Service.DIModule
         {
             builder.RegisterType<IngredientService>().As<IIngredientService>();
             builder.RegisterType<UserService>().As<IUserService>();
+            builder.RegisterType<CategoryService>().As<ICategoryService>();
+            builder.RegisterType<SubcategoryService>().As<ISubcategoryService>();
 
             builder.RegisterType<UserRegistrationHelper>().As<IUserRegistrationHelper>();
 

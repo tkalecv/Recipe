@@ -107,7 +107,6 @@ namespace Recipe.Service
         {
             try
             {
-                //log in an existing user
                 return await firebaseClient.AuthProvider
                                 .SignInWithEmailAndPasswordAsync(loginModel.Email, loginModel.Password);
 
