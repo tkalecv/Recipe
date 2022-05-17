@@ -12,6 +12,7 @@ using Recipe.Service.Common;
 using Recipe.Service.Common.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -69,10 +70,10 @@ namespace Recipe.Service
                 #region Set claims
                 Dictionary<string, object> Claims = new Dictionary<string, object>()
                 {
-                    { "Role", "User" },
+                    { ClaimTypes.Role, "User" },
                 };
 
-                await SetCustomUserClains(UserInfo.User.LocalId, Claims);
+                await SetCustomUserClaims(UserInfo.User.LocalId, Claims);
                 #endregion
 
                 #region Insert User into custom db
@@ -129,7 +130,7 @@ namespace Recipe.Service
         /// <param name="userId">User identifier to which you want to set claims to</param>
         /// <param name="claims">Custom claims you want to set to user</param>
         /// <returns>Task</returns>
-        private async Task SetCustomUserClains(string userId, Dictionary<string, object> claims)
+        private async Task SetCustomUserClaims(string userId, Dictionary<string, object> claims)
         {
             try
             {

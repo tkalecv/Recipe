@@ -57,8 +57,6 @@ namespace Recipe.REST.Controllers
         {
             try
             {
-                var a = Microsoft.AspNetCore.Http.Extensions.UriHelper.GetDisplayUrl(Request);
-
                 //log in an existing user
                 FirebaseAuthLink UserInfo = await _userService.Login(_mapper.Map<AuthUser>(loginModel));
                 string Token = UserInfo.FirebaseToken;
