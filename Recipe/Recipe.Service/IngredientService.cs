@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Recipe.Service
 {
+    //TODO: add and test authorization
     public class IngredientService : IIngredientService
     {
         private readonly IUnitOfWork _unitOfWork;

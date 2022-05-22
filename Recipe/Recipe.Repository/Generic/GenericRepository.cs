@@ -12,7 +12,7 @@ namespace Recipe.Repository.Generic
 {
     internal class GenericRepository<T> : IGenericRepository<T>
     {
-        public IDbTransaction Transaction { get; } //TODO: if this does not work, create private field for transaction end return it in get
+        public IDbTransaction Transaction { get; }
         public IDbConnection Connection => Transaction.Connection;
 
         private string TableName { get; set; }
@@ -219,7 +219,7 @@ namespace Recipe.Repository.Generic
             return typeof(T)
                     .GetProperties()
                     .Where(e => !e.Name.ToLower().Equals($"{TableName.ToLower()}id")
-                                && !e.PropertyType.GetTypeInfo().IsGenericType) //TODO: verify if this works if property is class
+                                && !e.PropertyType.GetTypeInfo().IsGenericType)
                     .Select(e => e.Name);
         }
     }
