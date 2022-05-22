@@ -4,6 +4,6 @@
     {
         byte[] Image { get; set; }
         int PictureID { get; set; }
-        int RecipeID { get; set; }
+        IRecipe Recipe { get; set; }
     }
 }

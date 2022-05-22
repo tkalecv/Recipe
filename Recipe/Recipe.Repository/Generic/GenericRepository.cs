@@ -218,7 +218,8 @@ namespace Recipe.Repository.Generic
         {
             return typeof(T)
                     .GetProperties()
-                    .Where(e => !e.Name.ToLower().Equals($"{TableName.ToLower()}id") && !e.PropertyType.GetTypeInfo().IsGenericType)
+                    .Where(e => !e.Name.ToLower().Equals($"{TableName.ToLower()}id")
+                                && !e.PropertyType.GetTypeInfo().IsGenericType)
                     .Select(e => e.Name);
         }
     }

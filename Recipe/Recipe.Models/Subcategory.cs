@@ -9,6 +9,6 @@ namespace Recipe.Models
     {
         public int SubcategoryID { get; set; }
         public string Name { get; set; }
-        public int CategoryID { get; set; }
+        public ICategory Category { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 {
     public interface ISubcategory
     {
-        int CategoryID { get; set; }
+        ICategory Category { get; set; }
         string Name { get; set; }
         int SubcategoryID { get; set; }
     }

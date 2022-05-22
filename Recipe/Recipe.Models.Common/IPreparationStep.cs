@@ -5,6 +5,6 @@
         string Description { get; set; }
         int Number { get; set; }
         int PreparationStepID { get; set; }
-        int RecipeID { get; set; }
+        IRecipe Recipe { get; set; }
     }
 }

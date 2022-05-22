@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Recipe.Models.Common;
 
 namespace Recipe.Models
@@ -13,5 +14,7 @@ namespace Recipe.Models
         public string LastName { get; set; }
         public string Address { get; set; }
         public string City { get; set; }
+        public ICollection<IRecipe> Recipes { get; set; }
+        public ICollection<IRecipe> LikedRecipes { get; set; }
     }
 }

@@ -9,5 +9,6 @@ namespace Recipe.Models
     {
         public int CategoryID { get; set; }
         public string Name { get; set; }
+        public ICollection<ISubcategory> Subcategories { get; set; }
     }
 }

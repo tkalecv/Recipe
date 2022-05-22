@@ -15,24 +15,20 @@ namespace Recipe.Repository.DIModule
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<GenericRepository<Ingredient>>().As<IGenericRepository<Ingredient>>();
-            builder.RegisterType<GenericRepository<IngredientMeasuringUnit>>().As<IGenericRepository<IngredientMeasuringUnit>>();
             builder.RegisterType<GenericRepository<MeasuringUnit>>().As<IGenericRepository<MeasuringUnit>>();
             builder.RegisterType<GenericRepository<Picture>>().As<IGenericRepository<Picture>>();
             builder.RegisterType<GenericRepository<PreparationStep>>().As<IGenericRepository<PreparationStep>>();
             builder.RegisterType<GenericRepository<Models.Recipe>>().As<IGenericRepository<Models.Recipe>>();
             builder.RegisterType<GenericRepository<RecipeAttributes>>().As<IGenericRepository<RecipeAttributes>>();
             builder.RegisterType<GenericRepository<UserData>>().As<IGenericRepository<UserData>>();
-            builder.RegisterType<GenericRepository<UserLikedRecipe>>().As<IGenericRepository<UserLikedRecipe>>();
 
             builder.RegisterType<GenericRepository<IIngredient>>().As<IGenericRepository<IIngredient>>();
-            builder.RegisterType<GenericRepository<IIngredientMeasuringUnit>>().As<IGenericRepository<IIngredientMeasuringUnit>>();
             builder.RegisterType<GenericRepository<IMeasuringUnit>>().As<IGenericRepository<IMeasuringUnit>>();
             builder.RegisterType<GenericRepository<IPicture>>().As<IGenericRepository<IPicture>>();
             builder.RegisterType<GenericRepository<IPreparationStep>>().As<IGenericRepository<IPreparationStep>>();
             builder.RegisterType<GenericRepository<IRecipe>>().As<IGenericRepository<IRecipe>>();
             builder.RegisterType<GenericRepository<IRecipeAttributes>>().As<IGenericRepository<IRecipeAttributes>>();
             builder.RegisterType<GenericRepository<IUserData>>().As<IGenericRepository<IUserData>>();
-            builder.RegisterType<GenericRepository<IUserLikedRecipe>>().As<IGenericRepository<IUserLikedRecipe>>();
 
             builder.RegisterType<UnitOfWork.UnitOfWork>().As<IUnitOfWork>();
 

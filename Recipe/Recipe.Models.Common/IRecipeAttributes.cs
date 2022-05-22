@@ -10,7 +10,7 @@ namespace Recipe.Models.Common
         int Person { get; set; }
         TimeSpan PrepareTime { get; set; }
         int RecipeAttributesID { get; set; }
-        int RecipeID { get; set; }
+        IRecipe Recipe { get; set; }
         string Serving { get; set; }
         int Stars { get; set; }
     }

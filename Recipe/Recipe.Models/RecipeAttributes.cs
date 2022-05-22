@@ -6,7 +6,7 @@ namespace Recipe.Models
     public class RecipeAttributes : IRecipeAttributes
     {
         public int RecipeAttributesID { get; set; }
-        public int RecipeID { get; set; }
+        public IRecipe Recipe { get; set; }
         public DateTime CreatedDate { get; set; }
         public int Person { get; set; }
         public TimeSpan PrepareTime { get; set; }
