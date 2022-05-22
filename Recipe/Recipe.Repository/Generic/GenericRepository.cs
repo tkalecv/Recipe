@@ -12,14 +12,14 @@ namespace Recipe.Repository.Generic
 {
     internal class GenericRepository<T> : IGenericRepository<T>
     {
-        private readonly IDbTransaction _transaction;
-        private IDbConnection _connection => _transaction.Connection;
+        public IDbTransaction Transaction { get; } //TODO: if this does not work, create private field for transaction end return it in get
+        public IDbConnection Connection => Transaction.Connection;
 
         private string TableName { get; set; }
 
         public GenericRepository(IDbTransaction transaction)
         {
-            _transaction = transaction;
+            Transaction = transaction;
 
             //TODO: remove first char I if it is an interface
             TableName = typeof(T).Name;
@@ -39,7 +39,7 @@ namespace Recipe.Repository.Generic
                 var stringOfParameters = string.Join(", ", columns.Select(e => "@" + e));
                 var query = $"INSERT INTO {TableName} ({stringOfColumns}) values ({stringOfParameters})";
 
-               return await ExecuteQueryAsync(query, entity);
+                return await ExecuteQueryAsync(query, entity);
             }
             catch (Exception ex)
             {
@@ -114,7 +114,7 @@ namespace Recipe.Repository.Generic
         }
 
         /// <summary>
-        /// Method asynchronously executes retrieve rows from SQL table with or without WHERE filter
+        /// Method asynchronously retrieve rows from SQL table with or without WHERE filter
         /// </summary>
         /// <param name="where">SQL WHERE filter that extends default SELECT query</param>
         /// <returns>Task<IEnumerable<T>></returns>
@@ -169,9 +169,9 @@ namespace Recipe.Repository.Generic
         public async Task<IEnumerable<T>> ExecuteQueryWithReturnAsync(string sqlQuery, T entity)
         {
             if (EqualityComparer<T>.Default.Equals(entity, default(T)))
-                return await _connection.QueryAsync<T>(sqlQuery, transaction: _transaction);
+                return await Connection.QueryAsync<T>(sqlQuery, transaction: Transaction);
 
-            return await _connection.QueryAsync<T>(sqlQuery, entity, transaction: _transaction);
+            return await Connection.QueryAsync<T>(sqlQuery, entity, transaction: Transaction);
         }
 
         /// <summary>
@@ -183,9 +183,9 @@ namespace Recipe.Repository.Generic
         public async Task<int> ExecuteQueryAsync(string sqlQuery, T entity)
         {
             if (EqualityComparer<T>.Default.Equals(entity, default(T)))
-                return await _connection.ExecuteAsync(sqlQuery, transaction: _transaction);
+                return await Connection.ExecuteAsync(sqlQuery, transaction: Transaction);
 
-            return await _connection.ExecuteAsync(sqlQuery, entity, transaction: _transaction);
+            return await Connection.ExecuteAsync(sqlQuery, entity, transaction: Transaction);
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Recipe.Repository.Generic
         /// <returns>Task<IEnumerable<T>></returns>
         public async Task<IEnumerable<T>> ExecuteStoredProcedureWithReturnAsync(string storedProcedure, T entity)
         {
-            return await _connection.QueryAsync<T>(storedProcedure, entity, commandType: CommandType.StoredProcedure, transaction: _transaction);
+            return await Connection.QueryAsync<T>(storedProcedure, entity, commandType: CommandType.StoredProcedure, transaction: Transaction);
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace Recipe.Repository.Generic
         /// <returns>Task<int></returns>
         public async Task<int> ExecuteStoredProcedureAsync(string storedProcedure, T entity)
         {
-            return await _connection.ExecuteAsync(storedProcedure, entity, commandType: CommandType.StoredProcedure, transaction: _transaction);
+            return await Connection.ExecuteAsync(storedProcedure, entity, commandType: CommandType.StoredProcedure, transaction: Transaction);
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace Recipe.Repository.Generic
             return typeof(T)
                     .GetProperties()
                     .Where(e => !e.Name.ToLower().Equals($"{TableName.ToLower()}id")
-                                && !e.PropertyType.GetTypeInfo().IsGenericType)
+                                && !e.PropertyType.GetTypeInfo().IsGenericType) //TODO: verify if this works if property is class
                     .Select(e => e.Name);
         }
     }

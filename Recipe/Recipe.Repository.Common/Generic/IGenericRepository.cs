@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace Recipe.Repository.Common.Generic
 {
     public interface IGenericRepository<T>
     {
+        IDbConnection Connection { get; }
+        IDbTransaction Transaction { get; }
         Task<int> CreateAsync(IEnumerable<T> entityList);
         Task<int> CreateAsync(T entity);
         Task<int> DeleteAsync(T entity);
