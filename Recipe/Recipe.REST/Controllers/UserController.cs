@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Firebase.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Recipe.Auth.Models;
@@ -79,7 +80,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpPost("/user/logout")]
+        [HttpPost("/user/logout"), Authorize]
         public IActionResult LogOut()
         {
             try

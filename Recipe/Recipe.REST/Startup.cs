@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Recipe.Auth;
 using Recipe.ExceptionHandler;
+using Swashbuckle.AspNetCore.Filters;
 using System;
 
 namespace Recipe.REST
@@ -23,6 +25,19 @@ namespace Recipe.REST
         {
             services.AddTransient<CustomExceptionMiddleware>();
 
+            //Swagger
+            services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+                options.OperationFilter<SecurityRequirementsOperationFilter>();
+            });
+
             //Custom Firebase JWT token auth
             services.ConfigureFirebaseAuthentication(Configuration);
 
@@ -39,9 +54,6 @@ namespace Recipe.REST
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
-
-            //Swagger
-            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

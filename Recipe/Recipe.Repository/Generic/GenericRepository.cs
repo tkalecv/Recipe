@@ -118,7 +118,7 @@ namespace Recipe.Repository.Generic
         /// </summary>
         /// <param name="where">SQL WHERE filter that extends default SELECT query</param>
         /// <returns>Task<IEnumerable<T>></returns>
-        public async Task<IEnumerable<T>> GetAllAsync(string where = null)
+        public async Task<IEnumerable<T>> GetAllAsync(string where = null) //TODO: this wont work because of joins/mappings
         {
             try
             {

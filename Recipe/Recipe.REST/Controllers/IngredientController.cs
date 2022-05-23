@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -16,10 +17,10 @@ using System.Threading.Tasks;
 namespace Recipe.REST.Controllers
 {
     //NOTE: You can add calls for specific filtering like "[HttpGet("{id}/name/{name}")]"
-   // or like You can also use it like this [Route("/[area]/[controller]/[action]?id={id}")]
+    // or like You can also use it like this [Route("/[area]/[controller]/[action]?id={id}")]
 
     [Route("api/ingredient")]
-    [ApiController]
+    [ApiController, Authorize]
     public class IngredientController : ControllerBase
     {
         private readonly IIngredientService _ingredientService;
