@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.Service", "Recipe.Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.ExceptionHandler", "Recipe.ExceptionHandler\Recipe.ExceptionHandler.csproj", "{70F8B744-0613-4781-B05F-8C217164B4C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipe.Auth", "Recipe.Auth\Recipe.Auth.csproj", "{91811481-E0A6-4C8B-86F9-063E10ADD919}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.Auth", "Recipe.Auth\Recipe.Auth.csproj", "{91811481-E0A6-4C8B-86F9-063E10ADD919}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.Helpers", "Recipe.Helpers\Recipe.Helpers.csproj", "{299EE33E-A183-44F1-938B-1E9DE64A6281}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{91811481-E0A6-4C8B-86F9-063E10ADD919}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91811481-E0A6-4C8B-86F9-063E10ADD919}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91811481-E0A6-4C8B-86F9-063E10ADD919}.Release|Any CPU.Build.0 = Release|Any CPU
+		{299EE33E-A183-44F1-938B-1E9DE64A6281}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{299EE33E-A183-44F1-938B-1E9DE64A6281}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{299EE33E-A183-44F1-938B-1E9DE64A6281}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{299EE33E-A183-44F1-938B-1E9DE64A6281}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

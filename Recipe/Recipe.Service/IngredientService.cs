@@ -16,7 +16,7 @@ namespace Recipe.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IGenericRepository<Ingredient> _repository;
+        private readonly IIngredientRepository _repository;
 
         public IngredientService(IUnitOfWork unitOfWork, IMapper mapper)
         {
@@ -25,7 +25,7 @@ namespace Recipe.Service
             // use only repository in all the methods, do not reuse service methods, because 
             // transaction passed to repository will be null after commit.
             // Keep all the logic in service then call that method in controller.
-            _repository = _unitOfWork.Repository<Ingredient>();
+            _repository = _unitOfWork.IngredientRepository;
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Recipe.Service
         {
             try
             {
-                int rowCount = await _repository.CreateAsync(_mapper.Map<Ingredient>(entity));
+                int rowCount = await _repository.CreateAsync(entity);
 
                 await _unitOfWork.CommitAsync();
 

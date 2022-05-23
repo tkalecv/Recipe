@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Nito.AsyncEx;
 using Recipe.DAL;
+using Recipe.Repository.Common;
 using Recipe.Repository.Common.Generic;
 using Recipe.Repository.Generic;
 using System;
@@ -17,10 +18,13 @@ namespace Recipe.Repository.UnitOfWork
         private DbTransaction _transaction { get; set; } = null;
 
         Dictionary<string, dynamic> _repositories { get; set; }
+        public IIngredientRepository IngredientRepository { get; }
 
-        public UnitOfWork(IRecipeContext recipeContext)
+        public UnitOfWork(IRecipeContext recipeContext,
+            IIngredientRepository ingredientRepository)
         {
             _connection = recipeContext.CreateConnection();
+            IngredientRepository = ingredientRepository; //TODO: how to pass transaction
         }
 
         /// <summary>
