@@ -11,6 +11,5 @@ namespace Recipe.Models.Common
         string Address { get; set; }
         string City { get; set; }
         ICollection<IRecipe> Recipes { get; set; }
-        ICollection<IRecipe> LikedRecipes { get; set; }
     }
 }

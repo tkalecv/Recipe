@@ -15,6 +15,5 @@ namespace Recipe.Models
         public string Address { get; set; }
         public string City { get; set; }
         public ICollection<IRecipe> Recipes { get; set; }
-        public ICollection<IRecipe> LikedRecipes { get; set; } //TODO: remove or fix liked recipes
     }
 }

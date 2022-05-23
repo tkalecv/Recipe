@@ -162,19 +162,3 @@ USE RecipeDatabaseFirebase;
 		CONSTRAINT FK_IngredientMeasuringUnit_MeasuringUnit FOREIGN KEY (MeasuringUnitID) REFERENCES dbo.MeasuringUnit (MeasuringUnitID)
 		ON DELETE CASCADE
 	);
-
-	--Create table 'UserLikedRecipe'
-	CREATE TABLE UserLikedRecipe
-	(
-		UserDataID   INT NOT NULL,
-		RecipeID     INT NOT NULL
-
-		-- PRIMARY + UNIQUE
-		CONSTRAINT PK_UserLikedRecipe_UserDataID_RecipeID PRIMARY KEY (UserDataID, RecipeID),
-
-		--FK
-		CONSTRAINT FK_UserLikedRecipe_UserData FOREIGN KEY (UserDataID) REFERENCES dbo.[UserData] (UserDataID)
-		ON DELETE CASCADE,
-		CONSTRAINT FK_UserLikedRecipe_Recipe FOREIGN KEY (RecipeID) REFERENCES dbo.Recipe (RecipeID)
-		ON DELETE CASCADE
-	);
