@@ -15,6 +15,10 @@ namespace Recipe.Repository.DIModule
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<IngredientRepository>().As<IIngredientRepository>();
+            builder.RegisterType<CategoryRepository>().As<ICategoryRepository>();
+            builder.RegisterType<RecipeRepository>().As<IRecipeRepository>();
+            builder.RegisterType<SubcategoryRepository>().As<ISubcategoryRepository>();
+            builder.RegisterType<UserDataRepository>().As<IUserDataRepository>();
 
             builder.RegisterType<UnitOfWork.UnitOfWork>().As<IUnitOfWork>();
 
