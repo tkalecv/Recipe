@@ -12,6 +12,8 @@ namespace Recipe.Service.AutoMapper
         public AutoMapperProfile()
         {
             CreateMap<Ingredient, IIngredient>().ReverseMap();
+            CreateMap<Subcategory, ISubcategory>().ReverseMap();
+            CreateMap<UserData, IUserData>().ReverseMap();
 
             CreateMap<UserRecordArgs, AuthUser>().ReverseMap();
             CreateMap<UserRecordArgs, IAuthUser>().ReverseMap();

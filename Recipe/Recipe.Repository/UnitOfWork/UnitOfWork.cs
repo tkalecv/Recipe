@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Autofac;
+using Dapper;
 using Nito.AsyncEx;
 using Recipe.DAL;
 using Recipe.Repository.Common;
@@ -18,20 +19,35 @@ namespace Recipe.Repository.UnitOfWork
         private DbTransaction _transaction { get; set; } = null;
 
         Dictionary<string, dynamic> _repositories { get; set; }
-        public IIngredientRepository IngredientRepository { get; }
 
-        public UnitOfWork(IRecipeContext recipeContext,
-            IIngredientRepository ingredientRepository)
+        #region Repositories
+        public IIngredientRepository IngredientRepository { get; } //TODO: delete this
+
+        private IRecipeRepository _recipeRepository;
+        public IRecipeRepository RecipeRepository
+        {
+            get
+            {
+                if (_recipeRepository == null)
+                    _recipeRepository = new RecipeRepository(_transaction);
+
+                return _recipeRepository;
+            }
+        }
+        #endregion
+
+        public UnitOfWork(IRecipeContext recipeContext)
         {
             _connection = recipeContext.CreateConnection();
-            IngredientRepository = ingredientRepository; //TODO: how to pass transaction
+
+            IngredientRepository = new IngredientRepository(_transaction);
         }
 
         /// <summary>
         /// Method asynchronously opens a database connection and begins a database transaction
         /// </summary>
         /// <returns>Task</returns>
-        private async Task BeginTransactionAsync()
+        public async Task BeginTransactionAsync()
         {
             if (_connection.State == ConnectionState.Closed)
                 await _connection.OpenAsync();

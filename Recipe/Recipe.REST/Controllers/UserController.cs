@@ -28,7 +28,7 @@ namespace Recipe.REST.Controllers
         }
 
         [HttpPost("/user/register")]
-        public async Task<IActionResult> Register(RegisterUserVM registerModel)
+        public async Task<IActionResult> Register(UserRegisterVM registerModel)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace Recipe.REST.Controllers
                     HttpContext.Session.SetString("_UserToken", Token);
                     HttpContext.Session.SetString("_UserRefreshToken", RefreshToken);
 
-                    return Ok(_mapper.Map<ReturnUserVM>(UserInfo));
+                    return Ok(_mapper.Map<UserReturnVM>(UserInfo));
                 }
 
                 throw new HttpStatusCodeException(StatusCodes.Status400BadRequest);
@@ -54,7 +54,7 @@ namespace Recipe.REST.Controllers
         }
 
         [HttpPost("/user/login")]
-        public async Task<IActionResult> Login(LoginUserVM loginModel)
+        public async Task<IActionResult> Login(UserLoginVM loginModel)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace Recipe.REST.Controllers
                     HttpContext.Session.SetString("_UserToken", Token);
                     HttpContext.Session.SetString("_UserRefreshToken", RefreshToken);
 
-                    return Ok(_mapper.Map<ReturnUserVM>(UserInfo));
+                    return Ok(_mapper.Map<UserReturnVM>(UserInfo));
                 }
 
                 throw new HttpStatusCodeException(StatusCodes.Status400BadRequest);

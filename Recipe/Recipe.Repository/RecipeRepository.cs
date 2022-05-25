@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Dapper;
+using Recipe.DAL.Scripts;
 using Recipe.Models.Common;
 using Recipe.Repository.Common;
 using System;
@@ -15,12 +16,10 @@ namespace Recipe.Repository
     {
         private readonly IDbTransaction _transaction;
         private IDbConnection _connection => _transaction.Connection;
-        private readonly IMapper _mapper;
 
-        public RecipeRepository(IDbTransaction transaction, IMapper mapper)
+        public RecipeRepository(IDbTransaction transaction)
         {
             _transaction = transaction;
-            _mapper = mapper;
         }
 
         /// <summary>
@@ -32,11 +31,16 @@ namespace Recipe.Repository
         {
             try
             {
-                DynamicParameters parameters = new DynamicParameters();
-                parameters.AddDynamicParams(recipe);
-                //TODO: add other objects
+                DynamicParameters parameters = new DynamicParameters(
+                    new
+                    {
+                        Name = recipe.Name,
+                        Description = recipe.Description,
+                        SubcategoryID = recipe.Subcategory.SubcategoryID,
+                        UserDataID = recipe.UserData.UserDataID
+                    });
 
-                return await _connection.ExecuteAsync("SP name here",
+                return await _connection.ExecuteAsync(ScriptReferences.Recipe.SP_CreateRecipe,
                     param: parameters,
                     transaction: _transaction,
                     commandType: CommandType.StoredProcedure);
@@ -60,10 +64,16 @@ namespace Recipe.Repository
 
                 foreach (IRecipe recipe in recipeList)
                 {
-                    DynamicParameters parameters = new DynamicParameters();
-                    parameters.AddDynamicParams(recipe);
+                    DynamicParameters parameters = new DynamicParameters(
+                        new
+                        {
+                            Name = recipe.Name,
+                            Description = recipe.Description,
+                            SubcategoryID = recipe.Subcategory.SubcategoryID,
+                            UserDataID = recipe.UserData.UserDataID
+                        });
 
-                    rowNumber += await _connection.ExecuteAsync("SP name here",
+                    rowNumber += await _connection.ExecuteAsync(ScriptReferences.Recipe.SP_CreateRecipe,
                         param: parameters,
                         transaction: _transaction,
                         commandType: CommandType.StoredProcedure);
@@ -105,9 +115,10 @@ namespace Recipe.Repository
         {
             try
             {
-                var recipes = await _connection.QueryAsync<IRecipe>("SP name here",
-                    param: new { id = id },
-                    commandType: CommandType.StoredProcedure);
+                var recipes = await _connection.QueryAsync<IRecipe>("SP here",
+                    param: new { RecipeID = id },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: _transaction);
 
                 return recipes.FirstOrDefault();
             }
@@ -120,15 +131,21 @@ namespace Recipe.Repository
         /// <summary>
         /// Method asynchronously retrieve all Recipes from SQL table with or without WHERE filter
         /// </summary>
+        /// <param name="userId">User id parameter</param>
         /// <param name="where">SQL WHERE filter that extends default SELECT query</param>
         /// <returns>Task<IEnumerable<IRecipe>></returns>
-        public async Task<IEnumerable<IRecipe>> GetAllAsync(string where = null)
+        public async Task<IEnumerable<IRecipe>> GetAllAsync(int? userId)
         {
             try
             {
-                var recipes = await _connection.QueryAsync<IRecipe>("SP name here",
-                    param: new { where = where },
-                    commandType: CommandType.StoredProcedure);
+                DynamicParameters parameters = new DynamicParameters();
+                if (userId != null)
+                    parameters.AddDynamicParams(new { UserDataID = userId });
+
+                var recipes = await _connection.QueryAsync<Models.Recipe>(ScriptReferences.Recipe.SP_RetrieveRecipe,
+                    param: parameters,
+                    commandType: CommandType.StoredProcedure,
+                    transaction: _transaction);
 
                 return recipes;
             }

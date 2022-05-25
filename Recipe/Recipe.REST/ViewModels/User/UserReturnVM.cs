@@ -3,7 +3,7 @@ using System;
 
 namespace Recipe.REST.ViewModels.User
 {
-    public class ReturnUserVM
+    public class UserReturnVM
     {
         [JsonProperty("idToken")]
         public string FirebaseToken { get; set; }

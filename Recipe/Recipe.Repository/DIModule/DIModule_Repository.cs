@@ -1,11 +1,7 @@
 ﻿using Autofac;
 using Recipe.DAL.DIModule;
-using Recipe.Models;
-using Recipe.Models.Common;
 using Recipe.Models.DIModule;
 using Recipe.Repository.Common;
-using Recipe.Repository.Common.Generic;
-using Recipe.Repository.Generic;
 using Recipe.Repository.UnitOfWork;
 
 namespace Recipe.Repository.DIModule

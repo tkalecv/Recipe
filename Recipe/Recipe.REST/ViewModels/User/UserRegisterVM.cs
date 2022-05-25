@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Recipe.REST.ViewModels.User
 {
-    public class RegisterUserVM
+    public class UserRegisterVM
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

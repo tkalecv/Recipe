@@ -162,3 +162,20 @@ USE RecipeDatabaseFirebase;
 		CONSTRAINT FK_IngredientMeasuringUnit_MeasuringUnit FOREIGN KEY (MeasuringUnitID) REFERENCES dbo.MeasuringUnit (MeasuringUnitID)
 		ON DELETE CASCADE
 	);
+
+
+
+	--Default data insertion
+	INSERT INTO Category ([Name])
+	VALUES ('Sweet'),
+	       ('Salty')
+
+	INSERT INTO Subcategory ([Name], CategoryID)
+	VALUES ('Cakes', 1),
+		   ('Cookies', 1),
+	       ('Pastries', 1),
+	       ('Soups', 2),
+	       ('Stews', 2),
+	       ('Meat', 2),
+	       ('Salads', 2),
+	       ('Sauces', 2)

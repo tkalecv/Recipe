@@ -15,12 +15,10 @@ namespace Recipe.Repository
     {
         private readonly IDbTransaction _transaction;
         private IDbConnection _connection => _transaction.Connection;
-        private readonly IMapper _mapper;
 
-        public CategoryRepository(IDbTransaction transaction, IMapper mapper)
+        public CategoryRepository(IDbTransaction transaction)
         {
             _transaction = transaction;
-            _mapper = mapper;
         }
 
         /// <summary>
@@ -112,7 +110,8 @@ namespace Recipe.Repository
                     },
                     param: new { id = id },
                     commandType: CommandType.StoredProcedure,
-                    splitOn: "subcategoryid");
+                    splitOn: "subcategoryid",
+                    transaction: _transaction);
 
                 return categories.FirstOrDefault();
             }
@@ -139,7 +138,8 @@ namespace Recipe.Repository
                     },
                     param: new { where = where },
                     commandType: CommandType.StoredProcedure,
-                    splitOn: "subcategoryid");
+                    splitOn: "subcategoryid",
+                    transaction: _transaction);
 
                 return categories;
             }

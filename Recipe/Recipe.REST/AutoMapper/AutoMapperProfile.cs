@@ -5,7 +5,10 @@ using Recipe.Auth.ModelsCommon;
 using Recipe.Models;
 using Recipe.Models.Common;
 using Recipe.REST.ViewModels.Ingredient;
+using Recipe.REST.ViewModels.Recipe;
+using Recipe.REST.ViewModels.Subcategory;
 using Recipe.REST.ViewModels.User;
+using Recipe.REST.ViewModels.UserData;
 
 namespace Recipe.REST.AutoMapper
 {
@@ -13,19 +16,43 @@ namespace Recipe.REST.AutoMapper
     {
         public AutoMapperProfile()
         {
-            CreateMap<IngredientVM, IIngredient>().ReverseMap();
-            CreateMap<IngredientVM, Ingredient>().ReverseMap();
+            //Ingredient
+            CreateMap<IngredientVM, IIngredient>();
+            CreateMap<IngredientVM, Ingredient>();
 
-            CreateMap<IngredientPostVM, IIngredient>().ReverseMap();
-            CreateMap<IngredientPostVM, Ingredient>().ReverseMap();
+            CreateMap<IngredientPostVM, IIngredient>();
+            CreateMap<IngredientPostVM, Ingredient>();
 
-            CreateMap<RegisterUserVM, IAuthUser>().ReverseMap();
-            CreateMap<RegisterUserVM, AuthUser>().ReverseMap();
+            //User
+            CreateMap<UserRegisterVM, IAuthUser>();
+            CreateMap<UserRegisterVM, AuthUser>();
 
-            CreateMap<LoginUserVM, IAuthUser>().ReverseMap();
-            CreateMap<LoginUserVM, AuthUser>().ReverseMap();
+            CreateMap<UserLoginVM, IAuthUser>();
+            CreateMap<UserLoginVM, AuthUser>();
 
-            CreateMap<ReturnUserVM, FirebaseAuthLink>().ReverseMap();
+            CreateMap<FirebaseAuthLink, UserReturnVM>();
+
+            //UserData
+            CreateMap<UserDataRecipeVM, UserData>();
+            CreateMap<UserDataRecipeVM, IUserData>();
+
+            //Subcategory
+            CreateMap<SubcategoryRecipeVM, Subcategory>();
+            CreateMap<SubcategoryRecipeVM, ISubcategory>();
+
+            //Recipe
+            CreateMap<RecipePostPutVM, Models.Recipe>()
+            .BeforeMap((src, dest) => { dest.UserData = new UserData(); dest.Subcategory = new Subcategory(); })
+            .ForPath(dest => dest.UserData.UserDataID, input => input.MapFrom(i => i.UserData.UserDataID))
+            .ForPath(dest => dest.Subcategory.SubcategoryID, input => input.MapFrom(i => i.Subcategory.SubcategoryID));
+
+            CreateMap<RecipePostPutVM, IRecipe>()
+            .BeforeMap((src, dest) => { dest.UserData = new UserData(); dest.Subcategory = new Subcategory(); })
+            .ForPath(dest => dest.UserData.UserDataID, input => input.MapFrom(i => i.UserData.UserDataID))
+            .ForPath(dest => dest.Subcategory.SubcategoryID, input => input.MapFrom(i => i.Subcategory.SubcategoryID));
+
+            CreateMap<Models.Recipe, RecipeReturnVM>();
+            CreateMap<IRecipe, RecipeReturnVM>();
         }
     }
 }

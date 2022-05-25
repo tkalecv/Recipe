@@ -16,12 +16,10 @@ namespace Recipe.Repository
     {
         private readonly IDbTransaction _transaction;
         private IDbConnection _connection => _transaction.Connection;
-        private readonly IMapper _mapper;
 
-        public IngredientRepository(IDbTransaction transaction, IMapper mapper)
+        public IngredientRepository(IDbTransaction transaction)
         {
             _transaction = transaction;
-            _mapper = mapper;
         }
 
         /// <summary>

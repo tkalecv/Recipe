@@ -8,10 +8,12 @@ namespace Recipe.Repository.UnitOfWork
 {
     public interface IUnitOfWork
     {
+        Task BeginTransactionAsync();
         Task CommitAsync();
         Task DisposeAsync();
         Task RollbackAsync();
         IGenericRepository<T> Repository<T>();
         IIngredientRepository IngredientRepository { get; }
+        IRecipeRepository RecipeRepository { get; }
     }
 }

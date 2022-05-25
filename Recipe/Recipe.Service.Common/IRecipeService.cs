@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Recipe.Repository.Common
+namespace Recipe.Service.Common
 {
-    public interface IRecipeRepository
+    public interface IRecipeService
     {
-        Task<int> CreateAsync(IEnumerable<IRecipe> recipeList);
+        Task<int> CreateAsync(IEnumerable<IRecipe> recipes);
         Task<int> CreateAsync(IRecipe recipe);
+        Task<int> DeleteAsync(int id);
         Task<int> DeleteAsync(IRecipe recipe);
+        Task<IRecipe> FindByIDAsync(int id);
         Task<IEnumerable<IRecipe>> GetAllAsync(int? userId);
-        Task<IRecipe> GetByIdAsync(int id);
+        Task<int> UpdateAsync(int id, IRecipe recipe);
         Task<int> UpdateAsync(IRecipe recipe);
     }
 }
