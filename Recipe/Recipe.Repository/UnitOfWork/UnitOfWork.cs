@@ -21,8 +21,6 @@ namespace Recipe.Repository.UnitOfWork
         Dictionary<string, dynamic> _repositories { get; set; }
 
         #region Repositories
-        public IIngredientRepository IngredientRepository { get; } //TODO: delete this
-
         private IRecipeRepository _recipeRepository;
         public IRecipeRepository RecipeRepository
         {
@@ -39,8 +37,6 @@ namespace Recipe.Repository.UnitOfWork
         public UnitOfWork(IRecipeContext recipeContext)
         {
             _connection = recipeContext.CreateConnection();
-
-            IngredientRepository = new IngredientRepository(_transaction);
         }
 
         /// <summary>
@@ -95,7 +91,7 @@ namespace Recipe.Repository.UnitOfWork
         /// </summary>
         /// <typeparam name="T">Object used to initialize GenericRepository</typeparam>
         /// <returns>IGenericRepository<T></returns>
-        public IGenericRepository<T> Repository<T>()
+        public IGenericRepository<T> Repository<T>() //TODO: remove this or edit to use for all repos
         {
             AsyncContext.Run(async () => await BeginTransactionAsync());
 

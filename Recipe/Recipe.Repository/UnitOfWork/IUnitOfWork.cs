@@ -1,7 +1,5 @@
 ﻿using Recipe.Repository.Common;
 using Recipe.Repository.Common.Generic;
-using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 
 namespace Recipe.Repository.UnitOfWork
@@ -13,7 +11,6 @@ namespace Recipe.Repository.UnitOfWork
         Task DisposeAsync();
         Task RollbackAsync();
         IGenericRepository<T> Repository<T>();
-        IIngredientRepository IngredientRepository { get; }
         IRecipeRepository RecipeRepository { get; }
     }
 }

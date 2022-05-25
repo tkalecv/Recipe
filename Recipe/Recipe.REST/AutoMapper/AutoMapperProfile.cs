@@ -4,7 +4,6 @@ using Recipe.Auth.Models;
 using Recipe.Auth.ModelsCommon;
 using Recipe.Models;
 using Recipe.Models.Common;
-using Recipe.REST.ViewModels.Ingredient;
 using Recipe.REST.ViewModels.Recipe;
 using Recipe.REST.ViewModels.Subcategory;
 using Recipe.REST.ViewModels.User;
@@ -16,13 +15,6 @@ namespace Recipe.REST.AutoMapper
     {
         public AutoMapperProfile()
         {
-            //Ingredient
-            CreateMap<IngredientVM, IIngredient>();
-            CreateMap<IngredientVM, Ingredient>();
-
-            CreateMap<IngredientPostVM, IIngredient>();
-            CreateMap<IngredientPostVM, Ingredient>();
-
             //User
             CreateMap<UserRegisterVM, IAuthUser>();
             CreateMap<UserRegisterVM, AuthUser>();

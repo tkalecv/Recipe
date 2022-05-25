@@ -11,7 +11,6 @@ namespace Recipe.Service.DIModule
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<IngredientService>().As<IIngredientService>();
             builder.RegisterType<UserService>().As<IUserService>();
             builder.RegisterType<CategoryService>().As<ICategoryService>();
             builder.RegisterType<SubcategoryService>().As<ISubcategoryService>();
