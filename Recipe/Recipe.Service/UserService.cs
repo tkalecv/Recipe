@@ -7,7 +7,7 @@ using Recipe.Auth;
 using Recipe.Auth.ModelsCommon;
 using Recipe.ExceptionHandler.CustomExceptions;
 using Recipe.Models;
-using Recipe.Repository.Common.Generic;
+using Recipe.Repository.Common.UnitOfWork;
 using Recipe.Repository.UnitOfWork;
 using Recipe.Service.Common;
 using Recipe.Service.Common.Helpers;
@@ -26,7 +26,6 @@ namespace Recipe.Service
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IUserRegistrationHelper _userRegistrationHelper;
-        private readonly IGenericRepository<Models.UserData> _repository;
 
         public UserService(IFirebaseClient firebaseClient, IUnitOfWork unitOfWork
             , IMapper mapper, IUserRegistrationHelper userRegistrationHelper)
@@ -36,10 +35,6 @@ namespace Recipe.Service
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userRegistrationHelper = userRegistrationHelper;
-            // use only repository in all the methods, do not reuse service methods, because 
-            // transaction passed to repository will be null after commit.
-            // Keep all the logic in service then call that method in controller.
-            _repository = _unitOfWork.Repository<Models.UserData>();
         }
 
         /// <summary>
@@ -80,7 +75,7 @@ namespace Recipe.Service
                 #endregion
 
                 #region Insert User into custom db
-                await _repository.CreateAsync(_mapper.Map<UserData>(registerModel));
+                await _unitOfWork.UserDataRepository.CreateAsync(_mapper.Map<UserData>(registerModel));
                 await _unitOfWork.CommitAsync();
                 #endregion
 

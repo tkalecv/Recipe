@@ -2,6 +2,7 @@
 using Recipe.DAL.DIModule;
 using Recipe.Models.DIModule;
 using Recipe.Repository.Common;
+using Recipe.Repository.Common.UnitOfWork;
 using Recipe.Repository.UnitOfWork;
 
 namespace Recipe.Repository.DIModule

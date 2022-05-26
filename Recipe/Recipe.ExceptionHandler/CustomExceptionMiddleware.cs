@@ -26,18 +26,7 @@ namespace Recipe.ExceptionHandler
             }
             catch (UnauthorizedAccessException ex)
             {
-                string result = null;
-                context.Response.ContentType = "application/json";
-
-                result = new ErrorDetails()
-                {
-                    Message = ex.Message,
-                    StatusCode = StatusCodes.Status401Unauthorized
-                }.ToString();
-
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-
-                await context.Response.WriteAsync(result);
+                await CreateContextResponse(context, StatusCodes.Status401Unauthorized, ex.Message);
             }
             catch (Firebase.Auth.FirebaseAuthException ex)
             {
@@ -45,51 +34,17 @@ namespace Recipe.ExceptionHandler
                 string message = responseData.SelectToken("error.message").ToString();
                 int code = (int)responseData.SelectToken("error.code");
 
-                string result = null;
-                context.Response.ContentType = "application/json";
-
-                result = new ErrorDetails()
-                {
-                    Message = message,
-                    StatusCode = code
-                }.ToString();
-
-                context.Response.StatusCode = code;
-
-                await context.Response.WriteAsync(result);
+                await CreateContextResponse(context, code, message);
             }
             catch (FirebaseAdmin.Auth.FirebaseAuthException ex)
             {
-                string result = null;
-                context.Response.ContentType = "application/json";
                 int code = int.Parse(Regex.Match(ex.HttpResponse.ToString(), @"(?<=StatusCode:.+?).+?(?=,)").Value);
 
-                result = new ErrorDetails()
-                {
-                    Message = ex.Message,
-                    StatusCode = code
-                }.ToString();
-
-                context.Response.StatusCode = code;
-
-                await context.Response.WriteAsync(result);
+                await CreateContextResponse(context, code, ex.Message);
             }
             catch (ArgumentException ex)
             {
-                string result = null;
-                context.Response.ContentType = "application/json";
-                int code = StatusCodes.Status400BadRequest;
-
-                result = new ErrorDetails()
-                {
-                    Message = ex.Message,
-                    StatusCode = code
-                }.ToString();
-
-                context.Response.StatusCode = code;
-
-                await context.Response.WriteAsync(result);
-
+                await CreateContextResponse(context, StatusCodes.Status400BadRequest, ex.Message);
             }
             catch (Exception exceptionObj)
             {
@@ -97,44 +52,58 @@ namespace Recipe.ExceptionHandler
             }
         }
 
-        private Task HandleExceptionAsync(HttpContext context, HttpStatusCodeException exception)
+        /// <summary>
+        /// Method creates error response
+        /// </summary>
+        /// <param name="context">HttpContext object</param>
+        /// <param name="statusCode">Status code that will be returned</param>
+        /// <param name="message">Error message that will be returned</param>
+        /// <param name="contentType">Content type response header</param>
+        /// <returns>Task</returns>
+        private Task CreateContextResponse(HttpContext context, int statusCode, string message, string contentType = "application/json")
         {
             string result = null;
-            context.Response.ContentType = "application/json";
-            if (exception is HttpStatusCodeException)
-            {
-                result = new ErrorDetails()
-                {
-                    Message = exception.Message,
-                    StatusCode = (int)exception.StatusCode
-                }.ToString();
+            context.Response.ContentType = contentType;
 
-                context.Response.StatusCode = (int)exception.StatusCode;
-            }
-            else
+            result = new ErrorDetails()
             {
-                result = new ErrorDetails()
-                {
-                    Message = "Runtime Error",
-                    StatusCode = StatusCodes.Status400BadRequest
-                }.ToString();
+                Message = message,
+                StatusCode = statusCode
+            }.ToString();
 
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            }
+            context.Response.StatusCode = statusCode;
+
             return context.Response.WriteAsync(result);
         }
 
+        /// <summary>
+        /// Method handles custom HttpStatusCodeException exceptions
+        /// </summary>
+        /// <param name="context">HttpContext object</param>
+        /// <param name="exception">HttpStatusCodeException object</param>
+        /// <returns>Task</returns>
+        private Task HandleExceptionAsync(HttpContext context, HttpStatusCodeException exception)
+        {
+
+            if (exception is HttpStatusCodeException)
+            {
+                return CreateContextResponse(context, (int)exception.StatusCode, exception.Message);
+            }
+            else
+            {
+                return CreateContextResponse(context, StatusCodes.Status400BadRequest, "Runtime Error");
+            }
+        }
+
+        /// <summary>
+        /// Method handles global exceptions
+        /// </summary>
+        /// <param name="context">HttpContext object</param>
+        /// <param name="exception">Exception object</param>
+        /// <returns>Task</returns>
         private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            string result = new ErrorDetails()
-            {
-                Message = exception.Message,
-                StatusCode = StatusCodes.Status500InternalServerError
-            }.ToString();
-
-            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-
-            return context.Response.WriteAsync(result);
+            return CreateContextResponse(context, StatusCodes.Status500InternalServerError, exception.Message);
         }
     }
 }

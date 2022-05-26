@@ -1,8 +1,7 @@
 ﻿using Recipe.Repository.Common;
-using Recipe.Repository.Common.Generic;
 using System.Threading.Tasks;
 
-namespace Recipe.Repository.UnitOfWork
+namespace Recipe.Repository.Common.UnitOfWork
 {
     public interface IUnitOfWork
     {
@@ -10,7 +9,10 @@ namespace Recipe.Repository.UnitOfWork
         Task CommitAsync();
         Task DisposeAsync();
         Task RollbackAsync();
-        IGenericRepository<T> Repository<T>();
         IRecipeRepository RecipeRepository { get; }
+        ICategoryRepository CategoryRepository { get; }
+        ISubcategoryRepository SubcategoryRepository { get; }
+        IUserDataRepository UserDataRepository { get; }
+
     }
 }

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Recipe.Models;
 using Recipe.Models.Common;
-using Recipe.Repository.Common.Generic;
+using Recipe.Repository.Common.UnitOfWork;
 using Recipe.Repository.UnitOfWork;
 using Recipe.Service.Common;
 using System;
@@ -15,28 +15,23 @@ namespace Recipe.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IGenericRepository<Subcategory> _repository;
 
         public SubcategoryService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            // use only repository in all the methods, do not reuse service methods, because 
-            // transaction passed to repository will be null after commit.
-            // Keep all the logic in service then call that method in controller.
-            _repository = _unitOfWork.Repository<Subcategory>();
         }
 
         /// <summary>
         /// Method creates new Subcategory entry in db
         /// </summary>
-        /// <param name="entity">Subcategory object that will be created</param>
+        /// <param name="subcategory">Subcategory object that will be created</param>
         /// <returnsTask<int>></returns>
-        public async Task<int> CreateAsync(ISubcategory entity)
+        public async Task<int> CreateAsync(ISubcategory subcategory)
         {
             try
             {
-                int rowCount = await _repository.CreateAsync(_mapper.Map<Subcategory>(entity));
+                int rowCount = await _unitOfWork.SubcategoryRepository.CreateAsync(subcategory);
 
                 await _unitOfWork.CommitAsync();
 
@@ -59,7 +54,7 @@ namespace Recipe.Service
         {
             try
             {
-                int rowCount = await _repository.CreateAsync(_mapper.Map<IEnumerable<Subcategory>>(entities));
+                int rowCount = await _unitOfWork.SubcategoryRepository.CreateAsync(entities);
 
                 await _unitOfWork.CommitAsync();
 
@@ -76,13 +71,13 @@ namespace Recipe.Service
         /// <summary>
         /// Method removes Subcategory entry from db
         /// </summary>
-        /// <param name="entity">Subcategory object that will be removed</param>
+        /// <param name="subcategory">Subcategory object that will be removed</param>
         /// <returns>Task<int></returns>
-        public async Task<int> DeleteAsync(ISubcategory entity)
+        public async Task<int> DeleteAsync(ISubcategory subcategory)
         {
             try
             {
-                int rowCount = await _repository.DeleteAsync(_mapper.Map<Subcategory>(entity));
+                int rowCount = await _unitOfWork.SubcategoryRepository.DeleteAsync(subcategory);
 
                 await _unitOfWork.CommitAsync();
 
@@ -105,9 +100,9 @@ namespace Recipe.Service
         {
             try
             {
-                var entity = await _repository.GetByIdAsync(id);
+                var subcategory = await _unitOfWork.SubcategoryRepository.GetByIdAsync(id);
 
-                int rowCount = await _repository.DeleteAsync(entity);
+                int rowCount = await _unitOfWork.SubcategoryRepository.DeleteAsync(subcategory);
 
                 await _unitOfWork.CommitAsync();
 
@@ -124,13 +119,13 @@ namespace Recipe.Service
         /// <summary>
         /// Method updates Subcategory entry in db
         /// </summary>
-        /// <param name="entity">Subcategory object that will be updated</param>
+        /// <param name="subcategory">Subcategory object that will be updated</param>
         /// <returns>Task<int></returns>
-        public async Task<int> UpdateAsync(ISubcategory entity)
+        public async Task<int> UpdateAsync(ISubcategory subcategory)
         {
             try
             {
-                int rowCount = await _repository.UpdateAsync(_mapper.Map<Subcategory>(entity));
+                int rowCount = await _unitOfWork.SubcategoryRepository.UpdateAsync(subcategory);
 
                 await _unitOfWork.CommitAsync();
 
@@ -148,15 +143,15 @@ namespace Recipe.Service
         /// Method updates Subcategory entry in db
         /// </summary>
         /// <param name="id">ID unique identifier of Subcategory object that will be updated</param>
-        /// <param name="entity">Subcategory object with new values</param>
+        /// <param name="subcategory">Subcategory object with new values</param>
         /// <returns>Task<int></returns>
-        public async Task<int> UpdateAsync(int id, ISubcategory entity)
+        public async Task<int> UpdateAsync(int id, ISubcategory subcategory)
         {
             try
             {
-                entity.SubcategoryID = id;
+                subcategory.SubcategoryID = id;
 
-                int rowCount = await _repository.UpdateAsync(_mapper.Map<Subcategory>(entity));
+                int rowCount = await _unitOfWork.SubcategoryRepository.UpdateAsync(subcategory);
 
                 await _unitOfWork.CommitAsync();
 
@@ -179,11 +174,11 @@ namespace Recipe.Service
         {
             try
             {
-                ISubcategory entity = await _repository.GetByIdAsync(id);
+                ISubcategory subcategory = await _unitOfWork.SubcategoryRepository.GetByIdAsync(id);
 
                 await _unitOfWork.CommitAsync();
 
-                return entity;
+                return subcategory;
             }
             catch (Exception ex)
             {
@@ -201,7 +196,7 @@ namespace Recipe.Service
         {
             try
             {
-                IEnumerable<ISubcategory> entities = await _repository.GetAllAsync();
+                IEnumerable<ISubcategory> entities = await _unitOfWork.SubcategoryRepository.GetAllAsync();
 
                 await _unitOfWork.CommitAsync();
 
@@ -214,6 +209,5 @@ namespace Recipe.Service
                 throw ex;
             }
         }
-
     }
 }

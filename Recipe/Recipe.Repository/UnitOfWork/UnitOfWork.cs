@@ -1,12 +1,6 @@
-﻿using Autofac;
-using Dapper;
-using Nito.AsyncEx;
-using Recipe.DAL;
+﻿using Recipe.DAL;
 using Recipe.Repository.Common;
-using Recipe.Repository.Common.Generic;
-using Recipe.Repository.Generic;
-using System;
-using System.Collections.Generic;
+using Recipe.Repository.Common.UnitOfWork;
 using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
@@ -18,8 +12,6 @@ namespace Recipe.Repository.UnitOfWork
         private DbConnection _connection { get; set; } = null;
         private DbTransaction _transaction { get; set; } = null;
 
-        Dictionary<string, dynamic> _repositories { get; set; }
-
         #region Repositories
         private IRecipeRepository _recipeRepository;
         public IRecipeRepository RecipeRepository
@@ -30,6 +22,42 @@ namespace Recipe.Repository.UnitOfWork
                     _recipeRepository = new RecipeRepository(_transaction);
 
                 return _recipeRepository;
+            }
+        }
+
+        private ICategoryRepository _categoryRepository;
+        public ICategoryRepository CategoryRepository
+        {
+            get
+            {
+                if (_categoryRepository == null)
+                    _categoryRepository = new CategoryRepository(_transaction);
+
+                return _categoryRepository;
+            }
+        }
+
+        private ISubcategoryRepository _subcategoryRepository;
+        public ISubcategoryRepository SubcategoryRepository
+        {
+            get
+            {
+                if (_subcategoryRepository == null)
+                    _subcategoryRepository = new SubcategoryRepository(_transaction);
+
+                return _subcategoryRepository;
+            }
+        }
+
+        private IUserDataRepository _userDataRepository;
+        public IUserDataRepository UserDataRepository
+        {
+            get
+            {
+                if (_userDataRepository == null)
+                    _userDataRepository = new UserDataRepository(_transaction);
+
+                return _userDataRepository;
             }
         }
         #endregion
@@ -84,31 +112,6 @@ namespace Recipe.Repository.UnitOfWork
 
             if (_connection != null)
                 await _connection.DisposeAsync();
-        }
-
-        /// <summary>
-        /// Method initializes GenericRepository
-        /// </summary>
-        /// <typeparam name="T">Object used to initialize GenericRepository</typeparam>
-        /// <returns>IGenericRepository<T></returns>
-        public IGenericRepository<T> Repository<T>() //TODO: remove this or edit to use for all repos
-        {
-            AsyncContext.Run(async () => await BeginTransactionAsync());
-
-            if (_repositories == null)
-                _repositories = new Dictionary<string, dynamic>();
-
-            var type = typeof(T).Name;
-
-            if (_repositories.ContainsKey(type))
-                return (IGenericRepository<T>)_repositories[type];
-
-            var repositoryType = typeof(GenericRepository<>);
-
-            _repositories.Add(type, Activator.CreateInstance(
-                repositoryType.MakeGenericType(typeof(T)), _transaction));
-
-            return _repositories[type];
         }
     }
 }
