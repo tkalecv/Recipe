@@ -94,7 +94,7 @@ namespace Recipe.REST.Controllers
                 if (!ModelState.IsValid)
                     throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, recipe);
 
-                await _recipeService.CreateAsync(_mapper.Map<Models.Recipe>(recipe)); //TODO: check automapper, how to map classes
+                await _recipeService.CreateAsync(_mapper.Map<Models.Recipe>(recipe));
 
                 return Ok(recipe);
             }

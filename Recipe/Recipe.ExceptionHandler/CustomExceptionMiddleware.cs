@@ -14,7 +14,7 @@ namespace Recipe.ExceptionHandler
 {
     public class CustomExceptionMiddleware : IMiddleware
     {
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next) //TODO; create method for result and status code
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
             {
