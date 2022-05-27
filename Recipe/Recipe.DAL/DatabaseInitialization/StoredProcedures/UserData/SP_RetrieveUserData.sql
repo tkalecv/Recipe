@@ -1,4 +1,5 @@
-CREATE PROCEDURE SP_RetrieveRecipe @UserDataID INT = NULL
+CREATE PROCEDURE SP_RetrieveUserData
+@FirebaseUserID NVARCHAR (450) = NULL
 AS
 
 SET XACT_ABORT ON;
@@ -8,15 +9,15 @@ DECLARE
 	  @ErrorNumber   INT
 	, @ErrorLine     INT
 	, @ErrorMessage  NVARCHAR(4000)
-	, @SqlQuery      NVARCHAR(1000) = 'SELECT * FROM dbo.Recipe'
+	, @SqlQuery      NVARCHAR(1000) = 'SELECT * FROM dbo.UserData'
 
 BEGIN TRY
 
 BEGIN TRANSACTION;
 
-	IF(@UserDataID IS NOT NULL)
+	IF(@FirebaseUserID IS NOT NULL)
 	BEGIN
-		SELECT @SqlQuery = @SqlQuery + ' WHERE UserDataID = ' + CAST(@UserDataID as nvarchar(100));
+		SELECT @SqlQuery = @SqlQuery + ' WHERE FirebaseUserID = ''' + @FirebaseUserID + '''';
 
 		execute sp_executesql @SqlQuery
 	END;
@@ -27,7 +28,7 @@ BEGIN TRANSACTION;
 
 COMMIT TRANSACTION;
 
-	PRINT 'Recipes retrieved successfully'
+	PRINT 'Users data retrieved successfully'
 
 END TRY
 BEGIN CATCH

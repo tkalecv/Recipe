@@ -1,4 +1,8 @@
-CREATE PROCEDURE SP_CreateRecipe @Name NVARCHAR(255), @Description NVARCHAR(255), @UserDataID INT, @SubcategoryID INT
+CREATE PROCEDURE SP_CreateRecipe 
+  @Name NVARCHAR(255)
+, @Description NVARCHAR(255)
+, @UserDataID INT
+, @SubcategoryID INT
 AS
 
 SET XACT_ABORT ON;
