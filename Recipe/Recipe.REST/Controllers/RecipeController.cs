@@ -33,7 +33,7 @@ namespace Recipe.REST.Controllers
         {
             try
             {
-                var result = _mapper.Map<IEnumerable<RecipeReturnVM>>(await _recipeService.GetAllAsync(userId));
+                var result = _mapper.Map<IEnumerable<RecipeReturnVM>>(await _recipeService.GetByUserIDAsync(userId));
 
                 if (result == null || result.Count() <= 0)
                     throw new HttpStatusCodeException(StatusCodes.Status204NoContent, $"There are no Recipes for user with id {userId}.");

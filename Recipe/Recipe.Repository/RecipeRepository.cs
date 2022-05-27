@@ -109,14 +109,14 @@ namespace Recipe.Repository
         /// <summary>
         /// Method asynchronously retrieves Recipe from table filtered with primary key
         /// </summary>
-        /// <param name="id">Recipe id (Primary Key)</param>
+        /// <param name="userId">Recipe id (Primary Key)</param>
         /// <returns>Task<IRecipe></returns>
-        public async Task<IRecipe> GetByIdAsync(int id)
+        public async Task<IRecipe> GetByUserIdAsync(int userId)
         {
             try
             {
-                var recipes = await _connection.QueryAsync<IRecipe>("SP here",
-                    param: new { RecipeID = id },
+                var recipes = await _connection.QueryAsync<IRecipe>(ScriptReferences.Recipe.SP_RetrieveRecipe,
+                    param: new { FirebaseUserID = userId },
                     commandType: CommandType.StoredProcedure,
                     transaction: _transaction);
 

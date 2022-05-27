@@ -77,7 +77,6 @@ USE RecipeDatabaseFirebase;
 		Serving       NVARCHAR(255)	         NOT NULL,
 		Advice        NVARCHAR(255)	         NULL,
 		Stars         INT			         NOT NULL CONSTRAINT DF_RecipeAttributes_Stars DEFAULT 0,
-		Likes         INT			         NOT NULL CONSTRAINT DF_RecipeAttributes_Likes DEFAULT 0
 
 		--UC
 		CONSTRAINT UC_RecipeAttributes_RecipeID UNIQUE (RecipeID),

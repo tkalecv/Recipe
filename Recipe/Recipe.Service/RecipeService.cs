@@ -104,7 +104,7 @@ namespace Recipe.Service
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                IRecipe recipe = await _unitOfWork.RecipeRepository.GetByIdAsync(id);
+                IRecipe recipe = await _unitOfWork.RecipeRepository.GetByUserIdAsync(id);
 
                 int rowCount = await _unitOfWork.RecipeRepository.DeleteAsync(recipe);
 
@@ -176,15 +176,15 @@ namespace Recipe.Service
         /// <summary>
         /// Method retrieves Recipe entry from db filtered by ID unique identifier
         /// </summary>
-        /// <param name="id">ID unique identifier of Recipe object that will be updated</param>
+        /// <param name="userId">User id</param>
         /// <returns>Task<IRecipe></returns>
-        public async Task<IRecipe> FindByIDAsync(int id)
+        public async Task<IRecipe> GetByUserIDAsync(int userId)
         {
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                IRecipe recipe = await _unitOfWork.RecipeRepository.GetByIdAsync(id);
+                IRecipe recipe = await _unitOfWork.RecipeRepository.GetByUserIdAsync(userId);
 
                 await _unitOfWork.RecipeRepository.DeleteAsync(recipe);
 
