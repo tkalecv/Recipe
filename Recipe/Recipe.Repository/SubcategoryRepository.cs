@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Dapper;
+using Recipe.DAL.Scripts;
 using Recipe.Models.Common;
 using Recipe.Repository.Common;
 using System;
@@ -30,11 +31,14 @@ namespace Recipe.Repository
         {
             try
             {
-                DynamicParameters parameters = new DynamicParameters();
-                parameters.AddDynamicParams(subcategory);
-                parameters.AddDynamicParams(new { CategoryID = subcategory.Category.CategoryID });
+                DynamicParameters parameters = new DynamicParameters(
+                    new
+                    {
+                        Name = subcategory.Name,
+                        CategoryID = subcategory.Category.CategoryID
+                    });
 
-                return await _connection.ExecuteAsync("SP name here",
+                return await _connection.ExecuteAsync(ScriptReferences.Subcategory.SP_CreateSubcategory,
                     param: parameters,
                     transaction: _transaction,
                     commandType: CommandType.StoredProcedure);
@@ -58,11 +62,14 @@ namespace Recipe.Repository
 
                 foreach (ISubcategory subcategory in subcategoryList)
                 {
-                    DynamicParameters parameters = new DynamicParameters();
-                    parameters.AddDynamicParams(subcategory);
-                    parameters.AddDynamicParams(new { CategoryID = subcategory.Category.CategoryID });
+                    DynamicParameters parameters = new DynamicParameters(
+                        new
+                        {
+                            Name = subcategory.Name,
+                            CategoryID = subcategory.Category.CategoryID
+                        });
 
-                    rowNumber += await _connection.ExecuteAsync("SP name here",
+                    rowNumber += await _connection.ExecuteAsync(ScriptReferences.Subcategory.SP_CreateSubcategory,
                         param: parameters,
                         transaction: _transaction,
                         commandType: CommandType.StoredProcedure);
@@ -104,13 +111,13 @@ namespace Recipe.Repository
         {
             try
             {
-                var Subcategorys = await _connection.QueryAsync<ISubcategory, ICategory, ISubcategory>("SP name here",
+                var Subcategorys = await _connection.QueryAsync<ISubcategory, ICategory, ISubcategory>(ScriptReferences.Subcategory.SP_RetrieveSubcategory,
                     (subcategory, category) =>
                     {
                         subcategory.Category = category;
                         return subcategory;
                     },
-                    param: new { id = id },
+                    param: new { SubcategoryID = id },
                     commandType: CommandType.StoredProcedure,
                     splitOn: "categoryid",
                     transaction: _transaction);
@@ -126,19 +133,17 @@ namespace Recipe.Repository
         /// <summary>
         /// Method asynchronously retrieve all Subcategories from SQL table with or without WHERE filter
         /// </summary>
-        /// <param name="where">SQL WHERE filter that extends default SELECT query</param>
         /// <returns>Task<IEnumerable<ISubcategory>></returns>
-        public async Task<IEnumerable<ISubcategory>> GetAllAsync(string where = null)
+        public async Task<IEnumerable<ISubcategory>> GetAllAsync()
         {
             try
             {
-                var Subcategorys = await _connection.QueryAsync<ISubcategory, ICategory, ISubcategory>("SP name here",
+                var Subcategorys = await _connection.QueryAsync<ISubcategory, ICategory, ISubcategory>(ScriptReferences.Subcategory.SP_RetrieveSubcategory,
                     (subcategory, category) =>
                     {
                         subcategory.Category = category;
                         return subcategory;
                     },
-                    param: new { where = where },
                     commandType: CommandType.StoredProcedure,
                     splitOn: "categoryid",
                     transaction: _transaction);

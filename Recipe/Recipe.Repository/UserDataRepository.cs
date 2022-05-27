@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Dapper;
+using Recipe.DAL.Scripts;
 using Recipe.Models.Common;
 using Recipe.Repository.Common;
 using System;
@@ -30,10 +31,16 @@ namespace Recipe.Repository
         {
             try
             {
-                DynamicParameters parameters = new DynamicParameters();
-                parameters.AddDynamicParams(userData);
+                DynamicParameters parameters = new DynamicParameters(
+                    new
+                    {
+                        Address = userData.Address,
+                        City = userData.City,
+                        FirstName = userData.FirstName,
+                        LastName = userData.LastName
+                    });
 
-                return await _connection.ExecuteAsync("SP name here",
+                return await _connection.ExecuteAsync(ScriptReferences.UserData.SP_CreateUserData,
                     param: parameters,
                     transaction: _transaction,
                     commandType: CommandType.StoredProcedure);
@@ -53,7 +60,7 @@ namespace Recipe.Repository
         {
             try
             {
-                return await _connection.ExecuteAsync("SP name here",
+                return await _connection.ExecuteAsync("SP here",
                     param: userData,
                     transaction: _transaction,
                     commandType: CommandType.StoredProcedure);
@@ -73,13 +80,13 @@ namespace Recipe.Repository
         {
             try
             {
-                var userDatas = await _connection.QueryAsync<IUserData, IRecipe, IUserData>("SP name here",
+                var userDatas = await _connection.QueryAsync<IUserData, IRecipe, IUserData>(ScriptReferences.UserData.SP_RetrieveUserData,
                     (userData, recipe) =>
                     {
                         userData.Recipes.Add(recipe);
                         return userData;
                     },
-                    param: new { id = id },
+                    param: new { FirebaseUserID = id },
                     commandType: CommandType.StoredProcedure,
                     splitOn: "recipeid",
                     transaction: _transaction);
@@ -95,19 +102,17 @@ namespace Recipe.Repository
         /// <summary>
         /// Method asynchronously retrieve all UserDatas from SQL table with or without WHERE filter
         /// </summary>
-        /// <param name="where">SQL WHERE filter that extends default SELECT query</param>
         /// <returns>Task<IEnumerable<IUserData>></returns>
-        public async Task<IEnumerable<IUserData>> GetAllAsync(string where = null)
+        public async Task<IEnumerable<IUserData>> GetAllAsync()
         {
             try
             {
-                var userDatas = await _connection.QueryAsync<IUserData, IRecipe, IUserData>("SP name here",
+                var userDatas = await _connection.QueryAsync<IUserData, IRecipe, IUserData>(ScriptReferences.UserData.SP_RetrieveUserData,
                     (userData, recipe) =>
                     {
                         userData.Recipes.Add(recipe);
                         return userData;
                     },
-                    param: new { where = where },
                     commandType: CommandType.StoredProcedure,
                     splitOn: "recipeid",
                     transaction: _transaction);

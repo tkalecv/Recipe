@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Dapper;
+using Recipe.DAL.Scripts;
 using Recipe.Models.Common;
 using Recipe.Repository.Common;
 using System;
@@ -30,10 +31,13 @@ namespace Recipe.Repository
         {
             try
             {
-                DynamicParameters parameters = new DynamicParameters();
-                parameters.AddDynamicParams(category);
+                DynamicParameters parameters = new DynamicParameters(
+                    new
+                    {
+                        Name = category.Name
+                    });
 
-                return await _connection.ExecuteAsync("SP name here",
+                return await _connection.ExecuteAsync(ScriptReferences.Category.SP_CreateCategory,
                     param: parameters,
                     transaction: _transaction,
                     commandType: CommandType.StoredProcedure);
@@ -57,10 +61,13 @@ namespace Recipe.Repository
 
                 foreach (ICategory category in categoryList)
                 {
-                    DynamicParameters parameters = new DynamicParameters();
-                    parameters.AddDynamicParams(category);
+                    DynamicParameters parameters = new DynamicParameters(
+                        new
+                        {
+                            Name = category.Name
+                        });
 
-                    rowNumber += await _connection.ExecuteAsync("SP name here",
+                    rowNumber += await _connection.ExecuteAsync(ScriptReferences.Category.SP_CreateCategory,
                         param: parameters,
                         transaction: _transaction,
                         commandType: CommandType.StoredProcedure);
@@ -102,13 +109,13 @@ namespace Recipe.Repository
         {
             try
             {
-                var categories = await _connection.QueryAsync<ICategory, ISubcategory, ICategory>("SP name here",
+                var categories = await _connection.QueryAsync<ICategory, ISubcategory, ICategory>(ScriptReferences.Category.SP_RetrieveCategory,
                     (category, subcat) =>
                     {
                         category.Subcategories.Add(subcat);
                         return category;
                     },
-                    param: new { id = id },
+                    param: new { CategoryID = id },
                     commandType: CommandType.StoredProcedure,
                     splitOn: "subcategoryid",
                     transaction: _transaction);
@@ -124,19 +131,17 @@ namespace Recipe.Repository
         /// <summary>
         /// Method asynchronously retrieve all Categories from SQL table with or without WHERE filter
         /// </summary>
-        /// <param name="where">SQL WHERE filter that extends default SELECT query</param>
         /// <returns>Task<IEnumerable<ICategory>></returns>
-        public async Task<IEnumerable<ICategory>> GetAllAsync(string where = null)
+        public async Task<IEnumerable<ICategory>> GetAllAsync()
         {
             try
             {
-                var categories = await _connection.QueryAsync<ICategory, ISubcategory, ICategory>("SP name here",
+                var categories = await _connection.QueryAsync<ICategory, ISubcategory, ICategory>(ScriptReferences.Category.SP_RetrieveCategory,
                     (category, subcat) =>
                     {
                         category.Subcategories.Add(subcat);
                         return category;
                     },
-                    param: new { where = where },
                     commandType: CommandType.StoredProcedure,
                     splitOn: "subcategoryid",
                     transaction: _transaction);
