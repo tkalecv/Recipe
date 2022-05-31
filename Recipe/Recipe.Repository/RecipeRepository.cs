@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Dapper;
 using Recipe.DAL.Scripts;
+using Recipe.Models;
 using Recipe.Models.Common;
 using Recipe.Repository.Common;
 using System;
@@ -89,14 +90,13 @@ namespace Recipe.Repository
         /// <summary>
         /// Method asynchronously deletes Recipe object from table. Number of affected rows is returned
         /// </summary>
-        /// <param name="recipe">Object with values that will be passed as parameter values</param>
+        /// <param name="recipeId">Recipe id (Primary Key)</param>
         /// <returns>Task<int></returns>
-        public async Task<int> DeleteAsync(IRecipe recipe)
+        public async Task<int> DeleteAsync(int recipeId)
         {
             try
             {
                 return await _connection.ExecuteAsync("SP name here",
-                    param: recipe,
                     transaction: _transaction,
                     commandType: CommandType.StoredProcedure);
             }
@@ -107,20 +107,34 @@ namespace Recipe.Repository
         }
 
         /// <summary>
-        /// Method asynchronously retrieves Recipe from table filtered with primary key
+        /// Method asynchronously retrieves Recipe from table filtered by user
         /// </summary>
-        /// <param name="userId">Recipe id (Primary Key)</param>
+        /// <param name="userId">User id (Primary Key)</param>
         /// <returns>Task<IRecipe></returns>
-        public async Task<IRecipe> GetByUserIdAsync(int userId)
+        public async Task<IEnumerable<IRecipe>> GetByUserIdAsync(int userId) //TODO: add recipeid parameter to stored procedure
         {
             try
             {
-                var recipes = await _connection.QueryAsync<IRecipe>(ScriptReferences.Recipe.SP_RetrieveRecipe,
-                    param: new { FirebaseUserID = userId },
+                DynamicParameters parameters = new DynamicParameters(
+                    new
+                    {
+                        UserDataID = userId
+                    });
+
+                var recipes = await _connection.QueryAsync<Models.Recipe, Subcategory, UserData, Category, Models.Recipe>(ScriptReferences.Recipe.SP_RetrieveRecipeByUser,
+                    (recipe, subcat, userdata, cat) =>
+                    {
+                        recipe.UserData = userdata;
+                        subcat.Category = cat;
+                        recipe.Subcategory = subcat;
+                        return recipe;
+                    },
+                    splitOn: "SubcategoryID,UserDataID,CategoryID",
+                    param: parameters,
                     commandType: CommandType.StoredProcedure,
                     transaction: _transaction);
 
-                return recipes.FirstOrDefault();
+                return recipes;
             }
             catch (Exception ex)
             {
@@ -131,18 +145,27 @@ namespace Recipe.Repository
         /// <summary>
         /// Method asynchronously retrieve all Recipes from SQL table with or without WHERE filter
         /// </summary>
-        /// <param name="userId">User id parameter</param>
+        /// <param name="recipeId">User id parameter. If left empty, all recipes are returned</param>
         /// <param name="where">SQL WHERE filter that extends default SELECT query</param>
         /// <returns>Task<IEnumerable<IRecipe>></returns>
-        public async Task<IEnumerable<IRecipe>> GetAllAsync(int? userId)
+        public async Task<IEnumerable<IRecipe>> GetAllAsync(int? recipeId) //TODO: will we ever retrieve all recipes
         {
             try
             {
                 DynamicParameters parameters = new DynamicParameters();
-                if (userId != null)
-                    parameters.AddDynamicParams(new { UserDataID = userId });
+                if (recipeId != null)
+                    parameters.AddDynamicParams(new { UserDataID = recipeId });
 
-                var recipes = await _connection.QueryAsync<Models.Recipe>(ScriptReferences.Recipe.SP_RetrieveRecipe,
+                var recipes = await _connection.QueryAsync<Models.Recipe, Subcategory, UserData, Category, Models.Recipe>(
+                    "SP name here", //TODO: create stored procedure
+                    (recipe, subcat, userdata, cat) =>
+                    {
+                        recipe.UserData = userdata;
+                        subcat.Category = cat;
+                        recipe.Subcategory = subcat;
+                        return recipe;
+                    },
+                    splitOn: "SubcategoryID,UserDataID,CategoryID",
                     param: parameters,
                     commandType: CommandType.StoredProcedure,
                     transaction: _transaction);
@@ -158,9 +181,10 @@ namespace Recipe.Repository
         /// <summary>
         /// Method asynchronously updates Recipe object in table. Number of affected rows is returned
         /// </summary>
+        /// <param name="recipeId">Recipe id (Primary Key)</param>
         /// <param name="recipe">Object with values that will be passed as parameter values</param>
         /// <returns>Task<int></returns>
-        public async Task<int> UpdateAsync(IRecipe recipe)
+        public async Task<int> UpdateAsync(int recipeId, IRecipe recipe)
         {
             try
             {

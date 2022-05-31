@@ -43,8 +43,15 @@ namespace Recipe.REST.AutoMapper
             .ForPath(dest => dest.UserData.UserDataID, input => input.MapFrom(i => i.UserData.UserDataID))
             .ForPath(dest => dest.Subcategory.SubcategoryID, input => input.MapFrom(i => i.Subcategory.SubcategoryID));
 
-            CreateMap<Models.Recipe, RecipeReturnVM>();
-            CreateMap<IRecipe, RecipeReturnVM>();
+            CreateMap<Models.Recipe, RecipeReturnVM>()
+            .BeforeMap((src, dest) => { dest.UserData = new UserData(); dest.Subcategory = new Subcategory(); })
+            .ForPath(dest => dest.UserData.UserDataID, input => input.MapFrom(i => i.UserData.UserDataID))
+            .ForPath(dest => dest.Subcategory.SubcategoryID, input => input.MapFrom(i => i.Subcategory.SubcategoryID));
+
+            CreateMap<IRecipe, RecipeReturnVM>()
+            .BeforeMap((src, dest) => { dest.UserData = new UserData(); dest.Subcategory = new Subcategory(); })
+            .ForPath(dest => dest.UserData.UserDataID, input => input.MapFrom(i => i.UserData.UserDataID))
+            .ForPath(dest => dest.Subcategory.SubcategoryID, input => input.MapFrom(i => i.Subcategory.SubcategoryID));
         }
     }
 }

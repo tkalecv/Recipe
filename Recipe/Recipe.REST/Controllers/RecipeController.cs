@@ -66,15 +66,15 @@ namespace Recipe.REST.Controllers
         }
 
         // GET: api/<RecipeController>
-        [HttpGet("/recipe/{recipeId:int}/user/{userId:int}")]
-        public async Task<IActionResult> GetOne([FromQuery] int recipeId, [FromQuery] int userId) //TODO: pass userid
+        [HttpGet("/recipe/{recipeId:int}")] //TODO: is this even needed?
+        public async Task<IActionResult> GetOne([FromQuery] int recipeId)
         {
             try
             {
-                var result = _mapper.Map<IEnumerable<RecipeReturnVM>>(await _recipeService.GetAllAsync(userId));
+                var result = _mapper.Map<IEnumerable<RecipeReturnVM>>(await _recipeService.GetByIdAsync(recipeId));
 
                 if (result == null || result.Count() <= 0)
-                    throw new HttpStatusCodeException(StatusCodes.Status204NoContent, $"There is no Recipe with id {recipeId} for user with id {userId}.");
+                    throw new HttpStatusCodeException(StatusCodes.Status204NoContent, $"There is no Recipe with id with id {recipeId}.");
 
                 return Ok(result);
             }

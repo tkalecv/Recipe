@@ -9,7 +9,14 @@ DECLARE
 	  @ErrorNumber   INT
 	, @ErrorLine     INT
 	, @ErrorMessage  NVARCHAR(4000)
-	, @SqlQuery      NVARCHAR(1000) = 'SELECT * FROM dbo.Recipe'
+	, @SqlQuery      NVARCHAR(1000) = 'SELECT r.RecipeID, r.[Name], r.[Description],
+										sc.SubCategoryID, sc.[Name],
+										ud.UserDataID,
+										c.CategoryID, c.[Name]
+										FROM Recipe r
+										LEFT JOIN Subcategory sc ON r.SubcategoryID = sc.SubCategoryID
+										LEFT JOIN UserData ud ON r.UserDataID = ud.UserDataID
+										LEFT JOIN Category c ON sc.CategoryID = c.CategoryID'
 
 BEGIN TRY
 

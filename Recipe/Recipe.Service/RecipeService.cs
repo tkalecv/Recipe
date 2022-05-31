@@ -4,6 +4,7 @@ using Recipe.Repository.UnitOfWork;
 using Recipe.Service.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -71,42 +72,15 @@ namespace Recipe.Service
         /// <summary>
         /// Method removes Recipe entry from db
         /// </summary>
-        /// <param name="recipe">Recipe object that will be removed</param>
+        /// <param name="recipeId">ID unique identifier of Recipe object that will be removed</param>
         /// <returns>Task<int></returns>
-        public async Task<int> DeleteAsync(IRecipe recipe)
+        public async Task<int> DeleteAsync(int recipeId)
         {
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                int rowCount = await _unitOfWork.RecipeRepository.DeleteAsync(recipe);
-
-                await _unitOfWork.CommitAsync();
-
-                return rowCount;
-            }
-            catch (Exception ex)
-            {
-                await _unitOfWork.RollbackAsync();
-
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Method removes Recipe entry from db
-        /// </summary>
-        /// <param name="id">ID unique identifier of Recipe object that will be removed</param>
-        /// <returns>Task<int></returns>
-        public async Task<int> DeleteAsync(int id)
-        {
-            try
-            {
-                await _unitOfWork.BeginTransactionAsync();
-
-                IRecipe recipe = await _unitOfWork.RecipeRepository.GetByUserIdAsync(id);
-
-                int rowCount = await _unitOfWork.RecipeRepository.DeleteAsync(recipe);
+                int rowCount = await _unitOfWork.RecipeRepository.DeleteAsync(recipeId);
 
                 await _unitOfWork.CommitAsync();
 
@@ -123,15 +97,16 @@ namespace Recipe.Service
         /// <summary>
         /// Method updates Recipe entry in db
         /// </summary>
+        /// <param name="recipeId">ID unique identifier of Recipe object that will be updated</param>
         /// <param name="recipe">Recipe object that will be updated</param>
         /// <returns>Task<int></returns>
-        public async Task<int> UpdateAsync(IRecipe recipe)
+        public async Task<int> UpdateAsync(int recipeId, IRecipe recipe)
         {
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                int rowCount = await _unitOfWork.RecipeRepository.UpdateAsync(recipe);
+                int rowCount = await _unitOfWork.RecipeRepository.UpdateAsync(recipeId, recipe);
 
                 await _unitOfWork.CommitAsync();
 
@@ -146,24 +121,21 @@ namespace Recipe.Service
         }
 
         /// <summary>
-        /// Method updates Recipe entry in db
+        /// Method retrieves Recipe entry from db filtered by user
         /// </summary>
-        /// <param name="id">ID unique identifier of Recipe object that will be updated</param>
-        /// <param name="recipe">Recipe object with new values</param>
-        /// <returns>Task<int></returns>
-        public async Task<int> UpdateAsync(int id, IRecipe recipe)
+        /// <param name="userId">User id</param>
+        /// <returns>Task<IRecipe></returns>
+        public async Task<IEnumerable<IRecipe>> GetByUserIDAsync(int userId)
         {
             try
             {
-                recipe.RecipeID = id;
-
                 await _unitOfWork.BeginTransactionAsync();
 
-                int rowCount = await _unitOfWork.RecipeRepository.UpdateAsync(recipe);
+                IEnumerable<IRecipe> recipes = await _unitOfWork.RecipeRepository.GetByUserIdAsync(userId);
 
                 await _unitOfWork.CommitAsync();
 
-                return rowCount;
+                return recipes;
             }
             catch (Exception ex)
             {
@@ -176,21 +148,19 @@ namespace Recipe.Service
         /// <summary>
         /// Method retrieves Recipe entry from db filtered by ID unique identifier
         /// </summary>
-        /// <param name="userId">User id</param>
+        /// <param name="recipeId">Recipe id (Primary Key)</param>
         /// <returns>Task<IRecipe></returns>
-        public async Task<IRecipe> GetByUserIDAsync(int userId)
+        public async Task<IRecipe> GetByIdAsync(int recipeId)
         {
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                IRecipe recipe = await _unitOfWork.RecipeRepository.GetByUserIdAsync(userId);
-
-                await _unitOfWork.RecipeRepository.DeleteAsync(recipe);
+                IEnumerable<IRecipe> recipes = await _unitOfWork.RecipeRepository.GetAllAsync(recipeId);
 
                 await _unitOfWork.CommitAsync();
 
-                return recipe;
+                return recipes.FirstOrDefault();
             }
             catch (Exception ex)
             {
