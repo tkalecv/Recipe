@@ -84,7 +84,6 @@ USE RecipeDatabaseFirebase;
 		--CK
 		CONSTRAINT CK_Recipe_Person CHECK (Person >= 1),
 		CONSTRAINT CK_Recipe_Stars CHECK (Stars >= 0),
-		CONSTRAINT CK_Recipe_Likes CHECK (Likes >= 0),
 		CONSTRAINT CK_Recipe_CreatedDate CHECK (CreatedDate <= GETDATE()),
 
 		--FK
