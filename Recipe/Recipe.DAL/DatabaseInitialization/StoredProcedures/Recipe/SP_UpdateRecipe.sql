@@ -20,9 +20,9 @@ BEGIN TRY
 
 	UPDATE dbo.Recipe
 	SET [Name] = @Name
-	, [Description] = @Description
-	, UserDataID = @UserDataID
-	, SubcategoryID = @SubcategoryID
+	  , [Description] = @Description
+	  , UserDataID = @UserDataID
+	  , SubcategoryID = @SubcategoryID
 	WHERE RecipeID = @RecipeID;
 
 	COMMIT TRANSACTION;
