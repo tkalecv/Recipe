@@ -8,9 +8,8 @@ namespace Recipe.Repository.Common
     {
         Task<int> CreateAsync(IEnumerable<IRecipe> recipeList);
         Task<int> CreateAsync(IRecipe recipe);
-        Task<int> DeleteAsync(int recipeId);
-        Task<IEnumerable<IRecipe>> GetAllAsync(int? userId);
-        Task<IEnumerable<IRecipe>> GetByUserIdAsync(int id);
+        Task<int> DeleteAsync(int? recipeId, int? userId);
+        Task<IEnumerable<IRecipe>> GetAllAsync(int? recipeId, int? userId);
         Task<int> UpdateAsync(int recipeId, IRecipe recipe);
     }
 }

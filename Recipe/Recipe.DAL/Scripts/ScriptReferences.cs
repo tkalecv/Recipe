@@ -9,7 +9,9 @@ namespace Recipe.DAL.Scripts
         public static class Recipe
         {
             public static string SP_CreateRecipe = nameof(SP_CreateRecipe);
-            public static string SP_RetrieveRecipeByUser = nameof(SP_RetrieveRecipeByUser);
+            public static string SP_RetrieveRecipe = nameof(SP_RetrieveRecipe);
+            public static string SP_DeleteRecipe = nameof(SP_DeleteRecipe);
+            public static string SP_UpdateRecipe = nameof(SP_UpdateRecipe);
         }
 
         public static class UserData

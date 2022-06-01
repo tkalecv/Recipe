@@ -91,12 +91,21 @@ namespace Recipe.Repository
         /// Method asynchronously deletes Recipe object from table. Number of affected rows is returned
         /// </summary>
         /// <param name="recipeId">Recipe id (Primary Key)</param>
+        /// <param name="userId">User id</param>
         /// <returns>Task<int></returns>
-        public async Task<int> DeleteAsync(int recipeId)
+        public async Task<int> DeleteAsync(int? recipeId, int? userId)
         {
             try
             {
-                return await _connection.ExecuteAsync("SP name here",
+                DynamicParameters parameters = new DynamicParameters();
+
+                if (recipeId != null)
+                    parameters.AddDynamicParams(new { RecipeID = recipeId });
+
+                if (userId != null)
+                    parameters.AddDynamicParams(new { UserDataID = userId });
+
+                return await _connection.ExecuteAsync(ScriptReferences.Recipe.SP_DeleteRecipe,
                     transaction: _transaction,
                     commandType: CommandType.StoredProcedure);
             }
@@ -107,57 +116,23 @@ namespace Recipe.Repository
         }
 
         /// <summary>
-        /// Method asynchronously retrieves Recipe from table filtered by user
-        /// </summary>
-        /// <param name="userId">User id (Primary Key)</param>
-        /// <returns>Task<IRecipe></returns>
-        public async Task<IEnumerable<IRecipe>> GetByUserIdAsync(int userId) //TODO: add recipeid parameter to stored procedure
-        {
-            try
-            {
-                DynamicParameters parameters = new DynamicParameters(
-                    new
-                    {
-                        UserDataID = userId
-                    });
-
-                var recipes = await _connection.QueryAsync<Models.Recipe, Subcategory, UserData, Category, Models.Recipe>(ScriptReferences.Recipe.SP_RetrieveRecipeByUser,
-                    (recipe, subcat, userdata, cat) =>
-                    {
-                        recipe.UserData = userdata;
-                        subcat.Category = cat;
-                        recipe.Subcategory = subcat;
-                        return recipe;
-                    },
-                    splitOn: "SubcategoryID,UserDataID,CategoryID",
-                    param: parameters,
-                    commandType: CommandType.StoredProcedure,
-                    transaction: _transaction);
-
-                return recipes;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Method asynchronously retrieve all Recipes from SQL table with or without WHERE filter
+        /// Method asynchronously retrieve all Recipes from SQL table with or without filtering
         /// </summary>
         /// <param name="recipeId">User id parameter. If left empty, all recipes are returned</param>
-        /// <param name="where">SQL WHERE filter that extends default SELECT query</param>
+        /// <param name="userId">User id</param>
         /// <returns>Task<IEnumerable<IRecipe>></returns>
-        public async Task<IEnumerable<IRecipe>> GetAllAsync(int? recipeId) //TODO: will we ever retrieve all recipes
+        public async Task<IEnumerable<IRecipe>> GetAllAsync(int? recipeId, int? userId)
         {
             try
             {
                 DynamicParameters parameters = new DynamicParameters();
                 if (recipeId != null)
-                    parameters.AddDynamicParams(new { UserDataID = recipeId });
+                    parameters.AddDynamicParams(new { RecipeID = recipeId });
+                if (userId != null)
+                    parameters.AddDynamicParams(new { UserDataID = userId });
 
                 var recipes = await _connection.QueryAsync<Models.Recipe, Subcategory, UserData, Category, Models.Recipe>(
-                    "SP name here", //TODO: create stored procedure
+                    ScriptReferences.Recipe.SP_RetrieveRecipe,
                     (recipe, subcat, userdata, cat) =>
                     {
                         recipe.UserData = userdata;
@@ -188,10 +163,17 @@ namespace Recipe.Repository
         {
             try
             {
-                DynamicParameters parameters = new DynamicParameters();
-                parameters.AddDynamicParams(recipe);
+                DynamicParameters parameters = new DynamicParameters(
+                    new
+                    {
+                        RecipeID = recipeId,
+                        Name = recipe.Name,
+                        Description = recipe.Description,
+                        UserDataID = recipe.UserData.UserDataID,
+                        SubcategoryID = recipe.Subcategory.SubcategoryID
+                    });
 
-                return await _connection.ExecuteAsync("SP name here",
+                return await _connection.ExecuteAsync(ScriptReferences.Recipe.SP_UpdateRecipe,
                     param: parameters,
                     transaction: _transaction,
                     commandType: CommandType.StoredProcedure);

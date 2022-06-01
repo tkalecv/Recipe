@@ -1,5 +1,6 @@
 CREATE PROCEDURE SP_RetrieveRecipe 
-@UserDataID INT = NULL
+  @UserDataID INT = NULL
+, @RecipeID   INT = NULL
 AS
 
 SET XACT_ABORT ON;
@@ -24,14 +25,22 @@ BEGIN TRANSACTION;
 
 	IF(@UserDataID IS NOT NULL)
 	BEGIN
-		SELECT @SqlQuery = @SqlQuery + ' WHERE UserDataID = ' + CAST(@UserDataID as nvarchar(100));
+		SELECT @SqlQuery = @SqlQuery + ' WHERE r.UserDataID = ' + CAST(@UserDataID as nvarchar(100));
+	END;
 
-		execute sp_executesql @SqlQuery
-	END;
-	ELSE
+		IF(@RecipeID IS NOT NULL)
 	BEGIN
-		execute sp_executesql @SqlQuery
+		IF(@UserDataID IS NOT NULL)
+		BEGIN
+			SELECT @SqlQuery = @SqlQuery + ' AND r.RecipeID = ' + CAST(@RecipeID as nvarchar(100));
+		END;
+		ELSE
+		BEGIN
+			SELECT @SqlQuery = @SqlQuery + ' WHERE r.RecipeID = ' + CAST(@RecipeID as nvarchar(100));
+		END;
 	END;
+
+	execute sp_executesql @SqlQuery
 
 COMMIT TRANSACTION;
 

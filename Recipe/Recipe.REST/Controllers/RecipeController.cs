@@ -27,7 +27,6 @@ namespace Recipe.REST.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/<RecipeController>
         [HttpGet("/recipe/user/{userId:int}")]
         public async Task<IActionResult> GetByUserId(int userId)
         {
@@ -46,13 +45,12 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        // GET: api/<RecipeController>
         [HttpGet("/recipe")]
         public async Task<IActionResult> GetAll()
         {
             try
             {
-                var result = _mapper.Map<IEnumerable<RecipeReturnVM>>(await _recipeService.GetAllAsync(null));
+                var result = _mapper.Map<IEnumerable<RecipeReturnVM>>(await _recipeService.GetAllAsync());
 
                 if (result == null || result.Count() <= 0)
                     throw new HttpStatusCodeException(StatusCodes.Status204NoContent, $"There are no Recipes.");
@@ -65,7 +63,6 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        // GET: api/<RecipeController>
         [HttpGet("/recipe/{recipeId:int}")] //TODO: is this even needed?
         public async Task<IActionResult> GetOne([FromQuery] int recipeId)
         {
@@ -85,7 +82,6 @@ namespace Recipe.REST.Controllers
         }
 
         //TODO: add authorize attribute
-        // POST api/<RecipeController>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] RecipePostPutVM recipe)
         {
@@ -104,7 +100,6 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        // PUT api/<RecipeController>/5
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Put([FromQuery] int id, [FromBody] RecipePostPutVM recipe)
         {
@@ -123,13 +118,42 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        // DELETE api/<RecipeController>/5
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromQuery] int id)
         {
             try
             {
-                await _recipeService.DeleteAsync(id);
+                await _recipeService.DeleteByIDAsync(id);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpDelete("/user/{id:int}")]
+        public async Task<IActionResult> DeleteAllUserRecipes([FromQuery] int id)
+        {
+            try
+            {
+                await _recipeService.DeleteAllUserRecipesAsync(id);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpDelete("/user/{recipeId:int}/recipe/{userId:int}")]
+        public async Task<IActionResult> DeleteAllUserRecipes([FromQuery] int recipeId, [FromQuery] int userId)
+        {
+            try
+            {
+                await _recipeService.DeleteUserSpecificRecipeAsync(recipeId, userId);
 
                 return Ok();
             }

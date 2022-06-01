@@ -177,3 +177,13 @@ USE RecipeDatabaseFirebase;
 	       ('Meat', 2),
 	       ('Salads', 2),
 	       ('Sauces', 2)
+
+	INSERT INTO UserData (FirebaseUserID, Address, City, FirstName, LastName)
+	VALUES ('testId', 'Some address', 'Some city', 'test', 'user'),
+	       ('testId2', 'Some address 2', 'Some city 2', 'test2', 'user2')
+
+	INSERT INTO Recipe (Name, Description, UserDataID, SubcategoryID)
+	VALUES ('Cake recipe', 'This is some cake recipe', 1, 1),
+		   ('Potato recipe', 'This is some potato recipe', 1, 2),
+		   ('Soup recipe', 'This is some soup recipe', 3, 2),
+		   ('Salad recipe', 'This is some salad recipe', 3, 1)
