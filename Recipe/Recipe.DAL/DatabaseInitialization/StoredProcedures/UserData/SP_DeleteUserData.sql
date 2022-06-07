@@ -1,5 +1,5 @@
 CREATE PROCEDURE SP_DeleteUserData
-  @FirebaseUserID INT = NULL
+  @FirebaseUserID NVARCHAR(450) = NULL
 AS
 
 SET XACT_ABORT ON;
@@ -9,8 +9,8 @@ DECLARE
 	  @ErrorNumber   INT
 	, @ErrorLine     INT
 	, @ErrorMessage  NVARCHAR(4000)
-	, @SqlQuery      NVARCHAR(1000) = 'DELETE FROM UserData WHERE FirebaseUserID = ' + CAST(@FirebaseUserID as nvarchar(100));
-
+	, @SqlQuery      NVARCHAR(1000) = 'DELETE FROM UserData WHERE FirebaseUserID = ''' + @FirebaseUserID + '''';
+	
 BEGIN TRY
 
 BEGIN TRANSACTION;

@@ -17,13 +17,13 @@ USE RecipeDatabaseFirebase;
 	--Create table 'SubCategory'
 	CREATE TABLE Subcategory
 	(
-		SubCategoryID INT IDENTITY(1,1) NOT NULL,
+		SubcategoryID INT IDENTITY(1,1) NOT NULL,
 		[Name]        NVARCHAR(100)     NOT NULL,
 		CategoryID    INT               NOT NULL
 
 		-- PRIMARY + UNIQUE
-		CONSTRAINT PK_SubCategory_SubCategoryID PRIMARY KEY (SubCategoryID),
-		CONSTRAINT UC_SubCategory_Name UNIQUE ([Name]),
+		CONSTRAINT PK_Subcategory_SubcategoryID PRIMARY KEY (SubcategoryID),
+		CONSTRAINT UC_Subcategory_Name UNIQUE ([Name]),
 
 		CONSTRAINT FK_Subcategory_Category FOREIGN KEY (CategoryID) REFERENCES dbo.Category (CategoryID)
 		ON DELETE CASCADE,
@@ -185,5 +185,5 @@ USE RecipeDatabaseFirebase;
 	INSERT INTO Recipe (Name, Description, UserDataID, SubcategoryID)
 	VALUES ('Cake recipe', 'This is some cake recipe', 1, 1),
 		   ('Potato recipe', 'This is some potato recipe', 1, 2),
-		   ('Soup recipe', 'This is some soup recipe', 3, 2),
-		   ('Salad recipe', 'This is some salad recipe', 3, 1)
+		   ('Soup recipe', 'This is some soup recipe', 2, 2),
+		   ('Salad recipe', 'This is some salad recipe', 2, 1)

@@ -18,13 +18,9 @@ BEGIN TRANSACTION;
 	IF(@CategoryID IS NOT NULL)
 	BEGIN
 		SELECT @SqlQuery = @SqlQuery + ' WHERE CategoryID = ' + CAST(@CategoryID as nvarchar(100));;
+	END;
 
-		execute sp_executesql @SqlQuery
-	END;
-	ELSE
-	BEGIN
-		execute sp_executesql @SqlQuery
-	END;
+	execute sp_executesql @SqlQuery
 
 COMMIT TRANSACTION;
 

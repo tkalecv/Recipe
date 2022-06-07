@@ -47,7 +47,7 @@ function Load-Module ($m) {
 Load-Module("SqlServer")
 
 #Enable script execution
-Set-ExecutionPolicy RemoteSigned
+Set-ExecutionPolicy Unrestricted
 write-host "Script execution enabled"
 
 #Create database

@@ -1,5 +1,6 @@
 CREATE PROCEDURE SP_RetrieveSubcategory
-@SubcategoryID INT = NULL
+  @SubcategoryID INT = NULL
+, @CategoryID INT = NULL
 AS
 
 SET XACT_ABORT ON;
@@ -9,22 +10,33 @@ DECLARE
 	  @ErrorNumber   INT
 	, @ErrorLine     INT
 	, @ErrorMessage  NVARCHAR(4000)
-	, @SqlQuery      NVARCHAR(1000) = 'SELECT * FROM dbo.Subcategory'
+	, @SqlQuery      NVARCHAR(1000) = 'SELECT sc.SubcategoryID, sc.Name, sc.CategoryID, c.Name
+									   FROM dbo.Subcategory sc
+									   LEFT JOIN Category c ON sc.CategoryID = c.CategoryID'
 
 BEGIN TRY
 
 BEGIN TRANSACTION;
 
+
 	IF(@SubcategoryID IS NOT NULL)
 	BEGIN
-		SELECT @SqlQuery = @SqlQuery + ' WHERE SubcategoryID = ' + CAST(@SubcategoryID as nvarchar(100));;
+		SELECT @SqlQuery = @SqlQuery + ' WHERE sc.SubcategoryID = ' + CAST(@SubcategoryID as nvarchar(100));;
+	END;
 
-		execute sp_executesql @SqlQuery
-	END;
-	ELSE
+		IF(@CategoryID IS NOT NULL)
 	BEGIN
-		execute sp_executesql @SqlQuery
+		IF(@SubcategoryID IS NOT NULL)
+		BEGIN
+			SELECT @SqlQuery = @SqlQuery + ' AND sc.CategoryID = ' + CAST(@CategoryID as nvarchar(100));
+		END;
+		ELSE
+		BEGIN
+			SELECT @SqlQuery = @SqlQuery + ' WHERE sc.CategoryID = ' + CAST(@CategoryID as nvarchar(100));
+		END;
 	END;
+
+	execute sp_executesql @SqlQuery
 
 COMMIT TRANSACTION;
 

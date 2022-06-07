@@ -16,10 +16,10 @@ BEGIN TRY
 
 	BEGIN TRANSACTION;
 
-	UPDATE dbo.Category
+	UPDATE dbo.Subcategory
 	SET [Name] = @Name
 	  , CategoryID = @CategoryID
-	WHERE Subcategory = @SubcategoryID;
+	WHERE SubcategoryID = @SubcategoryID;
 
 	COMMIT TRANSACTION;
 

@@ -11,7 +11,7 @@ DECLARE
 	, @ErrorLine     INT
 	, @ErrorMessage  NVARCHAR(4000)
 	, @SqlQuery      NVARCHAR(1000) = 'SELECT r.RecipeID, r.[Name], r.[Description],
-										sc.SubCategoryID, sc.[Name],
+										sc.SubcategoryID, sc.[Name],
 										ud.UserDataID,
 										c.CategoryID, c.[Name]
 										FROM Recipe r

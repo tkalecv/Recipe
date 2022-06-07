@@ -18,7 +18,7 @@ BEGIN TRY
 
 	BEGIN TRANSACTION;
 
-	UPDATE dbo.Category
+	UPDATE dbo.UserData
 	SET Address = @Address 
 	  , City = @City
 	  , FirstName = @FirstName
