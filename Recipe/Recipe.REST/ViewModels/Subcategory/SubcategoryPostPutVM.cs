@@ -1,8 +1,8 @@
 ﻿namespace Recipe.REST.ViewModels.Subcategory
 {
-    public class SubcategoryRecipeVM
+    public class SubcategoryPostPutVM
     {
-        public int SubcategoryID { get; set; }
         public string Name { get; set; }
+        public int CategoryID { get; set; }
     }
 }

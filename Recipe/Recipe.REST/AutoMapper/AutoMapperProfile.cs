@@ -4,6 +4,7 @@ using Recipe.Auth.Models;
 using Recipe.Auth.ModelsCommon;
 using Recipe.Models;
 using Recipe.Models.Common;
+using Recipe.REST.ViewModels.Category;
 using Recipe.REST.ViewModels.Recipe;
 using Recipe.REST.ViewModels.Subcategory;
 using Recipe.REST.ViewModels.User;
@@ -15,7 +16,7 @@ namespace Recipe.REST.AutoMapper
     {
         public AutoMapperProfile()
         {
-            //User
+            #region User
             CreateMap<UserRegisterVM, IAuthUser>();
             CreateMap<UserRegisterVM, AuthUser>();
 
@@ -23,16 +24,42 @@ namespace Recipe.REST.AutoMapper
             CreateMap<UserLoginVM, AuthUser>();
 
             CreateMap<FirebaseAuthLink, UserReturnVM>();
+            #endregion
 
-            //UserData
+            #region UserData
             CreateMap<UserDataRecipeVM, UserData>();
             CreateMap<UserDataRecipeVM, IUserData>();
+            #endregion
 
-            //Subcategory
+            #region Category
+            CreateMap<CategoryPostPutVM, Category>();
+            CreateMap<CategoryPostPutVM, ICategory>();
+
+            CreateMap<CategorySubcategoryVM, Category>();
+            CreateMap<CategorySubcategoryVM, ICategory>();
+            #endregion
+
+            #region Subcategory
             CreateMap<SubcategoryRecipeVM, Subcategory>();
             CreateMap<SubcategoryRecipeVM, ISubcategory>();
 
-            //Recipe
+            CreateMap<SubcategoryPostPutVM, Subcategory>()
+             .BeforeMap((src, dest) => { dest.Category = new Category(); })
+             .ForPath(dest => dest.Category.CategoryID, input => input.MapFrom(i => i.CategoryID));
+            CreateMap<SubcategoryPostPutVM, ISubcategory>()
+            .BeforeMap((src, dest) => { dest.Category = new Category(); })
+            .ForPath(dest => dest.Category.CategoryID, input => input.MapFrom(i => i.CategoryID));;
+
+            CreateMap<Subcategory, SubcategoryReturnVM>()
+            .ForPath(dest => dest.Category.Name, input => input.MapFrom(i => i.Category.Name))
+            .ForPath(dest => dest.Category.CategoryID, input => input.MapFrom(i => i.Category.CategoryID));
+
+            CreateMap<ISubcategory, SubcategoryReturnVM>()
+            .ForPath(dest => dest.Category.Name, input => input.MapFrom(i => i.Category.Name))
+            .ForPath(dest => dest.Category.CategoryID, input => input.MapFrom(i => i.Category.CategoryID));
+            #endregion
+
+            #region Recipe
             CreateMap<RecipePostPutVM, Models.Recipe>()
             .BeforeMap((src, dest) => { dest.UserData = new UserData(); dest.Subcategory = new Subcategory(); })
             .ForPath(dest => dest.UserData.UserDataID, input => input.MapFrom(i => i.UserData.UserDataID))
@@ -44,14 +71,15 @@ namespace Recipe.REST.AutoMapper
             .ForPath(dest => dest.Subcategory.SubcategoryID, input => input.MapFrom(i => i.Subcategory.SubcategoryID));
 
             CreateMap<Models.Recipe, RecipeReturnVM>()
-            .BeforeMap((src, dest) => { dest.UserData = new UserData(); dest.Subcategory = new Subcategory(); })
             .ForPath(dest => dest.UserData.UserDataID, input => input.MapFrom(i => i.UserData.UserDataID))
-            .ForPath(dest => dest.Subcategory.SubcategoryID, input => input.MapFrom(i => i.Subcategory.SubcategoryID));
+            .ForPath(dest => dest.Subcategory.SubcategoryID, input => input.MapFrom(i => i.Subcategory.SubcategoryID))
+            .ForPath(dest => dest.Subcategory.Name, input => input.MapFrom(i => i.Subcategory.Name));
 
             CreateMap<IRecipe, RecipeReturnVM>()
-            .BeforeMap((src, dest) => { dest.UserData = new UserData(); dest.Subcategory = new Subcategory(); })
             .ForPath(dest => dest.UserData.UserDataID, input => input.MapFrom(i => i.UserData.UserDataID))
-            .ForPath(dest => dest.Subcategory.SubcategoryID, input => input.MapFrom(i => i.Subcategory.SubcategoryID));
+            .ForPath(dest => dest.Subcategory.SubcategoryID, input => input.MapFrom(i => i.Subcategory.SubcategoryID))
+            .ForPath(dest => dest.Subcategory.Name, input => input.MapFrom(i => i.Subcategory.Name));
+            #endregion
         }
     }
 }

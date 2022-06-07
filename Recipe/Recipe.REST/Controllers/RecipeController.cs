@@ -63,7 +63,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpGet("/recipe/{recipeId:int}")] //TODO: is this even needed?
+        [HttpGet("/recipe/{recipeId:int}")]
         public async Task<IActionResult> GetOne([FromQuery] int recipeId)
         {
             try
@@ -71,7 +71,7 @@ namespace Recipe.REST.Controllers
                 var result = _mapper.Map<IEnumerable<RecipeReturnVM>>(await _recipeService.GetByIdAsync(recipeId));
 
                 if (result == null || result.Count() <= 0)
-                    throw new HttpStatusCodeException(StatusCodes.Status204NoContent, $"There is no Recipe with id with id {recipeId}.");
+                    throw new HttpStatusCodeException(StatusCodes.Status204NoContent, $"There is no Recipe with id {recipeId}.");
 
                 return Ok(result);
             }
@@ -100,15 +100,15 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Put([FromQuery] int id, [FromBody] RecipePostPutVM recipe)
+        [HttpPut("{recipeId:int}")]
+        public async Task<IActionResult> Put([FromQuery] int recipeId, [FromBody] RecipePostPutVM recipe)
         {
             try
             {
                 if (!ModelState.IsValid)
                     throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, recipe);
 
-                await _recipeService.UpdateAsync(id, _mapper.Map<IRecipe>(recipe));
+                await _recipeService.UpdateAsync(recipeId, _mapper.Map<IRecipe>(recipe));
 
                 return Ok(recipe);
             }
@@ -118,12 +118,12 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete([FromQuery] int id)
+        [HttpDelete("{recipeId:int}")]
+        public async Task<IActionResult> Delete([FromQuery] int recipeId)
         {
             try
             {
-                await _recipeService.DeleteByIDAsync(id);
+                await _recipeService.DeleteByIDAsync(recipeId);
 
                 return Ok();
             }
@@ -134,11 +134,11 @@ namespace Recipe.REST.Controllers
         }
 
         [HttpDelete("/user/{id:int}")]
-        public async Task<IActionResult> DeleteAllUserRecipes([FromQuery] int id)
+        public async Task<IActionResult> DeleteAllUserRecipes([FromQuery] int userId)
         {
             try
             {
-                await _recipeService.DeleteAllUserRecipesAsync(id);
+                await _recipeService.DeleteAllUserRecipesAsync(userId);
 
                 return Ok();
             }
@@ -148,8 +148,8 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpDelete("/user/{recipeId:int}/recipe/{userId:int}")]
-        public async Task<IActionResult> DeleteAllUserRecipes([FromQuery] int recipeId, [FromQuery] int userId)
+        [HttpDelete("/recipe/{recipeId:int}/user/{userId:int}")]
+        public async Task<IActionResult> DeleteUserRecipe([FromQuery] int recipeId, [FromQuery] int userId)
         {
             try
             {

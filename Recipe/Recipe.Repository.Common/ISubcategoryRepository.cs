@@ -8,9 +8,8 @@ namespace Recipe.Repository.Common
     {
         Task<int> CreateAsync(IEnumerable<ISubcategory> subcategoryList);
         Task<int> CreateAsync(ISubcategory subcategory);
-        Task<int> DeleteAsync(ISubcategory subcategory);
-        Task<IEnumerable<ISubcategory>> GetAllAsync();
-        Task<ISubcategory> GetByIdAsync(int id);
-        Task<int> UpdateAsync(ISubcategory subcategory);
+        Task<int> DeleteAsync(int subcategoryId);
+        Task<IEnumerable<ISubcategory>> GetAllAsync(int? subcategoryId, int? categoryId);
+        Task<int> UpdateAsync(int subcategoryId, ISubcategory subcategory);
     }
 }

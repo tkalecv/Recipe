@@ -6,6 +6,7 @@ using Recipe.Repository.UnitOfWork;
 using Recipe.Service.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,6 +32,8 @@ namespace Recipe.Service
         {
             try
             {
+                await _unitOfWork.BeginTransactionAsync();
+
                 int rowCount = await _unitOfWork.SubcategoryRepository.CreateAsync(subcategory);
 
                 await _unitOfWork.CommitAsync();
@@ -54,6 +57,8 @@ namespace Recipe.Service
         {
             try
             {
+                await _unitOfWork.BeginTransactionAsync();
+
                 int rowCount = await _unitOfWork.SubcategoryRepository.CreateAsync(entities);
 
                 await _unitOfWork.CommitAsync();
@@ -71,38 +76,15 @@ namespace Recipe.Service
         /// <summary>
         /// Method removes Subcategory entry from db
         /// </summary>
-        /// <param name="subcategory">Subcategory object that will be removed</param>
+        /// <param name="subcategoryId">ID unique identifier of Subcategory object that will be removed</param>
         /// <returns>Task<int></returns>
-        public async Task<int> DeleteAsync(ISubcategory subcategory)
+        public async Task<int> DeleteAsync(int subcategoryId)
         {
             try
             {
-                int rowCount = await _unitOfWork.SubcategoryRepository.DeleteAsync(subcategory);
+                await _unitOfWork.BeginTransactionAsync();
 
-                await _unitOfWork.CommitAsync();
-
-                return rowCount;
-            }
-            catch (Exception ex)
-            {
-                await _unitOfWork.RollbackAsync();
-
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Method removes Subcategory entry from db
-        /// </summary>
-        /// <param name="id">ID unique identifier of Subcategory object that will be removed</param>
-        /// <returns>Task<int></returns>
-        public async Task<int> DeleteAsync(int id)
-        {
-            try
-            {
-                var subcategory = await _unitOfWork.SubcategoryRepository.GetByIdAsync(id);
-
-                int rowCount = await _unitOfWork.SubcategoryRepository.DeleteAsync(subcategory);
+                int rowCount = await _unitOfWork.SubcategoryRepository.DeleteAsync(subcategoryId);
 
                 await _unitOfWork.CommitAsync();
 
@@ -119,39 +101,16 @@ namespace Recipe.Service
         /// <summary>
         /// Method updates Subcategory entry in db
         /// </summary>
-        /// <param name="subcategory">Subcategory object that will be updated</param>
-        /// <returns>Task<int></returns>
-        public async Task<int> UpdateAsync(ISubcategory subcategory)
-        {
-            try
-            {
-                int rowCount = await _unitOfWork.SubcategoryRepository.UpdateAsync(subcategory);
-
-                await _unitOfWork.CommitAsync();
-
-                return rowCount;
-            }
-            catch (Exception ex)
-            {
-                await _unitOfWork.RollbackAsync();
-
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Method updates Subcategory entry in db
-        /// </summary>
-        /// <param name="id">ID unique identifier of Subcategory object that will be updated</param>
+        /// <param name="subcategoryId">ID unique identifier of Subcategory object that will be updated</param>
         /// <param name="subcategory">Subcategory object with new values</param>
         /// <returns>Task<int></returns>
-        public async Task<int> UpdateAsync(int id, ISubcategory subcategory)
+        public async Task<int> UpdateAsync(int subcategoryId, ISubcategory subcategory)
         {
             try
             {
-                subcategory.SubcategoryID = id;
+                await _unitOfWork.BeginTransactionAsync();
 
-                int rowCount = await _unitOfWork.SubcategoryRepository.UpdateAsync(subcategory);
+                int rowCount = await _unitOfWork.SubcategoryRepository.UpdateAsync(subcategoryId, subcategory);
 
                 await _unitOfWork.CommitAsync();
 
@@ -168,13 +127,40 @@ namespace Recipe.Service
         /// <summary>
         /// Method retrieves Subcategory entry from db filtered by ID unique identifier
         /// </summary>
-        /// <param name="id">ID unique identifier of Subcategory object that will be updated</param>
+        /// <param name="subcategoryId">ID unique identifier of Subcategory object that will be updated</param>
         /// <returns>Task<ISubcategory></returns>
-        public async Task<ISubcategory> FindByIDAsync(int id)
+        public async Task<ISubcategory> GetByIDAsync(int subcategoryId)
         {
             try
             {
-                ISubcategory subcategory = await _unitOfWork.SubcategoryRepository.GetByIdAsync(id);
+                await _unitOfWork.BeginTransactionAsync();
+
+                IEnumerable<ISubcategory> subcategory = await _unitOfWork.SubcategoryRepository.GetAllAsync(subcategoryId, null);
+
+                await _unitOfWork.CommitAsync();
+
+                return subcategory.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Method retrieves Subcategory entry from db filtered by ID unique identifier
+        /// </summary>
+        /// <param name="categoryId">Category ID</param>
+        /// <returns>Task<ISubcategory></returns>
+        public async Task<IEnumerable<ISubcategory>> GetByCategoryIDAsync(int categoryId)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                IEnumerable<ISubcategory> subcategory = await _unitOfWork.SubcategoryRepository.GetAllAsync(null, categoryId);
 
                 await _unitOfWork.CommitAsync();
 
@@ -196,7 +182,9 @@ namespace Recipe.Service
         {
             try
             {
-                IEnumerable<ISubcategory> entities = await _unitOfWork.SubcategoryRepository.GetAllAsync();
+                await _unitOfWork.BeginTransactionAsync();
+
+                IEnumerable<ISubcategory> entities = await _unitOfWork.SubcategoryRepository.GetAllAsync(null, null);
 
                 await _unitOfWork.CommitAsync();
 

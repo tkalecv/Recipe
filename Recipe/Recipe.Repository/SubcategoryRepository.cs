@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Dapper;
 using Recipe.DAL.Scripts;
+using Recipe.Models;
 using Recipe.Models.Common;
 using Recipe.Repository.Common;
 using System;
@@ -85,14 +86,20 @@ namespace Recipe.Repository
         /// <summary>
         /// Method asynchronously deletes Subcategory object from table. Number of affected rows is returned
         /// </summary>
-        /// <param name="subcategory">Object with values that will be passed as parameter values</param>
+        /// <param name="subcategoryId">Subcategory id (Primary Key)</param>
         /// <returns>Task<int></returns>
-        public async Task<int> DeleteAsync(ISubcategory subcategory)
+        public async Task<int> DeleteAsync(int subcategoryId)
         {
             try
             {
-                return await _connection.ExecuteAsync("SP name here",
-                    param: subcategory,
+                DynamicParameters parameters = new DynamicParameters(
+                    new
+                    {
+                        SubcategoryID = subcategoryId
+                    });
+
+                return await _connection.ExecuteAsync(ScriptReferences.Subcategory.SP_DeleteSubcategory,
+                    param: parameters,
                     transaction: _transaction,
                     commandType: CommandType.StoredProcedure);
             }
@@ -103,42 +110,23 @@ namespace Recipe.Repository
         }
 
         /// <summary>
-        /// Method asynchronously retrieves Subcategory from table filtered with primary key
-        /// </summary>
-        /// <param name="id">Subcategory id (Primary Key)</param>
-        /// <returns>Task<ISubcategory></returns>
-        public async Task<ISubcategory> GetByIdAsync(int id)
-        {
-            try
-            {
-                var Subcategorys = await _connection.QueryAsync<ISubcategory, ICategory, ISubcategory>(ScriptReferences.Subcategory.SP_RetrieveSubcategory,
-                    (subcategory, category) =>
-                    {
-                        subcategory.Category = category;
-                        return subcategory;
-                    },
-                    param: new { SubcategoryID = id },
-                    commandType: CommandType.StoredProcedure,
-                    splitOn: "categoryid",
-                    transaction: _transaction);
-
-                return Subcategorys.FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
         /// Method asynchronously retrieve all Subcategories from SQL table with or without WHERE filter
         /// </summary>
+        /// <param name="subcategoryId">Subcategory id (Primary Key)</param>
+        /// <param name="categoryId">Category id</param>
         /// <returns>Task<IEnumerable<ISubcategory>></returns>
-        public async Task<IEnumerable<ISubcategory>> GetAllAsync()
+        public async Task<IEnumerable<ISubcategory>> GetAllAsync(int? subcategoryId, int? categoryId)
         {
             try
             {
-                var Subcategorys = await _connection.QueryAsync<ISubcategory, ICategory, ISubcategory>(ScriptReferences.Subcategory.SP_RetrieveSubcategory,
+                DynamicParameters parameters = new DynamicParameters();
+                if (subcategoryId != null)
+                    parameters.AddDynamicParams(new { SubcategoryID = subcategoryId });
+                if (categoryId != null)
+                    parameters.AddDynamicParams(new { CategoryID = categoryId });
+
+
+                var Subcategorys = await _connection.QueryAsync<Subcategory, Category, Subcategory>(ScriptReferences.Subcategory.SP_RetrieveSubcategory,
                     (subcategory, category) =>
                     {
                         subcategory.Category = category;
@@ -159,17 +147,22 @@ namespace Recipe.Repository
         /// <summary>
         /// Method asynchronously updates Subcategory object in table. Number of affected rows is returned
         /// </summary>
+        /// <param name="subcategoryId">Subcategory id (Primary Key)</param>
         /// <param name="subcategory">Object with values that will be passed as parameter values</param>
         /// <returns>Task<int></returns>
-        public async Task<int> UpdateAsync(ISubcategory subcategory)
+        public async Task<int> UpdateAsync(int subcategoryId, ISubcategory subcategory)
         {
             try
             {
-                DynamicParameters parameters = new DynamicParameters();
-                parameters.AddDynamicParams(subcategory);
-                parameters.AddDynamicParams(new { CategoryID = subcategory.Category.CategoryID });
+                DynamicParameters parameters = new DynamicParameters(
+                    new
+                    {
+                        SubcategoryID = subcategoryId,
+                        Name = subcategory.Name,
+                        CategoryID = subcategory.Category.CategoryID,
+                    });
 
-                return await _connection.ExecuteAsync("SP name here",
+                return await _connection.ExecuteAsync(ScriptReferences.Subcategory.SP_UpdateSubcategory,
                     param: parameters,
                     transaction: _transaction,
                     commandType: CommandType.StoredProcedure);

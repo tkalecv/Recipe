@@ -6,13 +6,11 @@ namespace Recipe.Service.Common
 {
     public interface ICategoryService
     {
-        Task<int> CreateAsync(ICategory entity);
-        Task<int> CreateAsync(IEnumerable<ICategory> entities);
-        Task<int> DeleteAsync(ICategory entity);
-        Task<int> DeleteAsync(int id);
-        Task<ICategory> FindByIDAsync(int id);
+        Task<int> CreateAsync(ICategory category);
+        Task<int> CreateAsync(IEnumerable<ICategory> categories);
+        Task<int> DeleteAsync(int categoryId);
+        Task<ICategory> GetByIdAsync(int categoryId);
         Task<IEnumerable<ICategory>> GetAllAsync();
-        Task<int> UpdateAsync(ICategory entity);
-        Task<int> UpdateAsync(int id, ICategory entity);
+        Task<int> UpdateAsync(int categoryId, ICategory category);
     }
 }

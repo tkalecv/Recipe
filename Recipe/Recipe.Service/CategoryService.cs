@@ -7,6 +7,7 @@ using Recipe.Repository.UnitOfWork;
 using Recipe.Service.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,6 +33,8 @@ namespace Recipe.Service
         {
             try
             {
+                await _unitOfWork.BeginTransactionAsync();
+
                 int rowCount = await _unitOfWork.CategoryRepository.CreateAsync(_mapper.Map<Category>(category));
 
                 await _unitOfWork.CommitAsync();
@@ -55,6 +58,8 @@ namespace Recipe.Service
         {
             try
             {
+                await _unitOfWork.BeginTransactionAsync();
+
                 int rowCount = await _unitOfWork.CategoryRepository.CreateAsync(_mapper.Map<IEnumerable<Category>>(entities));
 
                 await _unitOfWork.CommitAsync();
@@ -72,38 +77,15 @@ namespace Recipe.Service
         /// <summary>
         /// Method removes Category entry from db
         /// </summary>
-        /// <param name="category">Category object that will be removed</param>
+        /// <param name="categoryId">ID unique identifier of Category object that will be removed</param>
         /// <returns>Task<int></returns>
-        public async Task<int> DeleteAsync(ICategory category)
+        public async Task<int> DeleteAsync(int categoryId)
         {
             try
             {
-                int rowCount = await _unitOfWork.CategoryRepository.DeleteAsync(_mapper.Map<Category>(category));
+                await _unitOfWork.BeginTransactionAsync();
 
-                await _unitOfWork.CommitAsync();
-
-                return rowCount;
-            }
-            catch (Exception ex)
-            {
-                await _unitOfWork.RollbackAsync();
-
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Method removes Category entry from db
-        /// </summary>
-        /// <param name="id">ID unique identifier of Category object that will be removed</param>
-        /// <returns>Task<int></returns>
-        public async Task<int> DeleteAsync(int id)
-        {
-            try
-            {
-                var category = await _unitOfWork.CategoryRepository.GetByIdAsync(id);
-
-                int rowCount = await _unitOfWork.CategoryRepository.DeleteAsync(category);
+                int rowCount = await _unitOfWork.CategoryRepository.DeleteAsync(categoryId);
 
                 await _unitOfWork.CommitAsync();
 
@@ -120,39 +102,18 @@ namespace Recipe.Service
         /// <summary>
         /// Method updates Category entry in db
         /// </summary>
-        /// <param name="category">Category object that will be updated</param>
-        /// <returns>Task<int></returns>
-        public async Task<int> UpdateAsync(ICategory category)
-        {
-            try
-            {
-                int rowCount = await _unitOfWork.CategoryRepository.UpdateAsync(_mapper.Map<Category>(category));
-
-                await _unitOfWork.CommitAsync();
-
-                return rowCount;
-            }
-            catch (Exception ex)
-            {
-                await _unitOfWork.RollbackAsync();
-
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Method updates Category entry in db
-        /// </summary>
-        /// <param name="id">ID unique identifier of Category object that will be updated</param>
+        /// <param name="categoryId">ID unique identifier of Category object that will be updated</param>
         /// <param name="category">Category object with new values</param>
         /// <returns>Task<int></returns>
-        public async Task<int> UpdateAsync(int id, ICategory category)
+        public async Task<int> UpdateAsync(int categoryId, ICategory category)
         {
             try
             {
-                category.CategoryID = id;
+                await _unitOfWork.BeginTransactionAsync();
 
-                int rowCount = await _unitOfWork.CategoryRepository.UpdateAsync(_mapper.Map<Category>(category));
+                category.CategoryID = categoryId;
+
+                int rowCount = await _unitOfWork.CategoryRepository.UpdateAsync(categoryId, _mapper.Map<Category>(category));
 
                 await _unitOfWork.CommitAsync();
 
@@ -169,17 +130,19 @@ namespace Recipe.Service
         /// <summary>
         /// Method retrieves Category entry from db filtered by ID unique identifier
         /// </summary>
-        /// <param name="id">ID unique identifier of Category object that will be updated</param>
+        /// <param name="categoryId">ID unique identifier of Category object that will be updated</param>
         /// <returns>Task<ICategory></returns>
-        public async Task<ICategory> FindByIDAsync(int id)
+        public async Task<ICategory> GetByIdAsync(int categoryId)
         {
             try
             {
-                ICategory category = await _unitOfWork.CategoryRepository.GetByIdAsync(id);
+                await _unitOfWork.BeginTransactionAsync();
+
+                IEnumerable<ICategory> categories = await _unitOfWork.CategoryRepository.GetAllAsync(categoryId);
 
                 await _unitOfWork.CommitAsync();
 
-                return category;
+                return categories.FirstOrDefault();
             }
             catch (Exception ex)
             {
@@ -197,7 +160,9 @@ namespace Recipe.Service
         {
             try
             {
-                IEnumerable<ICategory> entities = await _unitOfWork.CategoryRepository.GetAllAsync();
+                await _unitOfWork.BeginTransactionAsync();
+
+                IEnumerable<ICategory> entities = await _unitOfWork.CategoryRepository.GetAllAsync(null);
 
                 await _unitOfWork.CommitAsync();
 

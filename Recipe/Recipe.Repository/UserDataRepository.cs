@@ -78,7 +78,7 @@ namespace Recipe.Repository
         /// <returns>Task<IUserData></returns>
         public async Task<IUserData> GetByIdAsync(int id)
         {
-            try
+            try //TODO: check if this works
             {
                 var userDatas = await _connection.QueryAsync<IUserData, IRecipe, IUserData>(ScriptReferences.UserData.SP_RetrieveUserData,
                     (userData, recipe) =>
@@ -88,7 +88,6 @@ namespace Recipe.Repository
                     },
                     param: new { FirebaseUserID = id },
                     commandType: CommandType.StoredProcedure,
-                    splitOn: "recipeid",
                     transaction: _transaction);
 
                 return userDatas.FirstOrDefault();
@@ -114,7 +113,6 @@ namespace Recipe.Repository
                         return userData;
                     },
                     commandType: CommandType.StoredProcedure,
-                    splitOn: "recipeid",
                     transaction: _transaction);
 
                 return userDatas;
