@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Recipe.ExceptionHandler.CustomExceptions;
@@ -82,7 +83,7 @@ namespace Recipe.REST.Controllers
         }
 
         //TODO: add authorize attribute
-        [HttpPost]
+        [HttpPost, Authorize]
         public async Task<IActionResult> Post([FromBody] RecipePostPutVM recipe)
         {
             try
@@ -100,7 +101,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpPut("{recipeId:int}")]
+        [HttpPut("{recipeId:int}"), Authorize]
         public async Task<IActionResult> Put([FromQuery] int recipeId, [FromBody] RecipePostPutVM recipe)
         {
             try
@@ -118,7 +119,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpDelete("{recipeId:int}")]
+        [HttpDelete("{recipeId:int}"), Authorize]
         public async Task<IActionResult> Delete([FromQuery] int recipeId)
         {
             try
@@ -133,7 +134,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpDelete("/user/{id:int}")]
+        [HttpDelete("/user/{id:int}"), Authorize]
         public async Task<IActionResult> DeleteAllUserRecipes([FromQuery] int userId)
         {
             try
@@ -148,7 +149,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpDelete("/recipe/{recipeId:int}/user/{userId:int}")]
+        [HttpDelete("/recipe/{recipeId:int}/user/{userId:int}"), Authorize]
         public async Task<IActionResult> DeleteUserRecipe([FromQuery] int recipeId, [FromQuery] int userId)
         {
             try

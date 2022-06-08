@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Recipe.ExceptionHandler.CustomExceptions;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 namespace Recipe.REST.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController, Authorize(Roles = "Admin")]
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
@@ -26,7 +27,7 @@ namespace Recipe.REST.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("/category")]
+        [HttpGet("/category"), AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -44,7 +45,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpGet("/category/{categoryId:int}")]
+        [HttpGet("/category/{categoryId:int}"), AllowAnonymous]
         public async Task<IActionResult> GetOne(int categoryId)
         {
             try

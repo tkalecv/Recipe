@@ -95,7 +95,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpPost("/refreshToken/{userId}")]
+        [HttpPost("/refreshToken/{userId}"), Authorize]
         public async Task<IActionResult> RefreshToken(string userId)
         {
             try
@@ -110,7 +110,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpGet("/user/{userId}")]
+        [HttpGet("/user/{userId}"), Authorize]
         public async Task<IActionResult> GetByID(string userId)
         {
             try
@@ -128,7 +128,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpGet("/user/")]
+        [HttpGet("/user/"), Authorize]
         public async Task<IActionResult> GetWithToken([FromQuery]string token)
         {
             try
@@ -146,7 +146,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpDelete("{userId}")]
+        [HttpDelete("{userId}"), Authorize]
         public async Task<IActionResult> Delete(string userId)
         {
             try
@@ -161,7 +161,7 @@ namespace Recipe.REST.Controllers
             }
         }
 
-        [HttpPut("{userId}")]
+        [HttpPut("{userId}"), Authorize]
         public async Task<IActionResult> Put(string userId, AuthUser user)
         {
             try
