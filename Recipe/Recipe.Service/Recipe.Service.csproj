@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Recipe.ExceptionHandler\Recipe.ExceptionHandler.csproj" />
+    <ProjectReference Include="..\Recipe.Helpers\Recipe.Helpers.csproj" />
     <ProjectReference Include="..\Recipe.Repository\Recipe.Repository.csproj" />
     <ProjectReference Include="..\Recipe.Service.Common\Recipe.Service.Common.csproj" />
   </ItemGroup>

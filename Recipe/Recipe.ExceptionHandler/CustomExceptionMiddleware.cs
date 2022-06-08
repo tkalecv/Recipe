@@ -39,8 +39,9 @@ namespace Recipe.ExceptionHandler
             catch (FirebaseAdmin.Auth.FirebaseAuthException ex)
             {
                 int code = int.Parse(Regex.Match(ex.HttpResponse.ToString(), @"(?<=StatusCode:.+?).+?(?=,)").Value);
+                string message = Regex.Match(ex.Message.ToString(), "(?<=\"message\": \".+?).+?(?=\",)").Value;
 
-                await CreateContextResponse(context, code, ex.Message);
+                await CreateContextResponse(context, code, message);
             }
             catch (ArgumentException ex)
             {

@@ -7,9 +7,8 @@ namespace Recipe.Repository.Common
     public interface IUserDataRepository
     {
         Task<int> CreateAsync(IUserData userData);
-        Task<int> DeleteAsync(IUserData userData);
-        Task<IEnumerable<IUserData>> GetAllAsync();
-        Task<IUserData> GetByIdAsync(int id);
-        Task<int> UpdateAsync(IUserData userData);
+        Task<int> DeleteAsync(string firebaseUserId);
+        Task<IEnumerable<IUserData>> GetAllAsync(string? firebaseUserId);
+        Task<int> UpdateAsync(string firebaseUserId, IUserData userData);
     }
 }

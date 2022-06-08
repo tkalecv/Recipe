@@ -23,7 +23,10 @@ namespace Recipe.REST.AutoMapper
             CreateMap<UserLoginVM, IAuthUser>();
             CreateMap<UserLoginVM, AuthUser>();
 
-            CreateMap<FirebaseAuthLink, UserReturnVM>();
+            CreateMap<FirebaseAuthLink, UserReturnVM>()
+            .ForPath(dest => dest.Uid, input => input.MapFrom(i => i.User.LocalId));
+            CreateMap<AuthUser, UserReturnVM>();
+            CreateMap<IAuthUser, UserReturnVM>();
             #endregion
 
             #region UserData

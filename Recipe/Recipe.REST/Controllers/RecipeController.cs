@@ -37,7 +37,7 @@ namespace Recipe.REST.Controllers
                 if (result == null || result.Count() <= 0)
                     throw new HttpStatusCodeException(StatusCodes.Status204NoContent, $"There are no Recipes for user with id {userId}.");
 
-                return Ok(result); //TODO: subcategory and userdata are empty
+                return Ok(result);
             }
             catch (Exception ex)
             {

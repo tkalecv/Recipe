@@ -4,22 +4,25 @@ using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Recipe.Auth;
+using Recipe.Auth.Models;
 using Recipe.Auth.ModelsCommon;
 using Recipe.ExceptionHandler.CustomExceptions;
+using Recipe.Helpers.AutoMapper;
 using Recipe.Models;
+using Recipe.Models.Common;
 using Recipe.Repository.Common.UnitOfWork;
 using Recipe.Repository.UnitOfWork;
 using Recipe.Service.Common;
 using Recipe.Service.Common.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Recipe.Service
 {
-    //TODO: Add methods for GetUser and RefreshToken
     public class UserService : IUserService
     {
         private readonly IFirebaseClient firebaseClient;
@@ -42,7 +45,7 @@ namespace Recipe.Service
         /// </summary>
         /// <param name="registerModel">Entity with data used to register</param>
         /// <returns>Task<FirebaseAuthLink></returns>
-        public async Task<FirebaseAuthLink> Register(IAuthUser registerModel)
+        public async Task<FirebaseAuthLink> Register(IAuthUser registerModel, string role = "User")
         {
             UserRecord UserRecord = null;
 
@@ -68,13 +71,14 @@ namespace Recipe.Service
                 #region Set claims
                 Dictionary<string, object> Claims = new Dictionary<string, object>()
                 {
-                    { ClaimTypes.Role, "User" },
+                    { ClaimTypes.Role, role },
                 };
 
                 await SetCustomUserClaims(UserRecord.Uid, Claims);
                 #endregion
 
                 #region Insert User into custom db
+                await _unitOfWork.BeginTransactionAsync();
                 await _unitOfWork.UserDataRepository.CreateAsync(_mapper.Map<UserData>(registerModel));
                 await _unitOfWork.CommitAsync();
                 #endregion
@@ -86,9 +90,11 @@ namespace Recipe.Service
             catch (Exception ex)
             {
                 if (UserRecord != null)
+                {
                     await firebaseClient.Admin.DeleteUserAsync(UserRecord.Uid);
 
-                await _unitOfWork.RollbackAsync();
+                    await _unitOfWork.RollbackAsync();
+                }
                 throw ex;
             }
         }
@@ -104,7 +110,6 @@ namespace Recipe.Service
             {
                 return await firebaseClient.AuthProvider
                                 .SignInWithEmailAndPasswordAsync(loginModel.Email, loginModel.Password);
-
             }
             catch (Exception ex)
             {
@@ -117,12 +122,18 @@ namespace Recipe.Service
         /// </summary>
         /// <param name="userId">Id of the user</param>
         /// <returns>Task<UserRecord></returns>
-        public async Task<UserRecord> GetuserWithid(string userId)
+        public async Task<IAuthUser> GetByIDAsync(string userId)
         {
             try
             {
-                return await firebaseClient.Admin
+                UserRecord firebaseUserRecord = await firebaseClient.Admin
                     .GetUserAsync(userId);
+
+                await _unitOfWork.BeginTransactionAsync();
+                IEnumerable<IUserData> userData = await _unitOfWork.UserDataRepository.GetAllAsync(firebaseUserRecord.Uid);
+                await _unitOfWork.CommitAsync();
+
+                return _mapper.MergeInto<AuthUser>(firebaseUserRecord, userData.FirstOrDefault());
             }
             catch (Exception ex)
             {
@@ -135,12 +146,18 @@ namespace Recipe.Service
         /// </summary>
         /// <param name="token">Users bearer token</param>
         /// <returns>Task<Firebase.Auth.User></returns>
-        public async Task<Firebase.Auth.User> GetuserWithToken(string token)
+        public async Task<IAuthUser> GetWithToken(string token)
         {
             try
             {
-                return await firebaseClient.AuthProvider
+                User firebaseUser = await firebaseClient.AuthProvider
                     .GetUserAsync(token);
+
+                await _unitOfWork.BeginTransactionAsync();
+                IEnumerable<IUserData> userData = await _unitOfWork.UserDataRepository.GetAllAsync(firebaseUser.LocalId);
+                await _unitOfWork.CommitAsync();
+
+                return _mapper.MergeInto<AuthUser>(firebaseUser, userData.FirstOrDefault());
             }
             catch (Exception ex)
             {
@@ -162,6 +179,76 @@ namespace Recipe.Service
             }
             catch (Exception ex)
             {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Method updates user entry in custom db and firebase db
+        /// </summary>
+        /// <param name="userId">User ID</param>
+        /// <param name="user">User object with new values</param>
+        /// <returns>Task<int></returns>
+        public async Task<int> UpdateAsync(string userId, IAuthUser user)
+        {
+            try
+            {
+                user.Uid = userId;
+
+                #region Email and Password validation
+                string ErrorMessage = string.Empty;
+                bool EmailAndPasswordValidated;
+
+                (EmailAndPasswordValidated, ErrorMessage) = _userRegistrationHelper.ValidateEmailAndPassword(user.Email, user.Password);
+
+                if (!EmailAndPasswordValidated)
+                    throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, ErrorMessage);
+                #endregion
+
+
+                await firebaseClient.Admin
+                    .UpdateUserAsync(_mapper.Map<UserRecordArgs>(user));
+
+                await _unitOfWork.BeginTransactionAsync();
+
+                int rowCount = await _unitOfWork.UserDataRepository.UpdateAsync(userId, _mapper.Map<UserData>(user));
+
+                await _unitOfWork.CommitAsync();
+
+                return rowCount;
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Method removes User entry from custom db and firebase db
+        /// </summary>
+        /// <param name="userId">User ID</param>
+        /// <returns>Task<int></returns>
+        public async Task<int> DeleteAsync(string userId)
+        {
+            try
+            {
+                await firebaseClient.Admin
+                    .DeleteUserAsync(userId);
+
+                await _unitOfWork.BeginTransactionAsync();
+
+                int rowCount = await _unitOfWork.UserDataRepository.DeleteAsync(userId);
+
+                await _unitOfWork.CommitAsync();
+
+                return rowCount;
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+
                 throw ex;
             }
         }

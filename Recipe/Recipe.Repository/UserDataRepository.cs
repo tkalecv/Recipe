@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Dapper;
 using Recipe.DAL.Scripts;
+using Recipe.Models;
 using Recipe.Models.Common;
 using Recipe.Repository.Common;
 using System;
@@ -34,6 +35,7 @@ namespace Recipe.Repository
                 DynamicParameters parameters = new DynamicParameters(
                     new
                     {
+                        FirebaseUserID = userData.FirebaseUserID,
                         Address = userData.Address,
                         City = userData.City,
                         FirstName = userData.FirstName,
@@ -54,14 +56,21 @@ namespace Recipe.Repository
         /// <summary>
         /// Method asynchronously deletes UserData object from table. Number of affected rows is returned
         /// </summary>
-        /// <param name="userData">Object with values that will be passed as parameter values</param>
+        /// <param name="firebaseUserId">Users firebase id</param>
         /// <returns>Task<int></returns>
-        public async Task<int> DeleteAsync(IUserData userData)
+        public async Task<int> DeleteAsync(string firebaseUserId)
         {
             try
             {
-                return await _connection.ExecuteAsync("SP here",
-                    param: userData,
+                DynamicParameters parameters = new DynamicParameters(
+                    new
+                    {
+                        FirebaseUserID = firebaseUserId
+                    });
+
+
+                return await _connection.ExecuteAsync(ScriptReferences.UserData.SP_DeleteUserData,
+                    param: parameters,
                     transaction: _transaction,
                     commandType: CommandType.StoredProcedure);
             }
@@ -72,46 +81,20 @@ namespace Recipe.Repository
         }
 
         /// <summary>
-        /// Method asynchronously retrieves UserData from table filtered with primary key
-        /// </summary>
-        /// <param name="id">UserData id (Primary Key)</param>
-        /// <returns>Task<IUserData></returns>
-        public async Task<IUserData> GetByIdAsync(int id)
-        {
-            try //TODO: check if this works
-            {
-                var userDatas = await _connection.QueryAsync<IUserData, IRecipe, IUserData>(ScriptReferences.UserData.SP_RetrieveUserData,
-                    (userData, recipe) =>
-                    {
-                        userData.Recipes.Add(recipe);
-                        return userData;
-                    },
-                    param: new { FirebaseUserID = id },
-                    commandType: CommandType.StoredProcedure,
-                    transaction: _transaction);
-
-                return userDatas.FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
         /// Method asynchronously retrieve all UserDatas from SQL table with or without WHERE filter
         /// </summary>
+        /// <param name="firebaseUserId">Users firebase id</param>
         /// <returns>Task<IEnumerable<IUserData>></returns>
-        public async Task<IEnumerable<IUserData>> GetAllAsync()
+        public async Task<IEnumerable<IUserData>> GetAllAsync(string? firebaseUserId)
         {
             try
             {
-                var userDatas = await _connection.QueryAsync<IUserData, IRecipe, IUserData>(ScriptReferences.UserData.SP_RetrieveUserData,
-                    (userData, recipe) =>
-                    {
-                        userData.Recipes.Add(recipe);
-                        return userData;
-                    },
+                DynamicParameters parameters = new DynamicParameters();
+                if (firebaseUserId != null)
+                    parameters.AddDynamicParams(new { FirebaseUserID = firebaseUserId });
+
+                var userDatas = await _connection.QueryAsync<UserData>(ScriptReferences.UserData.SP_RetrieveUserData,
+                    param: parameters,
                     commandType: CommandType.StoredProcedure,
                     transaction: _transaction);
 
@@ -126,16 +109,24 @@ namespace Recipe.Repository
         /// <summary>
         /// Method asynchronously updates UserData object in table. Number of affected rows is returned
         /// </summary>
+        /// <param name="firebaseUserId">Users firebase id</param>
         /// <param name="userData">Object with values that will be passed as parameter values</param>
         /// <returns>Task<int></returns>
-        public async Task<int> UpdateAsync(IUserData userData)
+        public async Task<int> UpdateAsync(string firebaseUserId, IUserData userData)
         {
             try
             {
-                DynamicParameters parameters = new DynamicParameters();
-                parameters.AddDynamicParams(userData);
+                DynamicParameters parameters = new DynamicParameters(
+                    new
+                    {
+                        FirebaseUserID = firebaseUserId,
+                        FirstName = userData.FirstName,
+                        LastName = userData.LastName,
+                        Address = userData.Address,
+                        City = userData.City
+                    });
 
-                return await _connection.ExecuteAsync("SP name here",
+                return await _connection.ExecuteAsync(ScriptReferences.UserData.SP_UpdateUserData,
                     param: parameters,
                     transaction: _transaction,
                     commandType: CommandType.StoredProcedure);

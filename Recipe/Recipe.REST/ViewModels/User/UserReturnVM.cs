@@ -5,6 +5,8 @@ namespace Recipe.REST.ViewModels.User
 {
     public class UserReturnVM
     {
+        public string Uid { get; set; }
+
         [JsonProperty("idToken")]
         public string FirebaseToken { get; set; }
 

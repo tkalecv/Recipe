@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Recipe.Auth.Models;
+using Recipe.Auth.ModelsCommon;
 using Recipe.ExceptionHandler.CustomExceptions;
 using Recipe.REST.ViewModels.User;
 using Recipe.Service.Common;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Recipe.REST.Controllers
 {
@@ -87,6 +88,92 @@ namespace Recipe.REST.Controllers
             {
                 HttpContext.Session.Remove("_UserToken");
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpPost("/refreshToken/{userId}")]
+        public async Task<IActionResult> RefreshToken(string userId)
+        {
+            try
+            {
+                await _userService.RefreshToken(userId);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpGet("/user/{userId}")]
+        public async Task<IActionResult> GetByID(string userId)
+        {
+            try
+            {
+                IAuthUser result = await _userService.GetByIDAsync(userId);
+
+                if (result == null)
+                    throw new HttpStatusCodeException(StatusCodes.Status204NoContent, $"There is no user with id {userId}.");
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpGet("/user/")]
+        public async Task<IActionResult> GetWithToken([FromQuery]string token)
+        {
+            try
+            {
+                IAuthUser result = await _userService.GetWithToken(token);
+
+                if (result == null)
+                    throw new HttpStatusCodeException(StatusCodes.Status204NoContent, $"User does not exist.");
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> Delete(string userId)
+        {
+            try
+            {
+                await _userService.DeleteAsync(userId);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> Put(string userId, AuthUser user)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, user);
+
+                await _userService.UpdateAsync(userId, user);
+
+                user.Password = null;
+
+                return Ok(user);
             }
             catch (Exception ex)
             {

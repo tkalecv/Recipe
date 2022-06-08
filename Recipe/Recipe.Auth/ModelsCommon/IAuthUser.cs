@@ -2,11 +2,12 @@
 {
     public interface IAuthUser
     {
+        //UserData
         string Address { get; set; }
         string City { get; set; }
         string FirstName { get; set; }
         string LastName { get; set; }
-
+        //Firebase
         bool Disabled { get; set; }
         string DisplayName { get; set; }
         string Email { get; set; }
